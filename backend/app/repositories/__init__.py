@@ -1,0 +1,1 @@
+from app.repositories.report_repository import ReportRepository as ReportRepository
