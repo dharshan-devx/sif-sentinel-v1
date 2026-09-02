@@ -1,0 +1,1452 @@
+You are now acting as the SENIOR BACKEND ARCHITECT, CODE AUDITOR, SECURITY REVIEWER, and TECHNICAL LEAD for my SIH 2026 project.
+
+IMPORTANT:
+DO NOT MODIFY, DELETE, REFACTOR, REWRITE, OR CREATE ANY PROJECT FILES YET.
+
+Your first task is ONLY to inspect and audit the existing repository and tell me exactly what has already been built, what works, what is incomplete, what is incorrect, what Codex appears to have implemented, and what still needs to be built to complete the backend for our internal college hackathon prototype.
+
+I will use your audit as the baseline before we start further development.
+
+==================================================
+PROJECT CONTEXT
+==================================================
+
+Project name:
+SIF Sentinel
+
+Problem Statement:
+SIH26165
+
+Problem:
+AI/NLP Engine to Detect Serious Injury & Fatality (SIF) Precursors in OIL's Unsafe-Act/Unsafe-Condition and Near-Miss Reports.
+
+Core product vision:
+
+Safety Report
+   ↓
+Data Ingestion
+   ↓
+Text Preprocessing
+   ↓
+SIF Classification
+   ↓
+Activity / Hazard / Barrier Extraction
+   ↓
+Barrier Failure Detection
+   ↓
+IOGP Life-Saving Rule Mapping
+   ↓
+Evidence Extraction
+   ↓
+Confidence Scoring
+   ↓
+Human Review when needed
+   ↓
+Precursor Detection
+   ↓
+Pattern Aggregation
+   ↓
+Risk Calculation
+   ↓
+Site / Activity Risk Ranking
+   ↓
+HSE Decision Support
+
+The eventual backend must support this complete workflow.
+
+This is a safety decision-support prototype, NOT an autonomous safety decision-making system.
+
+AI outputs must be treated as decision-support signals and should support confidence, evidence, and human review.
+
+==================================================
+TARGET BACKEND ARCHITECTURE
+==================================================
+
+The intended backend architecture is approximately:
+
+backend/
+    app/
+        main.py
+
+        api/
+            reports.py
+            analysis.py
+            dashboard.py
+            patterns.py
+            rules.py
+            review.py
+            analytics.py
+            ...
+
+        models/
+        schemas/
+        services/
+        db/
+        core/
+        middleware/
+        ml/
+        knowledge/
+        repositories/
+        ...
+
+    data/
+    scripts/
+    tests/
+
+Potential backend responsibilities:
+
+1. Report ingestion
+2. Report CRUD
+3. AI analysis
+4. SIF classification
+5. Activity extraction
+6. Hazard extraction
+7. Barrier extraction
+8. Barrier failure detection
+9. Life-Saving Rule mapping
+10. Evidence extraction
+11. Confidence scoring
+12. Precursor detection
+13. Pattern aggregation
+14. Risk scoring
+15. Site ranking
+16. Activity ranking
+17. Dashboard analytics
+18. Human review queue
+19. Review decisions
+20. Model metrics
+21. Database persistence
+22. Validation
+23. Error handling
+24. Logging
+25. Testing
+26. API documentation
+27. Demo-data/seed-data support
+28. Failure fallback handling
+
+==================================================
+EXPECTED BUSINESS ENTITIES
+==================================================
+
+The system conceptually contains entities such as:
+
+- Users
+- Sites
+- Reports
+- Report Analysis
+- Activities
+- Hazards
+- Barriers
+- Life-Saving Rules
+- Precursor Patterns
+- Review Queue
+- Model Predictions
+- Model Metrics
+- Audit Logs
+
+Do NOT assume these are implemented.
+
+VERIFY THEM FROM THE ACTUAL CODE.
+
+==================================================
+EXPECTED API SURFACE
+==================================================
+
+These are the intended API capabilities.
+
+VERIFY WHICH ONES ACTUALLY EXIST.
+
+Reports:
+
+POST /api/reports
+GET /api/reports
+GET /api/reports/{id}
+
+AI:
+
+POST /api/analyze
+POST /api/reports/{id}/analyze
+
+Dashboard:
+
+GET /api/dashboard/overview
+GET /api/dashboard/sites
+GET /api/dashboard/activities
+GET /api/dashboard/hazards
+GET /api/dashboard/trends
+
+Patterns:
+
+GET /api/patterns
+GET /api/patterns/{id}
+
+Rules:
+
+GET /api/rules
+GET /api/rules/{id}
+
+Human Review:
+
+GET /api/reviews
+POST /api/reviews/{id}/decision
+
+Model:
+
+GET /api/model/metrics
+
+These are TARGET requirements, NOT evidence that the endpoints already exist.
+
+==================================================
+EXPECTED AI OUTPUT
+==================================================
+
+A report analysis should ideally produce something equivalent to:
+
+{
+  "sif_potential": true,
+  "probability": 0.94,
+  "sif_level": "HIGH",
+  "activity": "...",
+  "hazard": "...",
+  "barrier": "...",
+  "barrier_failure": true,
+  "barrier_status": "...",
+  "barrier_failure_type": "...",
+  "life_saving_rule": "...",
+  "rule_confidence": 0.91,
+  "evidence": "...",
+  "explanation": "..."
+}
+
+Again:
+
+VERIFY what the current implementation actually returns.
+
+==================================================
+EXPECTED SIF / DOMAIN LOGIC
+==================================================
+
+The system is NOT supposed to simply determine:
+
+injury happened = SIF
+no injury = non-SIF
+
+The concept is SIF POTENTIAL.
+
+A no-injury near miss can still be HIGH SIF potential when:
+- there is a credible high-energy/high-consequence hazard
+- a critical barrier/control failed or was absent
+- exposure was possible
+- the event could plausibly produce serious injury/fatality
+
+The intended intelligence structure is:
+
+Activity
+   ↓
+Hazard
+   ↓
+Barrier
+   ↓
+Barrier Failure
+   ↓
+SIF Potential
+   ↓
+Life-Saving Rule
+
+The recurring precursor engine should aggregate normalized patterns across reports.
+
+Example:
+
+Maintenance
++
+Stored Energy
++
+Energy Isolation
++
+Isolation Verification Failure
+
+appears repeatedly across reports.
+
+That should be discoverable as a precursor pattern.
+
+==================================================
+EXPECTED LIFE-SAVING RULE DOMAIN
+==================================================
+
+The prototype should support these IOGP Life-Saving Rules:
+
+1. Bypassing Safety Controls
+2. Confined Space
+3. Driving
+4. Energy Isolation
+5. Hot Work
+6. Line of Fire
+7. Safe Mechanical Lifting
+8. Work Authorisation
+9. Working at Height
+
+VERIFY whether these currently exist in:
+- database
+- seed data
+- knowledge files
+- Python constants
+- configuration
+- API responses
+- rule mapping logic
+
+Do NOT assume they are correctly implemented just because a file exists.
+
+==================================================
+EXPECTED RISK / PRECURSOR LOGIC
+==================================================
+
+The intended precursor concept is based on normalized combinations of:
+
+activity
++
+hazard
++
+barrier
++
+barrier failure
+
+The prototype may use a composite risk score such as:
+
+Risk Score =
+    0.40 × SIF Density
+  + 0.25 × SIF Frequency
+  + 0.20 × Barrier Failure Rate
+  + 0.15 × Recency
+
+However:
+
+IMPORTANT:
+This is a prototype design choice, not an OIL-prescribed formula.
+
+So during the audit:
+- determine whether a risk formula exists
+- determine its exact implementation
+- show the actual formula
+- identify hard-coded weights
+- identify whether normalization is implemented
+- identify whether the score is actually used by APIs
+- identify whether the dashboard can consume the result
+
+==================================================
+CURRENT REPOSITORY CONTEXT
+==================================================
+
+The current workspace appears to contain a backend with folders such as:
+
+backend/
+    app/
+        api/
+        core/
+        db/
+        knowledge/
+        middleware/
+        ml/
+        models/
+        repositories/
+        schemas/
+        services/
+        __init__.py
+        main.py
+
+and also:
+
+data/
+scripts/
+tests/
+alembic/
+sif.db
+.env
+.env.example
+Dockerfile
+docker-compose.yml
+pyproject.toml
+requirements.txt
+README.md
+
+This is based on the current workspace view only.
+
+DO NOT trust the screenshot as the source of truth.
+
+Inspect the actual filesystem and code.
+
+==================================================
+YOUR AUDIT TASK
+==================================================
+
+Perform a DEEP REPOSITORY AUDIT.
+
+Do not make changes.
+
+Do not "fix" anything.
+
+Do not create files.
+
+Do not install large dependencies unless absolutely necessary for inspection.
+
+Do not overwrite anything.
+
+Run read-only inspection commands where appropriate.
+
+Inspect:
+
+1. Complete directory tree
+2. Git status
+3. Git history
+4. Recent commits
+5. Branches
+6. Current working tree
+7. pyproject.toml
+8. requirements.txt
+9. README.md
+10. .env.example
+11. main.py
+12. every API router
+13. every model
+14. every schema
+15. every repository
+16. every service
+17. every ML-related file
+18. knowledge files
+19. middleware
+20. database configuration
+21. Alembic migrations
+22. seed scripts
+23. data files
+24. tests
+25. Docker files
+26. configuration
+27. logging
+28. exception handling
+29. CORS
+30. database connection handling
+31. startup/shutdown logic
+32. dependency injection
+33. external AI/LLM integrations
+34. fallback behavior
+35. environment-variable usage
+
+Also inspect git history to infer what Codex has likely already changed.
+
+If possible, identify:
+- latest meaningful commits
+- files recently added
+- files recently modified
+- incomplete branches
+- TODO/FIXME comments
+- commented-out code
+- placeholder implementations
+- mock implementations
+- hardcoded responses
+- dummy values
+- dead code
+- duplicated logic
+- unfinished endpoints
+- unused imports
+- unused models
+- unused services
+- broken references
+
+==================================================
+MOST IMPORTANT:
+SEPARATE "EXISTS" FROM "ACTUALLY WORKS"
+==================================================
+
+For every major feature, distinguish:
+
+A. Implemented structurally
+B. Implemented but incomplete
+C. Implemented and likely working
+D. Broken
+E. Mock/dummy
+F. Not implemented
+
+For example:
+
+SIF classifier:
+- file exists
+- class exists
+- model loads
+- prediction function exists
+- API calls it
+- response is persisted
+- response reaches frontend
+- tests exist
+
+This distinction is VERY IMPORTANT.
+
+==================================================
+CHECK THE REAL DATA FLOW
+==================================================
+
+Trace at least one complete request from entry to persistence.
+
+For example:
+
+POST /api/analyze
+    ↓
+router
+    ↓
+schema validation
+    ↓
+service
+    ↓
+classifier
+    ↓
+extraction
+    ↓
+rule mapper
+    ↓
+confidence
+    ↓
+database
+    ↓
+response
+
+Tell me EXACTLY where the flow currently stops.
+
+Do not describe the desired architecture.
+
+Describe the actual architecture.
+
+==================================================
+CHECK DATABASE IMPLEMENTATION
+==================================================
+
+Determine:
+
+1. Database technology actually used
+2. SQLite or PostgreSQL or both
+3. Async/sync connection
+4. SQLAlchemy setup
+5. engine configuration
+6. session management
+7. model registration
+8. relationships
+9. foreign keys
+10. indexes
+11. constraints
+12. enums
+13. migrations
+14. migration status
+15. seed data
+16. database initialization
+17. transaction handling
+18. rollback handling
+19. duplicate prevention
+20. timestamps
+21. UUID usage
+22. JSON/JSONB usage
+23. whether the current `sif.db` is actually used
+
+If PostgreSQL is intended but SQLite is currently used, explicitly state that.
+
+==================================================
+CHECK API QUALITY
+==================================================
+
+For every endpoint you find, report:
+
+METHOD
+PATH
+FILE
+FUNCTION
+INPUT
+OUTPUT
+DATABASE EFFECT
+AI EFFECT
+STATUS
+
+Example:
+
+POST /api/analyze
+File: app/api/analysis.py
+Function: analyze_report()
+
+Input:
+...
+
+Output:
+...
+
+Status:
+WORKING / PARTIAL / BROKEN / MOCK
+
+Also detect:
+- inconsistent route naming
+- duplicate routes
+- incorrect HTTP methods
+- missing status codes
+- weak validation
+- missing error handling
+- leaking internal exceptions
+- inconsistent response schemas
+
+==================================================
+CHECK AI/NLP IMPLEMENTATION
+==================================================
+
+Determine exactly what the project currently uses.
+
+Possible components may include:
+
+- scikit-learn
+- TF-IDF
+- Logistic Regression
+- Sentence Transformers
+- embeddings
+- Hugging Face
+- Gemini or another LLM
+- prompt-based extraction
+- keyword rules
+- deterministic mapping
+- hybrid approach
+
+For each component, report:
+
+1. Does it exist?
+2. Does it load?
+3. Is it actually called?
+4. Is it trained?
+5. Is there a model artifact?
+6. Is training reproducible?
+7. Is prediction reproducible?
+8. Is there a fallback?
+9. Is confidence calculated?
+10. Are outputs validated?
+11. Is evidence extracted?
+12. Is LSR mapping domain constrained?
+13. Is human review triggered by low confidence?
+
+CRITICAL:
+Do NOT call something "ML" merely because an ML library is imported.
+
+Verify real execution.
+
+==================================================
+CHECK MODEL TRAINING / EVALUATION
+==================================================
+
+Inspect the dataset and model pipeline.
+
+Determine:
+
+- dataset location
+- number of records
+- columns
+- labels
+- class balance
+- preprocessing
+- train/validation/test split
+- random seed
+- model type
+- feature extraction
+- training script
+- saved model
+- inference script
+- evaluation script
+- metrics
+- confusion matrix
+- precision
+- recall
+- F1
+- PR-AUC if available
+
+Tell me whether the current model is:
+
+REAL TRAINED MODEL
+or
+RULE/HEURISTIC
+or
+LLM-ONLY
+or
+MOCK
+or
+HYBRID
+
+Do not invent metrics.
+
+If no reliable evaluation exists, explicitly say:
+
+"NO VERIFIED MODEL METRICS FOUND."
+
+==================================================
+CHECK PRECURSOR ENGINE
+==================================================
+
+Find out whether the current code actually performs:
+
+- normalization
+- grouping
+- occurrence counting
+- SIF counting
+- SIF density
+- recurring pattern detection
+- temporal aggregation
+- site aggregation
+- activity aggregation
+- barrier-failure aggregation
+- risk score calculation
+
+Trace the code.
+
+Give me the exact current algorithm.
+
+==================================================
+CHECK HUMAN-IN-THE-LOOP
+==================================================
+
+Determine whether there is actually a working review flow:
+
+AI prediction
+    ↓
+confidence threshold
+    ↓
+review queue
+    ↓
+reviewer decision
+    ↓
+database update
+
+Verify:
+- review table
+- review API
+- status
+- approve
+- reject
+- modify
+- reviewer
+- comment
+- timestamps
+- audit trail
+
+If the UI/API exists but the database update doesn't work, say so.
+
+==================================================
+CHECK SECURITY
+==================================================
+
+Audit:
+
+- environment variables
+- secret handling
+- .env usage
+- exposed keys
+- CORS
+- authentication
+- authorization
+- SQL injection risks
+- arbitrary file upload
+- oversized input
+- unsafe parsing
+- prompt injection exposure
+- exception leakage
+- insecure debug mode
+- hardcoded secrets
+- database credentials
+- API credentials
+
+Do NOT expose actual secrets in your report.
+
+If you detect one, say:
+
+"SECRET FOUND IN FILE X"
+
+without printing the secret.
+
+Also distinguish:
+- acceptable prototype shortcut
+- serious security issue
+- production blocker
+
+==================================================
+CHECK TESTING
+==================================================
+
+Inspect all tests.
+
+Tell me:
+
+- number of test files
+- number of test functions
+- covered modules
+- endpoint coverage
+- service coverage
+- database coverage
+- AI pipeline coverage
+- integration tests
+- failure cases
+- current pass/fail result
+
+Run tests if the repository can safely support read-only execution.
+
+If tests fail:
+
+DO NOT FIX THEM YET.
+
+Instead report:
+- exact failing test
+- exact error
+- likely root cause
+- affected component
+
+==================================================
+CHECK DEVELOPMENT QUALITY
+==================================================
+
+Look for:
+
+- circular imports
+- architectural violations
+- duplicated business logic
+- overly large files
+- poor dependency boundaries
+- global mutable state
+- blocking operations in async routes
+- DB sessions not closed
+- external API calls without timeout
+- no retry/fallback
+- swallowed exceptions
+- missing validation
+- missing typing
+- bad naming
+- hard-coded business logic
+- magic numbers
+- duplicated constants
+- dead services
+- unused models
+- inconsistent enums
+- inconsistent field names
+
+==================================================
+CHECK DEMO READINESS
+==================================================
+
+The backend must eventually support a live hackathon demo.
+
+Determine whether the current backend can successfully demonstrate:
+
+DEMO 1:
+"Worker entered confined space without gas testing."
+
+Expected conceptually:
+
+HIGH SIF
+Confined Space
+Atmospheric Hazard
+Gas Testing
+Barrier Failure
+Evidence
+Confidence
+LSR = Confined Space
+
+DEMO 2:
+"Maintenance started before energy isolation was verified."
+
+Expected:
+
+HIGH SIF
+Energy Isolation
+Isolation Verification failure
+Evidence
+LSR = Energy Isolation
+
+DEMO 3:
+"Worker entered suspended-load area during lifting."
+
+Expected:
+
+HIGH SIF
+Line of Fire / Safe Mechanical Lifting
+Barrier failure
+Evidence
+
+DEMO 4:
+Low-risk report.
+
+Expected:
+NON-SIF / LOW
+
+DEMO 5:
+Ambiguous report.
+
+Expected:
+LOW CONFIDENCE / HUMAN REVIEW
+
+Do NOT artificially modify the code to make these work.
+
+Just assess current behavior.
+
+==================================================
+CHECK EXTERNAL DEPENDENCIES
+==================================================
+
+Identify all external services.
+
+Examples:
+- Gemini
+- OpenAI
+- Hugging Face
+- external embeddings
+- PostgreSQL
+- Neon
+- Redis
+- any other service
+
+For each:
+
+- why it is used
+- where configured
+- whether optional or mandatory
+- whether failure is handled
+- whether prototype can work without it
+- whether a local fallback exists
+
+==================================================
+IMPORTANT SCOPE RULE
+==================================================
+
+Our immediate objective is:
+
+COMPLETE THE BACKEND FOR THE INTERNAL SIH PROTOTYPE.
+
+Do NOT recommend unnecessary production infrastructure such as:
+
+- Kubernetes
+- Kafka
+- Redis
+- microservices
+- blockchain
+- service mesh
+- complicated distributed systems
+
+unless the existing code already depends on them or there is a concrete functional reason.
+
+The project should remain reasonably simple and explainable.
+
+==================================================
+OUTPUT FORMAT
+==================================================
+
+Your response MUST follow this exact structure.
+
+==================================================
+SECTION 1 — EXECUTIVE SUMMARY
+==================================================
+
+Give me a brutally honest summary:
+
+Backend completion:
+XX%
+
+Functional completion:
+XX%
+
+Architecture maturity:
+XX%
+
+Demo readiness:
+XX%
+
+Database readiness:
+XX%
+
+AI readiness:
+XX%
+
+Testing readiness:
+XX%
+
+Production-like quality:
+XX%
+
+IMPORTANT:
+These percentages must be your engineering estimates based on inspected code.
+
+Explain each percentage briefly.
+
+==================================================
+SECTION 2 — WHAT ALREADY EXISTS
+==================================================
+
+Create a table:
+
+| Component | Exists? | Actually Works? | Evidence/File | Notes |
+
+Include:
+
+- FastAPI app
+- routers
+- database
+- models
+- schemas
+- services
+- repositories
+- AI
+- NLP
+- LSR mapping
+- precursor engine
+- risk engine
+- review queue
+- analytics
+- seed data
+- tests
+- migrations
+- logging
+- middleware
+- configuration
+
+==================================================
+SECTION 3 — CURRENT PROJECT ARCHITECTURE
+==================================================
+
+Draw the ACTUAL architecture.
+
+Not the desired architecture.
+
+Example:
+
+Frontend
+   ↓
+API
+   ↓
+Router
+   ↓
+Service
+   ↓
+AI
+   ↓
+Database
+
+But replace this with whatever really exists.
+
+Show exact files/modules.
+
+==================================================
+SECTION 4 — ACTUAL DATABASE DESIGN
+==================================================
+
+List every table/model actually present.
+
+For each:
+
+Model
+Fields
+Primary key
+Foreign keys
+Relationships
+Indexes
+Status
+
+Then describe:
+
+Current DB:
+SQLite / PostgreSQL / other
+
+Migration:
+working / partial / absent
+
+Seed:
+working / partial / absent
+
+==================================================
+SECTION 5 — ACTUAL API INVENTORY
+==================================================
+
+Produce a detailed table:
+
+| Method | Endpoint | File | Input | Output | DB | AI | Status |
+
+Include every actual endpoint.
+
+Then compare them against the intended API list.
+
+==================================================
+SECTION 6 — AI/NLP AUDIT
+==================================================
+
+Explain exactly:
+
+1. SIF classifier
+2. Extraction
+3. LSR mapper
+4. Confidence
+5. Evidence
+6. Fallback
+7. Model loading
+8. Prompting
+9. Output validation
+
+Then classify the architecture:
+
+ML
+LLM
+Rules
+Hybrid
+
+==================================================
+SECTION 7 — DATASET AUDIT
+==================================================
+
+Tell me:
+
+- where dataset lives
+- how many rows
+- columns
+- label fields
+- source types
+- synthetic/public/real
+- whether metadata exists
+- whether dataset is actually connected to model training
+- whether seed data is separate from training data
+
+Clearly distinguish:
+
+TRAINING DATA
+
+vs
+
+DEMO / OPERATIONAL DATA
+
+==================================================
+SECTION 8 — MODEL/EVALUATION AUDIT
+==================================================
+
+Tell me:
+
+- model
+- training pipeline
+- artifacts
+- evaluation
+- metrics
+- reproducibility
+- potential leakage
+- class imbalance
+- problems
+
+If metrics aren't verified:
+
+say so.
+
+==================================================
+SECTION 9 — PRECURSOR / RISK ENGINE AUDIT
+==================================================
+
+Describe exactly how the current code detects:
+
+- recurring patterns
+- activity patterns
+- hazard patterns
+- barrier failures
+- SIF density
+- site risk
+- activity risk
+- trends
+- recency
+
+If it doesn't exist:
+
+mark NOT IMPLEMENTED.
+
+==================================================
+SECTION 10 — HUMAN REVIEW AUDIT
+==================================================
+
+Trace:
+
+Prediction
+→ confidence
+→ queue
+→ reviewer
+→ decision
+→ persistence
+
+Mark missing parts.
+
+==================================================
+SECTION 11 — TESTING AUDIT
+==================================================
+
+Include:
+
+- tests found
+- test commands
+- current result
+- failing tests
+- untested critical areas
+- integration gaps
+
+==================================================
+SECTION 12 — SECURITY / RELIABILITY AUDIT
+==================================================
+
+Classify findings:
+
+CRITICAL
+HIGH
+MEDIUM
+LOW
+
+Include:
+
+- secrets
+- CORS
+- auth
+- validation
+- error handling
+- external API failure
+- DB failure
+- timeout handling
+- prompt safety
+- input limits
+
+==================================================
+SECTION 13 — CODEX COMPLETION AUDIT
+==================================================
+
+This is VERY IMPORTANT.
+
+Based on:
+
+- git history
+- commits
+- timestamps where available
+- modified files
+- architecture
+- implementation patterns
+
+Tell me what appears to have been completed by previous Codex work.
+
+Create:
+
+| Area | Evidence of Codex work | Likely completion | Notes |
+
+Also identify:
+
+- files that look partially generated
+- TODOs
+- placeholders
+- scaffolding
+- abandoned implementations
+
+Do not claim certainty if git history does not allow certainty.
+
+Use language such as:
+
+"likely implemented"
+"partially implemented"
+"cannot be verified"
+
+==================================================
+SECTION 14 — MISSING FEATURES
+==================================================
+
+Create a strict priority list.
+
+P0 = absolutely required for internal hackathon
+
+P1 = important
+
+P2 = strong addition
+
+P3 = optional / ignore for now
+
+For example:
+
+P0:
+- report ingestion
+- real analysis pipeline
+- persistence
+- SIF classification
+- extraction
+- LSR mapping
+- precursor aggregation
+- risk ranking
+- review queue
+- working APIs
+- error handling
+- seed/demo data
+
+But ONLY mark things missing if the repository confirms they are missing.
+
+==================================================
+SECTION 15 — BROKEN FEATURES
+==================================================
+
+Give me a list of actual bugs.
+
+Format:
+
+BUG #1
+Component:
+File:
+Problem:
+Observed behavior:
+Expected behavior:
+Likely root cause:
+Severity:
+Recommended fix direction:
+
+DO NOT IMPLEMENT THE FIX.
+
+==================================================
+SECTION 16 — ARCHITECTURAL GAPS
+==================================================
+
+Tell me where the existing backend architecture differs from the target architecture.
+
+Examples:
+
+- router directly contains business logic
+- service missing
+- DB model missing
+- AI coupled to API
+- analytics unavailable
+- no repository layer
+- no schema validation
+- no fallback
+- no review workflow
+
+==================================================
+SECTION 17 — END-TO-END GAP MAP
+==================================================
+
+Show:
+
+CURRENT:
+
+Report
+ ↓
+ ?
+ ↓
+ ?
+ ↓
+Database
+ ↓
+API
+ ↓
+Dashboard
+
+TARGET:
+
+Report
+ ↓
+Preprocessing
+ ↓
+SIF
+ ↓
+Extraction
+ ↓
+LSR
+ ↓
+Confidence
+ ↓
+Review
+ ↓
+Precursor
+ ↓
+Risk
+ ↓
+Database
+ ↓
+Dashboard
+
+Mark every missing/broken step.
+
+==================================================
+SECTION 18 — BACKEND COMPLETION ROADMAP
+==================================================
+
+Give me a recommended order to finish the backend.
+
+IMPORTANT:
+
+This must be based on the actual current repository.
+
+Don't give a generic tutorial.
+
+Create phases:
+
+PHASE 1 — Fix foundations
+PHASE 2 — Complete report pipeline
+PHASE 3 — Complete AI pipeline
+PHASE 4 — Complete database persistence
+PHASE 5 — Complete analytics
+PHASE 6 — Complete precursor intelligence
+PHASE 7 — Complete review workflow
+PHASE 8 — Testing
+PHASE 9 — Demo hardening
+
+For each phase tell me:
+
+- files to modify
+- files to create
+- dependencies
+- prerequisites
+- expected output
+- verification command
+
+==================================================
+SECTION 19 — WHAT I SHOULD DO NEXT
+==================================================
+
+Give me ONLY the NEXT 5 actions.
+
+Do not give 50 tasks.
+
+I want the safest sequence.
+
+==================================================
+SECTION 20 — FINAL VERDICT
+==================================================
+
+End with:
+
+CURRENT BACKEND STATE
+
+1. What is genuinely working
+2. What is partially working
+3. What is fake/mock
+4. What is broken
+5. What is missing
+6. Biggest technical risk
+7. Biggest hackathon risk
+8. Most important next implementation step
+9. Estimated effort remaining
+10. Whether the current architecture should be preserved or partially refactored
+
+==================================================
+CRITICAL RULES
+==================================================
+
+1. DO NOT modify code.
+2. DO NOT create files.
+3. DO NOT delete files.
+4. DO NOT refactor.
+5. DO NOT invent missing functionality.
+6. DO NOT assume a file means the feature works.
+7. Trace actual execution paths.
+8. Prefer evidence from source code and git history.
+9. If something cannot be verified, explicitly say so.
+10. Separate prototype shortcuts from genuine bugs.
+11. Do not fabricate metrics.
+12. Do not fabricate dataset sizes.
+13. Do not fabricate Codex contributions.
+14. Do not expose secrets.
+15. Do not optimize prematurely.
+16. Do not add unnecessary technologies.
+17. Focus on backend completion for SIH26165.
+18. Report the current state FIRST.
+19. Wait for my approval before making any modifications.
+
+FINAL INSTRUCTION:
+
+After completing this audit, STOP.
+
+Do not implement anything.
+
+I will take your audit report and bring it back to my project lead (ChatGPT) so we can decide exactly what to build next.
