@@ -1,11 +1,10 @@
-from app.ml.inference.predictor import SIFPrediction, SIFPredictor
-
-_predictor = SIFPredictor()
+from app.ml.inference.predictor import SIFPrediction
+from app.services.nlp.model_registry import get_current_sif_model, get_model_metadata
 
 
 def classify_sif(text: str) -> SIFPrediction:
-    return _predictor.predict(text)
+    return get_current_sif_model().predict(text)
 
 
 def model_metadata() -> dict:
-    return _predictor.metadata()
+    return get_model_metadata()
