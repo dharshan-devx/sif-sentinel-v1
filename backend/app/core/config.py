@@ -29,7 +29,14 @@ class Settings(BaseSettings):
     risk_high_threshold: float = 0.55
     risk_medium_threshold: float = 0.30
     demo_mode: bool = False
-    max_upload_bytes: int = 2_000_000
+    # Report text validation — minimum is 10 chars to allow short but meaningful
+    # safety observations (e.g. "Slip near valve"). Maximum is 20 000 chars to
+    # prevent oversized payloads from reaching the tokeniser/classifier.
+    report_text_min_length: int = 10
+    report_text_max_length: int = 20_000
+    # NOTE: max_upload_bytes has been removed. No file-upload endpoint exists in
+    # this codebase. If an upload route is added in a future phase, re-introduce
+    # this setting and enforce it before reading the full payload into memory.
 
     @field_validator("jwt_secret_key")
     @classmethod

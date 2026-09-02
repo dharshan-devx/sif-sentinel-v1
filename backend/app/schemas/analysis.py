@@ -1,8 +1,9 @@
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.core.constants import BarrierStatus, SIFLevel
+from app.core.validators import validate_report_text
 from app.schemas.common import ORMModel
 
 
@@ -13,7 +14,14 @@ class AnalysisRead(ORMModel):
 
 
 class AnalyzeTextRequest(BaseModel):
-    text: str = Field(min_length=10, max_length=20000)
+    # Same outer guard and same configurable policy as report_text — the
+    # direct /analyze endpoint must not accept input that /reports would reject.
+    text: str = Field(min_length=1, max_length=100_000)
+
+    @field_validator("text")
+    @classmethod
+    def _validate_text(cls, v: str) -> str:
+        return validate_report_text(v)
 
 
 class AnalysisResponse(BaseModel):
