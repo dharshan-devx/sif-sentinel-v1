@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 
 from app.api.deps import DBSession, require_roles
-from app.core.constants import UserRole
+from app.core.constants import ReviewDecision, UserRole
 from app.core.exceptions import AppError
 from app.models.model_prediction import ModelPrediction
 from app.models.review import Review
@@ -27,9 +27,9 @@ async def list_models(_: User = Depends(require_roles(UserRole.ADMIN, UserRole.H
 @router.get("/feedback", summary="Human-review feedback aggregates")
 async def feedback(db: DBSession, _: User = Depends(require_roles(UserRole.ADMIN, UserRole.HSE_MANAGER, UserRole.HSE_ANALYST))) -> dict:
     total = await db.scalar(select(func.count()).select_from(ModelPrediction)) or 0
-    reviewed = await db.scalar(select(func.count()).select_from(Review).where(Review.decision != "PENDING")) or 0
-    approved = await db.scalar(select(func.count()).select_from(Review).where(Review.decision == "APPROVE")) or 0
-    corrected = await db.scalar(select(func.count()).select_from(Review).where(Review.decision == "MODIFY")) or 0
+    reviewed = await db.scalar(select(func.count()).select_from(Review).where(Review.decision != ReviewDecision.PENDING)) or 0
+    approved = await db.scalar(select(func.count()).select_from(Review).where(Review.decision == ReviewDecision.APPROVE)) or 0
+    corrected = await db.scalar(select(func.count()).select_from(Review).where(Review.decision == ReviewDecision.MODIFY)) or 0
     return {"total_predictions": total, "reviewed_predictions": reviewed, "approved_predictions": approved, "corrected_predictions": corrected, "correction_rate": round(corrected / reviewed, 3) if reviewed else None, "human_review_metrics": "unavailable: fewer than 10 reviewed predictions" if reviewed < 10 else {"sample_size": reviewed}}
 
 

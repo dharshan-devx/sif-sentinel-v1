@@ -29,7 +29,10 @@ def database():
         await engine.dispose()
     asyncio.run(teardown())
     if TEST_DB.exists():
-        TEST_DB.unlink()
+        try:
+            TEST_DB.unlink()
+        except PermissionError:
+            pass
 
 
 @pytest.fixture()
