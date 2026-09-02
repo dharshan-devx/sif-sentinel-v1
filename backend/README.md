@@ -111,3 +111,9 @@ The graph endpoint emits five React Flow-ready nodes (activity, hazard, barrier,
 - `POST/GET /api/v1/reports`, `GET/PATCH/DELETE /api/v1/reports/{report_id}`
 
 See Swagger for endpoint contracts, authentication, enums, and response formats.
+
+
+
+test commands
+
+python -m pytest tests/ -v --tb=short 2>&1
