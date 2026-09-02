@@ -81,6 +81,27 @@ Training performs a stratified 80/20 split with random seed 2026 and writes the 
 
 Review is required when confidence is below threshold, classification is ambiguous, evidence is absent, or a medium/high risk prediction lacks a known rule mapping.
 
+## Precursor intelligence and analytics
+
+Phase 3 derives a **precursor pattern** from the latest analysis of each report: normalized `activity | hazard | barrier | barrier failure`. It counts recurring exposure signals; it does not make causal claims. Each report analysis triggers an idempotent pattern refresh, and administrators can run `POST /api/v1/precursors/rebuild` after imports or demonstrations.
+
+Pattern aggregation is SQL-backed and produces occurrence/SIF counts, density, 30-day recency, site and department spread, first/last occurrence, and a trend. Trends compare the most recent 30 days with the previous comparable 30 days: ±20% yields increasing/decreasing; no earlier-period observations yield `NEW`; fewer than three total observations yields `INSUFFICIENT_DATA`.
+
+The configurable 0–1 prototype risk score is:
+
+`0.30 × SIF density + 0.20 × capped frequency + 0.20 × barrier-failure rate + 0.15 × exp(-λ × age days) + 0.10 × trend factor + 0.05 × capped site spread`
+
+where `λ=0.03` by default, frequency caps at 10 reports, site spread caps at five sites, and trend factors are `1.0` increasing, `0.8` new, `0.5` stable, `0.2` decreasing, and `0.35` insufficient data. Levels are configurable: critical ≥0.75, high ≥0.55, medium ≥0.30, otherwise low. All dashboard and risk counts are database aggregations over latest report analyses; no Redis cache is used at prototype scale to avoid stale risk signals.
+
+### Analytics APIs
+
+- `GET /api/v1/precursors`, `GET /api/v1/precursors/trends`, `GET /api/v1/precursors/{id}`, `GET /api/v1/precursors/{id}/graph`
+- `POST /api/v1/precursors/rebuild`
+- `GET /api/v1/risk/sites`, `/risk/activities`, `/risk/hazards`, `/risk/barriers`
+- `GET /api/v1/dashboard/summary`, `/sif-trend`, `/lsr-distribution`, `/site-comparison`, `/activity-distribution`, `/hazard-distribution`, `/barrier-failures`
+
+The graph endpoint emits five React Flow-ready nodes (activity, hazard, barrier, failure, SIF) plus directed relationship edges. Precursor detail returns no more than five representative report summaries, avoiding report-text duplication.
+
 ## Primary endpoints
 
 - `GET /api/v1/health`, `GET /api/v1/health/ready`

@@ -44,3 +44,10 @@ class BarrierStatus(StrEnum):
     FAILED = "FAILED"
     MISSING = "MISSING"
     UNKNOWN = "UNKNOWN"
+
+
+class ReviewDecision(StrEnum):
+    PENDING = "PENDING"
+    APPROVE = "APPROVE"
+    REJECT = "REJECT"
+    MODIFY = "MODIFY"

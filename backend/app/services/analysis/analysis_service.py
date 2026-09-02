@@ -11,6 +11,7 @@ from app.models.review import Review
 from app.schemas.analysis import AnalysisResponse
 from app.services.audit_service import record_audit
 from app.services.nlp.analysis_pipeline import analyze_text
+from app.services.precursor_engine.precursor_service import PrecursorService
 from app.services.report_service import ReportService
 
 
@@ -40,6 +41,7 @@ class AnalysisService:
             report.status = ReportStatus.REVIEW_REQUIRED if result.review_required else ReportStatus.ANALYZED
             if result.review_required:
                 self.db.add(Review(report_id=report.id, analysis_id=analysis.id, reviewer_id=actor_id, decision="PENDING", reviewer_comment="Automatically queued because the analysis confidence requires human review.", reviewed_at=datetime.now(UTC)))
+            await PrecursorService(self.db).rebuild()
             await record_audit(self.db, user_id=actor_id, action="REPORT_ANALYZED", entity_type="report", entity_id=report.id, details={"model_version": result.model_version, "review_required": result.review_required}, ip_address=ip_address)
             await self.db.commit()
             await self.db.refresh(analysis)

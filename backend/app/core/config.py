@@ -18,6 +18,18 @@ class Settings(BaseSettings):
     entity_weight: float = 0.25
     rule_weight: float = 0.20
     evidence_weight: float = 0.10
+    precursor_recency_lambda: float = 0.03
+    risk_density_weight: float = 0.30
+    risk_frequency_weight: float = 0.20
+    risk_failure_weight: float = 0.20
+    risk_recency_weight: float = 0.15
+    risk_trend_weight: float = 0.10
+    risk_spread_weight: float = 0.05
+    risk_critical_threshold: float = 0.75
+    risk_high_threshold: float = 0.55
+    risk_medium_threshold: float = 0.30
+    demo_mode: bool = False
+    max_upload_bytes: int = 2_000_000
 
     @field_validator("jwt_secret_key")
     @classmethod

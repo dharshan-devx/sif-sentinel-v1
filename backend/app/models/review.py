@@ -21,6 +21,7 @@ class Review(UUIDTimestampMixin, Base):
     corrected_hazard: Mapped[str | None] = mapped_column(String(255))
     corrected_barrier: Mapped[str | None] = mapped_column(String(255))
     corrected_barrier_status: Mapped[BarrierStatus | None] = mapped_column(Enum(BarrierStatus, native_enum=False))
+    corrected_barrier_failure: Mapped[str | None] = mapped_column(Text)
     corrected_life_saving_rule: Mapped[str | None] = mapped_column(String(255))
     reviewer_comment: Mapped[str | None] = mapped_column(Text)
     reviewed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

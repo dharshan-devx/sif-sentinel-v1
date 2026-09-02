@@ -15,6 +15,8 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
         started = time.perf_counter()
         response = await call_next(request)
         response.headers["X-Request-ID"] = request_id
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         log.info("request_complete", request_id=request_id, method=request.method, path=request.url.path,
                  status_code=response.status_code, duration_ms=round((time.perf_counter() - started) * 1000, 2))
         return response
