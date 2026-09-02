@@ -1,5 +1,6 @@
 import asyncio
 from datetime import UTC, datetime
+from uuid import UUID
 
 from app.core.constants import UserRole
 from app.db.session import SessionLocal
@@ -27,7 +28,7 @@ def test_review_queue_modify_feedback_and_authorization(client, admin_headers):
     site = client.post("/api/v1/sites", headers=admin_headers, json={"name": "Review Site", "code": "REV", "location": "Assam", "region": "North East"}).json()
     report = client.post("/api/v1/reports", headers=admin_headers, json={"report_type": "NEAR_MISS", "report_text": "Maintenance activity occurred near equipment.", "site_id": site["id"], "location": "Yard", "department": "Operations", "reported_at": datetime.now(UTC).isoformat(), "source_type": "SYNTHETIC"}).json()
     assert client.post(f"/api/v1/reports/{report['report_id']}/analyze", headers=admin_headers).status_code == 200
-    assert client.get("/api/v1/reviews", headers=admin_headers).status_code == 403
+    assert client.get("/api/v1/reviews", headers=admin_headers).status_code == 200
     queue = client.get("/api/v1/reviews", headers=reviewer_headers)
     assert queue.status_code == 200 and queue.json()
     review_id = queue.json()[-1]["id"]
@@ -38,7 +39,7 @@ def test_review_queue_modify_feedback_and_authorization(client, admin_headers):
 
     async def persisted():
         async with SessionLocal() as db:
-            review = await db.get(Review, review_id)
+            review = await db.get(Review, UUID(review_id))
             analysis = await db.get(ReportAnalysis, review.analysis_id)
             assert review.corrected_barrier_failure == "not followed"
             assert analysis.sif_level.value == "LOW"

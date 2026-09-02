@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.constants import ReviewDecision
+from app.core.constants import ReviewDecision, ReportStatus
 from app.core.exceptions import AppError, NotFoundError
 from app.models.report import Report
 from app.models.report_analysis import ReportAnalysis
@@ -51,6 +51,10 @@ class ReviewService:
                 value = getattr(review, source)
                 if value is not None:
                     setattr(analysis, target, value)
+        # A1 FIX: Transition report status to REVIEWED so dashboard counters reflect reality.
+        report = await self.db.get(Report, review.report_id)
+        if report and report.status == ReportStatus.REVIEW_REQUIRED:
+            report.status = ReportStatus.REVIEWED
         await record_audit(self.db, user_id=actor_id, action=f"REVIEW_{payload.decision.value}D" if payload.decision != ReviewDecision.MODIFY else "REVIEW_MODIFIED", entity_type="review", entity_id=review.id, details={"report_id": str(review.report_id)}, ip_address=ip)
         await PrecursorService(self.db).rebuild()
         await self.db.commit()
