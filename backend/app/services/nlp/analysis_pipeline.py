@@ -4,8 +4,9 @@ from app.core.config import get_settings
 from app.core.constants import SIFLevel
 from app.knowledge.lsr_mapper import map_to_life_saving_rule
 from app.services.nlp.confidence import overall_confidence
-from app.services.nlp.entity_extractor import extract_entities
+from app.services.nlp.entity_extractor import extract_entities, get_structured_evidence
 from app.services.nlp.evidence_extractor import extract_evidence
+from app.services.nlp.evidence_model import EvidenceType, StructuredEvidence
 from app.services.nlp.preprocessing import preprocess_text
 from app.services.nlp.sif_classifier import classify_sif
 
@@ -35,28 +36,82 @@ class PipelineResult:
 def analyze_text(text: str) -> PipelineResult:
     document = preprocess_text(text)
     prediction = classify_sif(document.normalized_text)
+    
+    structured_evidence = get_structured_evidence(document)
     entities = extract_entities(document)
-    rule = map_to_life_saving_rule(entities.activity, entities.hazard, entities.barrier, entities.barrier_failure, document.normalized_text)
+    
+    rule = map_to_life_saving_rule(
+        entities.activity, 
+        entities.hazard, 
+        entities.barrier, 
+        entities.barrier_failure, 
+        document.normalized_text, 
+        structured_evidence
+    )
+    
     evidence = extract_evidence(document, entities)
     confidence = overall_confidence(max(prediction.probability, 1 - prediction.probability), entities.confidence, rule.confidence, evidence.confidence)
     ambiguous = 0.42 <= prediction.probability <= 0.58
+    
+    # If a barrier is explicitly 'unknown', force review
+    has_unknown_barrier = any(ctrl.verification_status == "unknown" for ctrl in structured_evidence.get_by_type(EvidenceType.CONTROL))
+    
     high_risk_without_rule = prediction.sif_level in (SIFLevel.HIGH, SIFLevel.MEDIUM) and not rule.rule
-    review_required = confidence < get_settings().analysis_review_threshold or ambiguous or not evidence.evidence_span or high_risk_without_rule
+    review_required = confidence < get_settings().analysis_review_threshold or ambiguous or not evidence.evidence_span or high_risk_without_rule or has_unknown_barrier
+    
     level = SIFLevel.REVIEW if review_required and prediction.sif_level in (SIFLevel.NON_SIF, SIFLevel.LOW, SIFLevel.REVIEW) else prediction.sif_level
-    return PipelineResult(prediction.sif_potential, level, prediction.probability, entities.activity, entities.hazard, entities.barrier, entities.barrier_status.value, entities.barrier_failure, rule.rule, rule.confidence, evidence.evidence_span, evidence.evidence_sentences, evidence.evidence_terms, confidence, review_required, prediction.model_name, prediction.model_version, _explain(prediction.sif_level, entities, rule.rule, evidence.evidence_span, prediction.predictive_terms))
+    
+    return PipelineResult(
+        prediction.sif_potential, level, prediction.probability, 
+        entities.activity, entities.hazard, entities.barrier, 
+        entities.barrier_status.value, entities.barrier_failure, 
+        rule.rule, rule.confidence, evidence.evidence_span, 
+        evidence.evidence_sentences, evidence.evidence_terms, 
+        confidence, review_required, prediction.model_name, 
+        prediction.model_version, 
+        _explain(prediction.sif_level, structured_evidence, rule.rule, evidence.evidence_span, prediction.predictive_terms, review_required, has_unknown_barrier)
+    )
 
 
-def _explain(level: SIFLevel, entities, rule: str | None, evidence: str | None, predictive_terms: list[str]) -> str:
-    concepts = [item for item in (entities.activity, entities.hazard, entities.barrier) if item]
-    description = ", ".join(concepts) if concepts else "limited controlled-domain signals"
-    failure = f" and indicates the control was {entities.barrier_failure}" if entities.barrier_failure else ""
-    mapping = f" This maps to the {rule} Life-Saving Rule." if rule else " No controlled Life-Saving Rule mapping was established."
-    evidence_note = " Evidence was found in the submitted report." if evidence else " No meaningful source evidence was found."
+def _explain(level: SIFLevel, structured: StructuredEvidence, rule: str | None, evidence: str | None, predictive_terms: list[str], review_required: bool, has_unknown_barrier: bool) -> str:
+    parts = []
     
-    explanation = f"The report was classified as {level.value} SIF potential based on {description}{failure}.{mapping}{evidence_note}"
+    activities = structured.get_by_type(EvidenceType.ACTIVITY)
+    hazards = structured.get_by_type(EvidenceType.HAZARD)
+    controls = structured.get_by_type(EvidenceType.CONTROL)
     
+    if activities or hazards:
+        concepts = [item.normalized_concept for item in activities + hazards]
+        parts.append(f"Evidence identified {', '.join(concepts)}.")
+        
+    for ctrl in controls:
+        if ctrl.verification_status == "verified":
+            parts.append(f"The report states that {ctrl.normalized_concept} was explicitly verified.")
+        elif ctrl.verification_status == "not verified":
+            parts.append(f"The report states that {ctrl.normalized_concept} was NOT verified.")
+        elif ctrl.verification_status == "failed":
+            parts.append(f"The report states that {ctrl.normalized_concept} failed or was bypassed.")
+        elif ctrl.verification_status == "not performed":
+            parts.append(f"The report states that the activity was performed without {ctrl.normalized_concept}.")
+        elif ctrl.verification_status == "unknown":
+            parts.append(f"The report mentions {ctrl.normalized_concept} but its verification status is ambiguous or unknown.")
+            
+    if rule:
+        parts.append(f"This evidence maps to the {rule} Life-Saving Rule.")
+    else:
+        parts.append("No controlled Life-Saving Rule mapping was established.")
+        
+    if not evidence:
+        parts.append("No meaningful source evidence was found.")
+        
     if predictive_terms:
         formatted_terms = ", ".join(f"'{term}'" for term in predictive_terms)
-        explanation += f" Top predictive terms identified by the model: {formatted_terms}."
+        parts.append(f"The ML model identified {formatted_terms} as top predictive terms.")
         
-    return explanation
+    if review_required:
+        if has_unknown_barrier:
+            parts.append("Human review is recommended because the assessment depends on an ambiguous or unknown verification state.")
+        else:
+            parts.append("Human review is recommended to confirm this assessment.")
+
+    return " ".join(parts)
