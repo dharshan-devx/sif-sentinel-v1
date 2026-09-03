@@ -14,6 +14,7 @@ from app.models.precursor_pattern import PrecursorPattern
 from app.models.review import Review
 from app.schemas.analysis import AnalysisResponse
 from app.services.audit_service import record_audit
+from app.services.intervention_service import InterventionService
 from app.services.nlp.analysis_pipeline import analyze_text
 from app.services.risk_engine.calculator import calculate_risk
 from app.services.precursor_engine.precursor_service import PrecursorService
@@ -191,6 +192,11 @@ class AnalysisService:
                 ))
 
             await PrecursorService(self.db).rebuild()
+            # Phase K is strictly downstream advisory intelligence.  This uses
+            # persisted deterministic analysis/risk fields and cannot mutate them.
+            await InterventionService(self.db).generate_for_report(
+                report, analysis, precursor_priority=precursor_priority
+            )
             await record_audit(
                 self.db,
                 user_id=actor_id,

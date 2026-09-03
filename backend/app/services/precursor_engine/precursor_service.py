@@ -64,6 +64,12 @@ class PrecursorService:
             await self.db.execute(delete(PrecursorPattern).where(PrecursorPattern.pattern_key.not_in(keys) if keys else True))
             
         await self.db.flush()
+        # A recurring pattern may warrant one preventive advisory recommendation.
+        # Import locally to keep precursor aggregation independent of the API layer.
+        from app.services.intervention_service import InterventionService
+        intervention_service = InterventionService(self.db)
+        for pattern in (await self.db.scalars(select(PrecursorPattern))).all():
+            await intervention_service.generate_for_pattern(pattern)
         if commit:
             await self.db.commit()
         return len(metrics)

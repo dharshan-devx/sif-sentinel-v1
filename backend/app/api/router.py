@@ -5,6 +5,7 @@ from app.api.routes import (
     auth,
     dashboard,
     health,
+    interventions,
     models,
     precursors,
     reports,
@@ -17,6 +18,7 @@ from app.api.routes import (
 
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(health.router)
+api_router.include_router(interventions.router)
 api_router.include_router(analysis.router)
 api_router.include_router(auth.router)
 api_router.include_router(users.router)
