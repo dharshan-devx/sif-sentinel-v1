@@ -1,0 +1,1 @@
+export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <main className="flex min-h-screen items-center justify-center bg-slate-100 p-4"><div className="w-full max-w-md"><p className="mb-4 text-center text-sm font-bold tracking-wide text-sky-900">SIF SENTINEL · SAFETY DECISION SUPPORT</p>{children}</div></main>; }

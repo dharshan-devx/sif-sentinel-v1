@@ -1,0 +1,1 @@
+export function Tooltip({ label, children }: { label: string; children: React.ReactNode }) { return <span title={label} aria-label={label} className="inline-flex cursor-help decoration-dotted underline underline-offset-4">{children}</span>; }

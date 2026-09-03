@@ -1,0 +1,3 @@
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+// NOTE: This file is generated/maintained by Next.js. Do not edit manually.
