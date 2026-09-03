@@ -1,4 +1,6 @@
 from datetime import UTC, datetime
+
+from app.core.config import get_settings
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -125,11 +127,16 @@ class AnalysisService:
                 authoritative_results=llm_context["authoritative_results"]
             )
             
-            analysis.llm_attempted = (llm_res.provider != "none")
+            # llm_attempted = True iff LLM was enabled (we made an attempt).
+            # llm_used = True iff that attempt produced a usable summary.
+            # This distinction allows dashboards to show:
+            #   enabled + attempted + failed  vs.  disabled (no attempt).
+            _llm_was_enabled = get_settings().llm_enabled
+            analysis.llm_attempted = _llm_was_enabled
             analysis.llm_used = llm_res.success
-            analysis.llm_provider = llm_res.provider if analysis.llm_attempted else None
-            analysis.llm_model_used = llm_res.model if analysis.llm_attempted else None
-            analysis.llm_timestamp = llm_res.timestamp
+            analysis.llm_provider = llm_res.provider if _llm_was_enabled else None
+            analysis.llm_model_used = llm_res.model if _llm_was_enabled else None
+            analysis.llm_timestamp = llm_res.timestamp if _llm_was_enabled else None
             analysis.reviewer_summary = llm_res.summary
             analysis.llm_error_code = llm_res.error_code
             
