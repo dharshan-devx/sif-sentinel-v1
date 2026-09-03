@@ -5,6 +5,7 @@ import { useDashboardBarrierFailures } from "@/hooks/use-dashboard-distributions
 import type { DashboardWindow } from "@/lib/api/dashboard";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 
 const WINDOWS: { value: DashboardWindow; label: string }[] = [
   { value: "7d", label: "7 days" },
@@ -26,7 +27,6 @@ export function BarrierSection() {
   const { data, isLoading, isError, error, refetch } = useDashboardBarrierFailures(window);
 
   const totalFailures = data?.reduce((acc, p) => acc + p.failed_count, 0) ?? 0;
-  const maxFailed = Math.max(...(data?.map((p) => p.failed_count) ?? [1]), 1);
 
   return (
     <section aria-labelledby="barrier-heading">
@@ -76,40 +76,39 @@ export function BarrierSection() {
             No barrier failures recorded in this period.
           </p>
         ) : (
-          <>
+          <div 
+            className="h-40 w-full"
+            role="img"
+            aria-label={`Barrier failures over the last ${WINDOWS.find((w) => w.value === window)?.label}`}
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis 
+                  dataKey="date" 
+                  tickFormatter={formatDate}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: "#64748b" }}
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: "#64748b" }}
+                />
+                <Tooltip 
+                  cursor={{ fill: "#f1f5f9" }}
+                  contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
+                  labelFormatter={(label) => formatDate(label as string)}
+                />
+                <Bar name="Barrier failures" dataKey="failed_count" fill="#f87171" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
             <p className="sr-only" aria-live="polite">
               Barrier failures: {data.map((p) => `${formatDate(p.date)}: ${p.failed_count}`).join(", ")}
             </p>
-            {/* Bar chart of barrier failures over time */}
-            <div
-              role="img"
-              aria-label={`Barrier failures over the last ${WINDOWS.find((w) => w.value === window)?.label}`}
-              className="flex h-40 items-end gap-1"
-            >
-              {data.map((point) => (
-                <div
-                  key={point.date}
-                  className="group relative flex flex-1 flex-col items-center justify-end"
-                  title={`${formatDate(point.date)}: ${point.failed_count} barrier failures`}
-                >
-                  <div
-                    className="w-full rounded-t-sm bg-red-400 transition-all group-hover:bg-red-500"
-                    style={{ height: `${(point.failed_count / maxFailed) * 100}%` }}
-                    aria-hidden="true"
-                  />
-                  {data.length <= 14 && (
-                    <p className="mt-1 truncate text-[10px] text-slate-400" aria-hidden="true">
-                      {formatDate(point.date)}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-500">
-              <span className="inline-block h-3 w-3 rounded-sm bg-red-400" aria-hidden="true" />
-              Barrier failures per day
-            </div>
-          </>
+          </div>
         )}
       </div>
     </section>

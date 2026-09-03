@@ -5,6 +5,7 @@ import { useDashboardTrend } from "@/hooks/use-dashboard-summary";
 import type { DashboardWindow } from "@/lib/api/dashboard";
 import { ErrorState } from "@/components/ui/error-state";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 
 const WINDOWS: { value: DashboardWindow; label: string }[] = [
   { value: "7d", label: "7 days" },
@@ -45,8 +46,6 @@ export function TrendSection() {
     );
   }
 
-  const maxTotal = Math.max(...(data?.map((p) => p.total_reports) ?? [1]), 1);
-
   return (
     <section aria-labelledby="trend-heading">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -80,70 +79,41 @@ export function TrendSection() {
             Insufficient data to display this trend. Reports will appear once the system receives incidents.
           </p>
         ) : (
-          <>
-            {/* Accessible text summary */}
+          <div 
+            className="h-64 w-full"
+            role="img"
+            aria-label={`SIF trend over the last ${WINDOWS.find((w) => w.value === window)?.label}`}
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis 
+                  dataKey="date" 
+                  tickFormatter={formatDate}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: "#64748b" }}
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: "#64748b" }}
+                />
+                <Tooltip 
+                  cursor={{ fill: "#f1f5f9" }}
+                  contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
+                  labelFormatter={(label) => formatDate(label as string)}
+                />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: "12px", color: "#64748b", paddingTop: "10px" }} />
+                <Bar name="Total reports" dataKey="total_reports" stackId="a" fill="#bae6fd" radius={[0, 0, 0, 0]} />
+                <Bar name="SIF-potential" dataKey="sif_reports" stackId="b" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
             <p className="sr-only" aria-live="polite">
-              Showing {data.length} data points over the selected window.
-              Peak total reports: {Math.max(...data.map((p) => p.total_reports))}.
+              Showing {data.length} data points over the selected window. Peak total reports: {Math.max(...data.map((p) => p.total_reports))}.
             </p>
-
-            {/* Bar chart */}
-            <div
-              role="img"
-              aria-label={`SIF trend over the last ${WINDOWS.find((w) => w.value === window)?.label}`}
-              className="relative"
-            >
-              {/* Y-axis labels */}
-              <div className="flex h-64 gap-1 items-end">
-                {data.map((point) => {
-                  const totalHeight = (point.total_reports / maxTotal) * 100;
-                  const sifHeight = point.total_reports > 0
-                    ? (point.sif_reports / point.total_reports) * totalHeight
-                    : 0;
-
-                  return (
-                    <div
-                      key={point.date}
-                      className="group relative flex flex-1 flex-col items-center justify-end gap-0.5"
-                      title={`${formatDate(point.date)}: ${point.total_reports} total, ${point.sif_reports} SIF (${(point.sif_rate * 100).toFixed(1)}%)`}
-                    >
-                      {/* Total bar */}
-                      <div
-                        className="w-full rounded-t-sm bg-sky-200 transition-all"
-                        style={{ height: `${totalHeight}%` }}
-                        aria-hidden="true"
-                      >
-                        {/* SIF overlay */}
-                        <div
-                          className="w-full rounded-t-sm bg-amber-500"
-                          style={{ height: `${sifHeight > 0 ? (sifHeight / totalHeight) * 100 : 0}%` }}
-                          aria-hidden="true"
-                        />
-                      </div>
-                      {/* Date label (only show some to avoid clutter) */}
-                      {data.length <= 14 && (
-                        <p className="mt-1 truncate text-[10px] text-slate-400" aria-hidden="true">
-                          {formatDate(point.date)}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Legend */}
-            <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-500">
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block h-3 w-3 rounded-sm bg-sky-200" aria-hidden="true" />
-                Total reports
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block h-3 w-3 rounded-sm bg-amber-500" aria-hidden="true" />
-                SIF-potential reports
-              </span>
-            </div>
-          </>
+          </div>
         )}
       </div>
     </section>

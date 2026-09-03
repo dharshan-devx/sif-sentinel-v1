@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(() => { tokenStore.clear(); queryClient.clear(); setUser(null); setInitializationError(null); setStatus("unauthenticated"); }, [queryClient]);
   const refresh = useCallback(async (): Promise<User | null> => {
     if (!tokenStore.has()) { setUser(null); setInitializationError(null); setStatus("unauthenticated"); return null; }
-    setStatus("loading");
+    Promise.resolve().then(() => setStatus("loading"));
     try { const current = await authApi.me(); setUser(current); setInitializationError(null); setStatus("authenticated"); return current; }
     catch (error) {
       if (isApiClientError(error) && error.status === 401) { signOut(); return null; }
@@ -33,7 +33,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return null;
     }
   }, [signOut]);
-  useEffect(() => { void refresh().catch(() => undefined); }, [refresh]);
+  useEffect(() => {
+    let mounted = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void refresh().then(() => {
+      if (!mounted) return;
+    });
+    return () => { mounted = false; };
+  }, [refresh]);
   useEffect(() => { const onUnauthorized = () => signOut(); window.addEventListener("sif:unauthorized", onUnauthorized); return () => window.removeEventListener("sif:unauthorized", onUnauthorized); }, [signOut]);
   const signIn = useCallback(async (payload: LoginRequest) => {
     const response = await authApi.login(payload); tokenStore.set(response.access_token); setUser(response.user); setInitializationError(null); setStatus("authenticated"); return response.user;

@@ -1,7 +1,7 @@
 import { tokenStore } from "@/lib/auth/token-store";
 import type { BackendErrorBody } from "@/types/api";
 
-const DEFAULT_BASE_URL = "http://localhost:8000/api/v1";
+const DEFAULT_BASE_URL = typeof window !== "undefined" ? "/api/v1" : "http://127.0.0.1:8000/api/v1";
 const DEFAULT_TIMEOUT_MS = 15_000;
 
 export interface ApiClientOptions {
