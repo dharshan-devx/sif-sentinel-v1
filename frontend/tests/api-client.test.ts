@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { ApiClient, ApiClientError } from "@/lib/api/client";
+import { ApiClient } from "@/lib/api/client";
 
 describe("ApiClient", () => {
   it("uses the configured base URL, bearer token, JSON, and Accept header", async () => {

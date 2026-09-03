@@ -1,7 +1,7 @@
 import { apiClient, type ApiClient } from "@/lib/api/client";
 import type { AnalysisResponse, MessageResponse, Report, ReportCreate, ReportPage, ReportUpdate } from "@/types/api";
 
-export interface ReportListParams { page?: number; page_size?: number; site_id?: string; report_type?: string; status?: string; source_type?: string; date_from?: string; date_to?: string; search?: string }
+export interface ReportListParams { page?: number; page_size?: number; site_id?: string; report_type?: string; status?: string; source_type?: string; date_from?: string; date_to?: string; search?: string; [key: string]: string | number | undefined; }
 const query = (values: Record<string, string | number | undefined>) => {
   const params = new URLSearchParams();
   Object.entries(values).forEach(([key, value]) => { if (value !== undefined) params.set(key, String(value)); });

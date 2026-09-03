@@ -36,7 +36,7 @@ export interface SiteCreate {
   name: string; code: string; location: string; region: string;
   description?: string | null; is_active?: boolean;
 }
-export interface SiteUpdate extends Partial<Omit<SiteCreate, "code">> {}
+export type SiteUpdate = Partial<Omit<SiteCreate, "code">>;
 
 export interface Report {
   id: string;
