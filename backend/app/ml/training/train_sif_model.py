@@ -32,7 +32,11 @@ def train() -> dict:
     (ARTIFACTS / "vectorizer").mkdir(parents=True, exist_ok=True)
     joblib.dump(model, ARTIFACTS / "model" / "sif_logreg.joblib")
     joblib.dump(vectorizer, ARTIFACTS / "vectorizer" / "tfidf.joblib")
-    metadata = {"model_name": "sif-tfidf-logreg", "model_version": "sif-tfidf-logreg-v1", "training_timestamp": datetime.now(UTC).isoformat(), "training_dataset_identifier": "synthetic-safety-reports-v1", "feature_configuration": {"ngram_range": [1, 2], "sublinear_tf": True}, "class_labels": list(model.classes_), "metrics": metrics}
+    
+    import hashlib
+    dataset_hash = hashlib.sha256(DATASET.read_bytes()).hexdigest()
+    
+    metadata = {"model_name": "sif-tfidf-logreg", "model_version": "sif-tfidf-logreg-v1", "training_timestamp": datetime.now(UTC).isoformat(), "training_dataset_identifier": "synthetic-safety-reports-v1", "dataset_hash": dataset_hash, "feature_configuration": {"ngram_range": [1, 2], "sublinear_tf": True}, "class_labels": list(model.classes_), "metrics": metrics}
     (ARTIFACTS / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
     return metadata
 

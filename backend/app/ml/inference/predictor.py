@@ -17,6 +17,7 @@ class SIFPrediction:
     sif_level: SIFLevel
     model_name: str
     model_version: str
+    predictive_terms: list[str]
 
 
 class SIFPredictor:
@@ -25,6 +26,7 @@ class SIFPredictor:
         self._model = None
         self._vectorizer = None
         self._metadata: dict = {}
+        self._sif_index = 0
 
     def _load(self) -> None:
         if self._model is not None:
@@ -40,13 +42,25 @@ class SIFPredictor:
             self._model = joblib.load(model_path)
             self._vectorizer = joblib.load(vectorizer_path)
             self._metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+            self._sif_index = list(self._model.classes_).index("SIF")
 
     def predict(self, text: str) -> SIFPrediction:
         self._load()
         transformed = self._vectorizer.transform([text])
-        classes = list(self._model.classes_)
-        probability = float(self._model.predict_proba(transformed)[0][classes.index("SIF")])
-        return SIFPrediction(probability >= 0.5, round(probability, 4), level_for_probability(probability), self._metadata["model_name"], self._metadata["model_version"])
+        probability = float(self._model.predict_proba(transformed)[0][self._sif_index])
+        
+        # Extract feature importance (words that drove the SIF prediction)
+        feature_names = self._vectorizer.get_feature_names_out()
+        coefficients = self._model.coef_[0] if self._model.classes_.shape[0] == 2 else self._model.coef_[self._sif_index]
+        
+        # Multiply non-zero TF-IDF values by model coefficients
+        non_zero_indices = transformed.nonzero()[1]
+        contributions = [(feature_names[i], transformed[0, i] * coefficients[i]) for i in non_zero_indices]
+        
+        # Top 3 terms that pushed the model toward SIF
+        top_terms = [term for term, contrib in sorted(contributions, key=lambda x: x[1], reverse=True) if contrib > 0][:3]
+        
+        return SIFPrediction(probability >= 0.5, round(probability, 4), level_for_probability(probability), self._metadata["model_name"], self._metadata["model_version"], top_terms)
 
     def metadata(self) -> dict:
         self._load()

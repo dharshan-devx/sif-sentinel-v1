@@ -43,13 +43,20 @@ def analyze_text(text: str) -> PipelineResult:
     high_risk_without_rule = prediction.sif_level in (SIFLevel.HIGH, SIFLevel.MEDIUM) and not rule.rule
     review_required = confidence < get_settings().analysis_review_threshold or ambiguous or not evidence.evidence_span or high_risk_without_rule
     level = SIFLevel.REVIEW if review_required and prediction.sif_level in (SIFLevel.NON_SIF, SIFLevel.LOW, SIFLevel.REVIEW) else prediction.sif_level
-    return PipelineResult(prediction.sif_potential, level, prediction.probability, entities.activity, entities.hazard, entities.barrier, entities.barrier_status.value, entities.barrier_failure, rule.rule, rule.confidence, evidence.evidence_span, evidence.evidence_sentences, evidence.evidence_terms, confidence, review_required, prediction.model_name, prediction.model_version, _explain(prediction.sif_level, entities, rule.rule, evidence.evidence_span))
+    return PipelineResult(prediction.sif_potential, level, prediction.probability, entities.activity, entities.hazard, entities.barrier, entities.barrier_status.value, entities.barrier_failure, rule.rule, rule.confidence, evidence.evidence_span, evidence.evidence_sentences, evidence.evidence_terms, confidence, review_required, prediction.model_name, prediction.model_version, _explain(prediction.sif_level, entities, rule.rule, evidence.evidence_span, prediction.predictive_terms))
 
 
-def _explain(level: SIFLevel, entities, rule: str | None, evidence: str | None) -> str:
+def _explain(level: SIFLevel, entities, rule: str | None, evidence: str | None, predictive_terms: list[str]) -> str:
     concepts = [item for item in (entities.activity, entities.hazard, entities.barrier) if item]
     description = ", ".join(concepts) if concepts else "limited controlled-domain signals"
     failure = f" and indicates the control was {entities.barrier_failure}" if entities.barrier_failure else ""
     mapping = f" This maps to the {rule} Life-Saving Rule." if rule else " No controlled Life-Saving Rule mapping was established."
     evidence_note = " Evidence was found in the submitted report." if evidence else " No meaningful source evidence was found."
-    return f"The report was classified as {level.value} SIF potential based on {description}{failure}.{mapping}{evidence_note}"
+    
+    explanation = f"The report was classified as {level.value} SIF potential based on {description}{failure}.{mapping}{evidence_note}"
+    
+    if predictive_terms:
+        formatted_terms = ", ".join(f"'{term}'" for term in predictive_terms)
+        explanation += f" Top predictive terms identified by the model: {formatted_terms}."
+        
+    return explanation
