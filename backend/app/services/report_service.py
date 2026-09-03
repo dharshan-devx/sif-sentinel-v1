@@ -3,6 +3,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.constants import ReportStatus, ReportType, SourceType
 from app.core.exceptions import AppError, NotFoundError
 from app.models.report import Report
 from app.repositories.report_repository import ReportRepository
@@ -36,6 +37,36 @@ class ReportService:
             raise NotFoundError("report")
         return report
 
+    async def list(
+        self,
+        *,
+        page: int,
+        page_size: int,
+        site_id: UUID | None = None,
+        report_type: ReportType | None = None,
+        status: ReportStatus | None = None,
+        source_type: SourceType | None = None,
+        date_from: datetime | None = None,
+        date_to: datetime | None = None,
+        search: str | None = None,
+    ) -> tuple[list[Report], int]:
+        """Return paginated reports with optional filters.
+
+        Delegates entirely to ReportRepository so route handlers never
+        access the repository directly.
+        """
+        return await self.repo.list(
+            page=page,
+            page_size=page_size,
+            site_id=site_id,
+            report_type=report_type,
+            status=status,
+            source_type=source_type,
+            date_from=date_from,
+            date_to=date_to,
+            search=search,
+        )
+
     async def update(self, human_id: str, payload: ReportUpdate, user_id: UUID, ip_address: str | None) -> Report:
         report = await self.get(human_id)
         for name, value in payload.model_dump(exclude_unset=True).items():
@@ -56,3 +87,4 @@ class ReportService:
     @staticmethod
     def _new_human_id() -> str:
         return f"SIF-{datetime.now(UTC):%Y%m%d}-{uuid4().hex[:8].upper()}"
+

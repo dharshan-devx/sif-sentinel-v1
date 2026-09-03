@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import and_, delete, exists, select
+from sqlalchemy import and_, delete, exists, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import NotFoundError
@@ -28,7 +28,16 @@ class PrecursorService:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    async def rebuild(self) -> int:
+    async def rebuild(self, *, commit: bool = False) -> int:
+        """Rebuild all precursor patterns from current analysis data.
+
+        ``commit=False`` (default): flushes only — the caller is responsible
+        for committing as part of a larger transaction (used by analysis and
+        review services).
+
+        ``commit=True``: commits immediately — used by the explicit
+        POST /precursors/rebuild endpoint where rebuild IS the transaction.
+        """
         metrics = await aggregate_patterns(self.db)
         keys = {item.key for item in metrics}
         existing = {pattern.pattern_key: pattern for pattern in (await self.db.scalars(select(PrecursorPattern))).all()}
@@ -43,6 +52,8 @@ class PrecursorService:
         if existing:
             await self.db.execute(delete(PrecursorPattern).where(PrecursorPattern.pattern_key.not_in(keys) if keys else True))
         await self.db.flush()
+        if commit:
+            await self.db.commit()
         return len(metrics)
 
     async def list(self, *, site_id: UUID | None = None, activity: str | None = None, hazard: str | None = None, barrier: str | None = None, risk_level: str | None = None, date_from: datetime | None = None, date_to: datetime | None = None, limit: int = 50, sort: str = "risk_score") -> list[PrecursorSummary]:
@@ -110,7 +121,6 @@ class PrecursorService:
     def _why(occurrence_count: int, sif_count: int, sif_density: float, recent_count: int, trend: str) -> str:
         return f"Potential precursor signal: {occurrence_count} analyzed reports, {sif_count} SIF-associated ({sif_density:.0%}), {recent_count} in the last 30 days, with a {trend.replace('_', ' ').lower()} trend."
 
-
 def func_lower(column):
-    from sqlalchemy import func
+    """Lowercase + trim a SQLAlchemy column expression for case-insensitive matching."""
     return func.lower(func.trim(column))

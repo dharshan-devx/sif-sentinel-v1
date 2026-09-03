@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from app.core.config import get_settings
 from app.core.constants import SIFLevel
 from app.knowledge.lsr_mapper import map_to_life_saving_rule
 from app.services.nlp.confidence import overall_confidence
@@ -40,7 +41,6 @@ def analyze_text(text: str) -> PipelineResult:
     confidence = overall_confidence(max(prediction.probability, 1 - prediction.probability), entities.confidence, rule.confidence, evidence.confidence)
     ambiguous = 0.42 <= prediction.probability <= 0.58
     high_risk_without_rule = prediction.sif_level in (SIFLevel.HIGH, SIFLevel.MEDIUM) and not rule.rule
-    from app.core.config import get_settings
     review_required = confidence < get_settings().analysis_review_threshold or ambiguous or not evidence.evidence_span or high_risk_without_rule
     level = SIFLevel.REVIEW if review_required and prediction.sif_level in (SIFLevel.NON_SIF, SIFLevel.LOW, SIFLevel.REVIEW) else prediction.sif_level
     return PipelineResult(prediction.sif_potential, level, prediction.probability, entities.activity, entities.hazard, entities.barrier, entities.barrier_status.value, entities.barrier_failure, rule.rule, rule.confidence, evidence.evidence_span, evidence.evidence_sentences, evidence.evidence_terms, confidence, review_required, prediction.model_name, prediction.model_version, _explain(prediction.sif_level, entities, rule.rule, evidence.evidence_span))

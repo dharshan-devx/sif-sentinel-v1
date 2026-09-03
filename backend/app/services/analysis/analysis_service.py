@@ -26,31 +26,118 @@ class AnalysisService:
             raise AppError("MODEL_UNAVAILABLE", "Safety classifier is unavailable", 503) from exc
         return self._response(result)
 
-    async def analyze_report(self, human_id: str, actor_id: UUID, ip_address: str | None) -> AnalysisResponse:
+    async def analyze_report(
+        self, human_id: str, actor_id: UUID, ip_address: str | None
+    ) -> AnalysisResponse:
         if self.db is None:
             raise AppError("NO_DB_SESSION", "Database session is required for report analysis", 500)
+
         report = await ReportService(self.db).get(human_id)
+
         try:
             result = analyze_text(report.report_text)
         except RuntimeError as exc:
             raise AppError("MODEL_UNAVAILABLE", "Safety classifier is unavailable", 503) from exc
+
         try:
-            analysis = ReportAnalysis(report_id=report.id, sif_potential=result.sif_potential, sif_level=result.sif_level, sif_probability=result.sif_probability, activity=result.activity, hazard=result.hazard, barrier=result.barrier, barrier_status=BarrierStatus(result.barrier_status), barrier_failure=result.barrier_failure, life_saving_rule=result.life_saving_rule, rule_confidence=result.rule_confidence, evidence_span=result.evidence_span, explanation=result.explanation, overall_confidence=result.overall_confidence, model_version=result.model_version, analysis_status="REVIEW_REQUIRED" if result.review_required else "COMPLETE")
+            analysis = ReportAnalysis(
+                report_id=report.id,
+                sif_potential=result.sif_potential,
+                sif_level=result.sif_level,
+                sif_probability=result.sif_probability,
+                activity=result.activity,
+                hazard=result.hazard,
+                barrier=result.barrier,
+                barrier_status=BarrierStatus(result.barrier_status),
+                barrier_failure=result.barrier_failure,
+                life_saving_rule=result.life_saving_rule,
+                rule_confidence=result.rule_confidence,
+                evidence_span=result.evidence_span,
+                explanation=result.explanation,
+                overall_confidence=result.overall_confidence,
+                model_version=result.model_version,
+                analysis_status="REVIEW_REQUIRED" if result.review_required else "COMPLETE",
+            )
             self.db.add(analysis)
             await self.db.flush()
-            self.db.add(ModelPrediction(report_id=report.id, model_name=result.model_name, model_version=result.model_version, predicted_label="SIF" if result.sif_potential else "NON_SIF", probability=result.sif_probability, prediction_json={"sif_level": result.sif_level.value, "entities": {"activity": result.activity, "hazard": result.hazard, "barrier": result.barrier, "barrier_status": result.barrier_status, "barrier_failure": result.barrier_failure}, "evidence_terms": result.evidence_terms, "overall_confidence": result.overall_confidence}))
-            report.status = ReportStatus.REVIEW_REQUIRED if result.review_required else ReportStatus.ANALYZED
+
+            self.db.add(ModelPrediction(
+                report_id=report.id,
+                model_name=result.model_name,
+                model_version=result.model_version,
+                predicted_label="SIF" if result.sif_potential else "NON_SIF",
+                probability=result.sif_probability,
+                prediction_json={
+                    "sif_level": result.sif_level.value,
+                    "entities": {
+                        "activity": result.activity,
+                        "hazard": result.hazard,
+                        "barrier": result.barrier,
+                        "barrier_status": result.barrier_status,
+                        "barrier_failure": result.barrier_failure,
+                    },
+                    "evidence_terms": result.evidence_terms,
+                    "overall_confidence": result.overall_confidence,
+                },
+            ))
+
+            report.status = (
+                ReportStatus.REVIEW_REQUIRED if result.review_required else ReportStatus.ANALYZED
+            )
+
             if result.review_required:
-                self.db.add(Review(report_id=report.id, analysis_id=analysis.id, reviewer_id=actor_id, decision=ReviewDecision.PENDING, reviewer_comment="Automatically queued because the analysis confidence requires human review.", reviewed_at=datetime.now(UTC)))
+                self.db.add(Review(
+                    report_id=report.id,
+                    analysis_id=analysis.id,
+                    reviewer_id=actor_id,
+                    decision=ReviewDecision.PENDING,
+                    reviewer_comment=(
+                        "Automatically queued because the analysis confidence requires human review."
+                    ),
+                    reviewed_at=datetime.now(UTC),
+                ))
+
             await PrecursorService(self.db).rebuild()
-            await record_audit(self.db, user_id=actor_id, action="REPORT_ANALYZED", entity_type="report", entity_id=report.id, details={"model_version": result.model_version, "review_required": result.review_required}, ip_address=ip_address)
+            await record_audit(
+                self.db,
+                user_id=actor_id,
+                action="REPORT_ANALYZED",
+                entity_type="report",
+                entity_id=report.id,
+                details={"model_version": result.model_version, "review_required": result.review_required},
+                ip_address=ip_address,
+            )
             await self.db.commit()
             await self.db.refresh(analysis)
+
         except Exception:
             await self.db.rollback()
             raise
+
         return self._response(result, human_id, analysis.id)
 
     @staticmethod
-    def _response(result, report_id: str | None = None, analysis_id: UUID | None = None) -> AnalysisResponse:
-        return AnalysisResponse(report_id=report_id, analysis_id=analysis_id, sif_potential=result.sif_potential, sif_level=result.sif_level, sif_probability=result.sif_probability, activity=result.activity, hazard=result.hazard, barrier=result.barrier, barrier_status=BarrierStatus(result.barrier_status), barrier_failure=result.barrier_failure, life_saving_rule=result.life_saving_rule, rule_confidence=result.rule_confidence, evidence_span=result.evidence_span, evidence_sentences=result.evidence_sentences, evidence_terms=result.evidence_terms, overall_confidence=result.overall_confidence, review_required=result.review_required, model_version=result.model_version, explanation=result.explanation)
+    def _response(
+        result, report_id: str | None = None, analysis_id: UUID | None = None
+    ) -> AnalysisResponse:
+        return AnalysisResponse(
+            report_id=report_id,
+            analysis_id=analysis_id,
+            sif_potential=result.sif_potential,
+            sif_level=result.sif_level,
+            sif_probability=result.sif_probability,
+            activity=result.activity,
+            hazard=result.hazard,
+            barrier=result.barrier,
+            barrier_status=BarrierStatus(result.barrier_status),
+            barrier_failure=result.barrier_failure,
+            life_saving_rule=result.life_saving_rule,
+            rule_confidence=result.rule_confidence,
+            evidence_span=result.evidence_span,
+            evidence_sentences=result.evidence_sentences,
+            evidence_terms=result.evidence_terms,
+            overall_confidence=result.overall_confidence,
+            review_required=result.review_required,
+            model_version=result.model_version,
+            explanation=result.explanation,
+        )

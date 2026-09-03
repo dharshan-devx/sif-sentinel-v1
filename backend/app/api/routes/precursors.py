@@ -38,8 +38,7 @@ async def precursor_trends(db: DBSession, _: User = Depends(require_roles(UserRo
 
 @router.post("/rebuild", response_model=Message, summary="Idempotently rebuild precursor pattern statistics")
 async def rebuild_precursors(db: DBSession, _: User = Depends(require_roles(UserRole.ADMIN, UserRole.HSE_MANAGER, UserRole.HSE_ANALYST))) -> Message:
-    count = await PrecursorService(db).rebuild()
-    await db.commit()
+    count = await PrecursorService(db).rebuild(commit=True)
     return Message(message=f"Rebuilt {count} precursor patterns")
 
 

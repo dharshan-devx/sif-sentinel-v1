@@ -1,14 +1,19 @@
 import asyncio
 import os
+import sys
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
 TEST_DB = Path(__file__).parent / "test_sif.db"
-import sys
+
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+# Signal to app/db/session.py that NullPool should be used to avoid
+# asyncpg "Future attached to a different loop" errors in pytest-asyncio.
+os.environ["TESTING"] = "1"
 
 if "TEST_DATABASE_URL" in os.environ:
     os.environ["DATABASE_URL"] = os.environ["TEST_DATABASE_URL"]
