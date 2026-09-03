@@ -32,6 +32,8 @@ Controlled backend errors preserve status, machine code, safe message, details, 
 
 The session bearer token is stored in `sessionStorage` behind a small token store abstraction. This matches the current backend's lack of refresh, logout, and revocation endpoints. It is not a claim of server-side revocation; the UI’s “End session” is a local clear only.
 
+F2 centralises session state in `AuthProvider`: `loading`, `authenticated`, `unauthenticated`, and `unavailable`. Startup validates an existing token using `GET /auth/me`; only `401` clears it. Transient network and service failures surface a retryable initialisation state instead of falsely terminating a session. A local sign-out or a client-observed `401` clears TanStack Query cache data before protected routing moves to `/login`.
+
 ## Team boundaries
 
 - `components/ui`: shared primitives and states.

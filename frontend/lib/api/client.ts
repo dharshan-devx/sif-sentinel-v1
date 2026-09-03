@@ -75,9 +75,13 @@ export class ApiClient {
 
       if (!response.ok) {
         if (isBackendError(payload)) {
-          throw new ApiClientError(payload.error.message, response.status, payload.error.code, payload.error.details, payload.request_id ?? requestId);
+          const error = new ApiClientError(payload.error.message, response.status, payload.error.code, payload.error.details, payload.request_id ?? requestId);
+          notifyUnauthorized(error);
+          throw error;
         }
-        throw new ApiClientError("The service could not complete this request.", response.status, "HTTP_ERROR", undefined, requestId);
+        const error = new ApiClientError("The service could not complete this request.", response.status, "HTTP_ERROR", undefined, requestId);
+        notifyUnauthorized(error);
+        throw error;
       }
       return payload as T;
     } catch (error) {
@@ -111,3 +115,7 @@ function safelyParseJson(text: string): unknown {
 
 export const apiClient = new ApiClient();
 export function isApiClientError(error: unknown): error is ApiClientError { return error instanceof ApiClientError; }
+
+function notifyUnauthorized(error: ApiClientError): void {
+  if (error.status === 401 && typeof window !== "undefined") window.dispatchEvent(new Event("sif:unauthorized"));
+}

@@ -43,6 +43,15 @@ The backend returns an access token from `POST /auth/login` and has no refresh, 
 
 On a `401`, the auth provider clears local state and safely redirects to login. On `403`, it retains the session and shows access denial. The app invalidates TanStack Query keys after future mutations because the API has no push events.
 
+### F2 authentication behavior
+
+- Initialisation is explicitly `loading`, `authenticated`, `unauthenticated`, or `unavailable`. A missing token becomes unauthenticated without an API call; a token is validated through `GET /auth/me`.
+- Only an explicit backend `401` clears a stored token. Temporary network or `5xx` initialisation failures show a controlled retry state without discarding a potentially valid session.
+- Login stores the returned bearer token and backend-returned user, then safely navigates to the requested local path or `/dashboard`.
+- Registration uses `POST /auth/register` and returns the backend-created `VIEWER`; it then directs the person to sign in. The UI never claims elevated access.
+- “End session” clears local token/auth state and the TanStack Query cache. It makes no backend logout/revocation request because none exists.
+- Navigation is filtered by role only as a UX aid. Every backend request remains subject to FastAPI RBAC.
+
 ## Commands
 
 ```powershell

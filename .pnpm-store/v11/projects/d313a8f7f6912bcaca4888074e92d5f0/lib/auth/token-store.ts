@@ -8,4 +8,5 @@ export const tokenStore = {
   get(): string | null { return browserStorage()?.getItem(TOKEN_KEY) ?? null; },
   set(token: string): void { browserStorage()?.setItem(TOKEN_KEY, token); },
   clear(): void { browserStorage()?.removeItem(TOKEN_KEY); },
+  has(): boolean { return this.get() !== null; },
 };
