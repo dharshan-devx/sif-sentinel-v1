@@ -40,6 +40,8 @@ def test_controlled_pipeline_examples():
 
 
 def _create_report(client, headers, code: str, text: str) -> str:
+    import uuid
+    code = f"{code}-{str(uuid.uuid4())[:6]}"
     site = client.post("/api/v1/sites", headers=headers, json={"name": code, "code": code, "location": "Assam", "region": "North East"})
     assert site.status_code == 201
     response = client.post("/api/v1/reports", headers=headers, json={"report_type": "NEAR_MISS", "report_text": text, "site_id": site.json()["id"], "location": "Yard", "department": "Operations", "reported_at": datetime.now(UTC).isoformat(), "source_type": "SYNTHETIC"})

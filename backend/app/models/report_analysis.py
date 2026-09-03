@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import JSON, Enum, Float, ForeignKey, String, Text
+from sqlalchemy import JSON, Enum, Float, ForeignKey, String, Text, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Uuid
 
@@ -35,11 +35,11 @@ class ReportAnalysis(UUIDTimestampMixin, Base):
     # Phase J: LLM Metadata
     llm_attempted: Mapped[bool] = mapped_column(default=False, server_default="0", nullable=False)
     llm_used: Mapped[bool] = mapped_column(default=False, server_default="0", nullable=False)
-    llm_provider: Mapped[str | None] = mapped_column(String(50))
-    llm_model_used: Mapped[str | None] = mapped_column(String(100))
-    llm_timestamp: Mapped[datetime | None]
-    reviewer_summary: Mapped[str | None] = mapped_column(Text)
-    llm_error_code: Mapped[str | None] = mapped_column(String(100))
+    llm_provider: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    llm_model_used: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    llm_timestamp: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    reviewer_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    llm_error_code: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
     analysis_status: Mapped[str] = mapped_column(String(50), default="PENDING", nullable=False)
     report = relationship("Report", back_populates="analyses")

@@ -30,12 +30,14 @@ def test_pattern_normalization_trends_and_risk_levels():
 
 def test_precursor_rebuild_graph_risk_and_dashboard_apis(client, admin_headers):
     # Minimum occurrences is 3, so we create 3 identical observations to form 1 pattern
-    first_report = _create_and_analyze(client, admin_headers, "P31", "Technician started maintenance before electrical energy isolation was verified.")
-    _create_and_analyze(client, admin_headers, "P32", "Technician started maintenance before electrical energy isolation was verified.")
-    _create_and_analyze(client, admin_headers, "P33", "Technician started maintenance before electrical energy isolation was verified.")
+    import uuid
+    base = str(uuid.uuid4())[:4]
+    first_report = _create_and_analyze(client, admin_headers, f"P31-{base}", "Technician started maintenance before electrical energy isolation was verified.")
+    _create_and_analyze(client, admin_headers, f"P32-{base}", "Technician started maintenance before electrical energy isolation was verified.")
+    _create_and_analyze(client, admin_headers, f"P33-{base}", "Technician started maintenance before electrical energy isolation was verified.")
     
     # 1 observation shouldn't become a precursor on its own due to threshold
-    _create_and_analyze(client, admin_headers, "P34", "Worker entered confined space without gas testing.")
+    _create_and_analyze(client, admin_headers, f"P34-{base}", "Worker entered confined space without gas testing.")
 
     rebuilt = client.post("/api/v1/precursors/rebuild", headers=admin_headers)
     assert rebuilt.status_code == 200
