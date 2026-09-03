@@ -11,9 +11,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 from sklearn.model_selection import train_test_split
 
-ROOT = Path(__file__).parents[3]
-DATASET = ROOT / "data" / "training" / "safety_reports_v1.csv"
-ARTIFACTS = Path(__file__).parents[1] / "artifacts"
+ROOT = Path(__file__).parents[2]
+DATASET = ROOT / "data" / "processed" / "safety_reports_v1.csv"
+ARTIFACTS = ROOT / "artifacts" / "models"
 
 
 def train() -> dict:

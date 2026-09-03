@@ -4,7 +4,8 @@ import json
 import sklearn
 
 from app.ml.inference.predictor import ARTIFACT_DIR, SIFPredictor
-from app.ml.training.train_sif_model import DATASET
+from pathlib import Path
+DATASET = Path(__file__).parents[2] / "data" / "processed" / "safety_reports_v1.csv"
 from app.services.nlp.confidence import overall_confidence
 
 

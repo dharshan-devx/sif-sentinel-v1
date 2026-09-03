@@ -7,7 +7,7 @@ import joblib
 
 from app.core.constants import SIFLevel
 
-ARTIFACT_DIR = Path(__file__).parents[1] / "artifacts"
+ARTIFACT_DIR = Path(__file__).parents[4] / "artifacts" / "models"
 
 
 @dataclass(frozen=True)

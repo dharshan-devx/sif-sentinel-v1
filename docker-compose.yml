@@ -13,7 +13,7 @@ services:
       timeout: 5s
       retries: 10
   backend:
-    build: .
+    build: ./backend
     env_file: .env
     environment:
       DATABASE_URL: postgresql+psycopg://sif:sif@postgres:5432/sif_db
