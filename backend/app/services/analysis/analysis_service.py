@@ -16,6 +16,7 @@ from app.services.nlp.analysis_pipeline import analyze_text
 from app.services.risk_engine.calculator import calculate_risk
 from app.services.precursor_engine.precursor_service import PrecursorService
 from app.services.report_service import ReportService
+from app.services.llm.assistance_service import LLMAssistanceService
 
 
 class AnalysisService:
@@ -99,6 +100,39 @@ class AnalysisService:
                 model_version=result.model_version,
                 analysis_status="REVIEW_REQUIRED" if result.review_required else "COMPLETE",
             )
+            
+            # Phase J: Request optional LLM Assistance
+            # Context explicitly bound to structured authoritative results to prevent injection overrides
+            llm_context = {
+                "structured_evidence": {
+                    "activity": result.activity,
+                    "hazard": result.hazard,
+                    "barrier": result.barrier,
+                    "barrier_status": result.barrier_status,
+                    "barrier_failure": result.barrier_failure,
+                    "life_saving_rule": result.life_saving_rule,
+                },
+                "authoritative_results": {
+                    "sif_level": result.sif_level.value if result.sif_level else None,
+                    "risk_score": risk_data["score"],
+                    "risk_priority": risk_data["priority"],
+                    "precursor_priority": precursor_priority,
+                }
+            }
+            llm_res = await LLMAssistanceService.request_reviewer_summary(
+                report_text=report.report_text,
+                structured_evidence=llm_context["structured_evidence"],
+                authoritative_results=llm_context["authoritative_results"]
+            )
+            
+            analysis.llm_attempted = (llm_res.provider != "none")
+            analysis.llm_used = llm_res.success
+            analysis.llm_provider = llm_res.provider if analysis.llm_attempted else None
+            analysis.llm_model_used = llm_res.model if analysis.llm_attempted else None
+            analysis.llm_timestamp = llm_res.timestamp
+            analysis.reviewer_summary = llm_res.summary
+            analysis.llm_error_code = llm_res.error_code
+            
             self.db.add(analysis)
             await self.db.flush()
 
@@ -166,13 +200,14 @@ class AnalysisService:
             await self.db.rollback()
             raise
 
-        return self._response(result, human_id, analysis.id)
+        return self._response(result, human_id, analysis.id, analysis_db_obj=analysis)
 
     @staticmethod
     def _response(
-        result, report_id: str | None = None, analysis_id: UUID | None = None
+        result, report_id: str | None = None, analysis_id: UUID | None = None,
+        analysis_db_obj: ReportAnalysis | None = None
     ) -> AnalysisResponse:
-        return AnalysisResponse(
+        resp = AnalysisResponse(
             report_id=report_id,
             analysis_id=analysis_id,
             sif_potential=result.sif_potential,
@@ -194,3 +229,13 @@ class AnalysisService:
             explanation=result.explanation,
             risk=result.risk,
         )
+        if analysis_db_obj:
+            resp.reviewer_summary = analysis_db_obj.reviewer_summary
+            resp.llm_attempted = analysis_db_obj.llm_attempted
+            resp.llm_used = analysis_db_obj.llm_used
+            resp.llm_provider = analysis_db_obj.llm_provider
+            resp.llm_model_used = analysis_db_obj.llm_model_used
+            resp.llm_timestamp = analysis_db_obj.llm_timestamp
+            resp.llm_error_code = analysis_db_obj.llm_error_code
+            
+        return resp

@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
@@ -24,6 +25,13 @@ class AnalysisRead(ORMModel):
     sif_potential: bool | None
     sif_level: SIFLevel | None
     barrier_status: BarrierStatus | None
+    reviewer_summary: str | None = None
+    llm_attempted: bool = False
+    llm_used: bool = False
+    llm_provider: str | None = None
+    llm_model_used: str | None = None
+    llm_timestamp: datetime | None = None
+    llm_error_code: str | None = None
 
 
 class AnalyzeTextRequest(BaseModel):
@@ -58,3 +66,12 @@ class AnalysisResponse(BaseModel):
     model_version: str
     explanation: str
     risk: RiskDetail | None = None
+    
+    # Phase J: LLM Assistive Metadata
+    reviewer_summary: str | None = None
+    llm_attempted: bool = False
+    llm_used: bool = False
+    llm_provider: str | None = None
+    llm_model_used: str | None = None
+    llm_timestamp: datetime | None = None
+    llm_error_code: str | None = None

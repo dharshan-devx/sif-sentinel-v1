@@ -45,6 +45,17 @@ class Settings(BaseSettings):
     risk_weight_lsr: int = 15
     risk_weight_precursor: int = 25
     demo_mode: bool = False
+    
+    # Phase J LLM Provider Abstraction
+    llm_enabled: bool = False
+    llm_provider: str = "gemini"
+    llm_model: str = "gemini-2.5-flash"
+    llm_api_key: str | None = None
+    llm_timeout_seconds: int = 15
+    llm_temperature: float = 0.0
+    llm_max_calls_per_analysis: int = 1
+    llm_max_output_tokens: int = 1024
+
     # Report text validation — minimum is 10 chars to allow short but meaningful
     # safety observations (e.g. "Slip near valve"). Maximum is 20 000 chars to
     # prevent oversized payloads from reaching the tokeniser/classifier.

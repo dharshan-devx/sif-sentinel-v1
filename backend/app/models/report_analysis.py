@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 from sqlalchemy import JSON, Enum, Float, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -30,5 +31,15 @@ class ReportAnalysis(UUIDTimestampMixin, Base):
     explanation: Mapped[str | None] = mapped_column(Text)
     overall_confidence: Mapped[float | None] = mapped_column(Float)
     model_version: Mapped[str | None] = mapped_column(String(100))
+    
+    # Phase J: LLM Metadata
+    llm_attempted: Mapped[bool] = mapped_column(default=False, server_default="0", nullable=False)
+    llm_used: Mapped[bool] = mapped_column(default=False, server_default="0", nullable=False)
+    llm_provider: Mapped[str | None] = mapped_column(String(50))
+    llm_model_used: Mapped[str | None] = mapped_column(String(100))
+    llm_timestamp: Mapped[datetime | None]
+    reviewer_summary: Mapped[str | None] = mapped_column(Text)
+    llm_error_code: Mapped[str | None] = mapped_column(String(100))
+
     analysis_status: Mapped[str] = mapped_column(String(50), default="PENDING", nullable=False)
     report = relationship("Report", back_populates="analyses")
