@@ -34,11 +34,11 @@ class SIFPredictor:
         with self._lock:
             if self._model is not None:
                 return
-            model_path = ARTIFACT_DIR / "model" / "sif_logreg.joblib"
+            model_path = ARTIFACT_DIR / "model" / "sif_advanced.joblib"
             vectorizer_path = ARTIFACT_DIR / "vectorizer" / "tfidf.joblib"
             metadata_path = ARTIFACT_DIR / "metadata.json"
             if not all(path.exists() for path in (model_path, vectorizer_path, metadata_path)):
-                raise RuntimeError("SIF model artifacts are unavailable; run python ml/training/train_sif_model.py from the repository root")
+                raise RuntimeError("SIF model artifacts are unavailable; run python ml/training/train_advanced_model.py from the repository root")
             self._model = joblib.load(model_path)
             self._vectorizer = joblib.load(vectorizer_path)
             self._metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
@@ -51,9 +51,15 @@ class SIFPredictor:
         
         # Extract feature importance (words that drove the SIF prediction)
         feature_names = self._vectorizer.get_feature_names_out()
-        coefficients = self._model.coef_[0] if self._model.classes_.shape[0] == 2 else self._model.coef_[self._sif_index]
         
-        # Multiply non-zero TF-IDF values by model coefficients
+        if hasattr(self._model, "coef_"):
+            coefficients = self._model.coef_[0] if self._model.classes_.shape[0] == 2 else self._model.coef_[self._sif_index]
+        elif hasattr(self._model, "feature_importances_"):
+            coefficients = self._model.feature_importances_
+        else:
+            coefficients = [1.0] * len(feature_names)
+        
+        # Multiply non-zero TF-IDF values by model coefficients (or global importances)
         non_zero_indices = transformed.nonzero()[1]
         contributions = [(feature_names[i], transformed[0, i] * coefficients[i]) for i in non_zero_indices]
         
