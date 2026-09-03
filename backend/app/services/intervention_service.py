@@ -8,13 +8,21 @@ import structlog
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.constants import InterventionActionType, InterventionCategory, InterventionReviewStatus
+from app.core.constants import (
+    InterventionActionType,
+    InterventionCategory,
+    InterventionReviewStatus,
+)
 from app.core.exceptions import AppError, NotFoundError
 from app.models.intervention_recommendation import InterventionRecommendation
 from app.models.precursor_pattern import PrecursorPattern
 from app.models.report import Report
 from app.models.report_analysis import ReportAnalysis
-from app.schemas.intervention import InterventionRead, InterventionReviewRequest, InterventionSummary
+from app.schemas.intervention import (
+    InterventionRead,
+    InterventionReviewRequest,
+    InterventionSummary,
+)
 from app.services.audit_service import record_audit
 
 logger = structlog.get_logger(__name__)
@@ -173,7 +181,13 @@ class InterventionService:
         return item
 
     async def review(self, recommendation_id: UUID, payload: InterventionReviewRequest, actor_id: UUID, ip: str | None) -> InterventionRead:
-        item = await self.get(recommendation_id)
+        item = await self.db.scalar(
+            select(InterventionRecommendation)
+            .where(InterventionRecommendation.id == recommendation_id)
+            .with_for_update()
+        )
+        if not item:
+            raise NotFoundError("intervention recommendation")
         if item.review_status != InterventionReviewStatus.PENDING:
             raise AppError("INTERVENTION_ALREADY_REVIEWED", "Recommendation has already been reviewed", 409)
         if payload.decision == InterventionReviewStatus.PENDING:

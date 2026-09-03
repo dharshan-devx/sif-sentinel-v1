@@ -1,8 +1,11 @@
+import hashlib
 import json
-import pytest
-from app.ml.inference.predictor import SIFPredictor, ARTIFACT_DIR
+
+import sklearn
+
+from app.ml.inference.predictor import ARTIFACT_DIR, SIFPredictor
+from app.ml.training.train_sif_model import DATASET
 from app.services.nlp.confidence import overall_confidence
-from app.core.config import get_settings
 
 
 def test_model_predictive_terms():
@@ -29,13 +32,14 @@ def test_model_reproducibility():
     assert pred1.predictive_terms == pred2.predictive_terms
 
 
-def test_dataset_hash_provenance():
-    """Ensure the dataset hash is stored in metadata for provenance tracking."""
+def test_dataset_hash_and_runtime_provenance_match_training_input():
+    """The committed artifact must identify its exact versioned training source."""
     metadata_path = ARTIFACT_DIR / "metadata.json"
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    
-    assert "dataset_hash" in metadata
-    assert len(metadata["dataset_hash"]) == 64  # SHA-256 is 64 hex chars
+
+    canonical_source = DATASET.read_text(encoding="utf-8").replace("\r\n", "\n").encode("utf-8")
+    assert metadata["dataset_hash"] == hashlib.sha256(canonical_source).hexdigest()
+    assert metadata["scikit_learn_version"] == sklearn.__version__
 
 
 def test_overall_confidence_boundaries():

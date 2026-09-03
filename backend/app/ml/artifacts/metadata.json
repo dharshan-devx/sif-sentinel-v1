@@ -1,9 +1,10 @@
 {
   "model_name": "sif-tfidf-logreg",
   "model_version": "sif-tfidf-logreg-v1",
-  "training_timestamp": "2026-09-03T05:17:18.230651+00:00",
+  "training_timestamp": "2026-09-03T10:09:58.455880+00:00",
   "training_dataset_identifier": "synthetic-safety-reports-v1",
-  "dataset_hash": "5a529f9cfdae8ee2ffbc0d77036d26b644a517f44513e8b5f5ce68bd495d9348",
+  "dataset_hash": "4512698c83a59ca347609c1057c34325ebd56f983d9e7b5fa3648a6619b589ba",
+  "scikit_learn_version": "1.9.0",
   "feature_configuration": {
     "ngram_range": [
       1,

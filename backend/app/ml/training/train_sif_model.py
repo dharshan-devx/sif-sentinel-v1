@@ -5,13 +5,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import joblib
+import sklearn
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 from sklearn.model_selection import train_test_split
 
 ROOT = Path(__file__).parents[3]
-DATASET = ROOT / "data" / "training" / "safety_reports.csv"
+DATASET = ROOT / "data" / "training" / "safety_reports_v1.csv"
 ARTIFACTS = Path(__file__).parents[1] / "artifacts"
 
 
@@ -34,9 +35,11 @@ def train() -> dict:
     joblib.dump(vectorizer, ARTIFACTS / "vectorizer" / "tfidf.joblib")
     
     import hashlib
-    dataset_hash = hashlib.sha256(DATASET.read_bytes()).hexdigest()
+    dataset_hash = hashlib.sha256(
+        DATASET.read_text(encoding="utf-8").replace("\r\n", "\n").encode("utf-8")
+    ).hexdigest()
     
-    metadata = {"model_name": "sif-tfidf-logreg", "model_version": "sif-tfidf-logreg-v1", "training_timestamp": datetime.now(UTC).isoformat(), "training_dataset_identifier": "synthetic-safety-reports-v1", "dataset_hash": dataset_hash, "feature_configuration": {"ngram_range": [1, 2], "sublinear_tf": True}, "class_labels": list(model.classes_), "metrics": metrics}
+    metadata = {"model_name": "sif-tfidf-logreg", "model_version": "sif-tfidf-logreg-v1", "training_timestamp": datetime.now(UTC).isoformat(), "training_dataset_identifier": "synthetic-safety-reports-v1", "dataset_hash": dataset_hash, "scikit_learn_version": sklearn.__version__, "feature_configuration": {"ngram_range": [1, 2], "sublinear_tf": True}, "class_labels": list(model.classes_), "metrics": metrics}
     (ARTIFACTS / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
     return metadata
 

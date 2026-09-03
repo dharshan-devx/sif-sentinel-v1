@@ -1,14 +1,19 @@
 # SIH26165 — SIF Precursor Detection Backend
 
-Phase 1 and 2 provide a production-shaped FastAPI foundation plus a local, reproducible SIF analysis engine for unsafe-act, unsafe-condition, near-miss, and incident reports. It does not use an LLM or external API key.
+SIF Sentinel is a deterministic, evidence-backed safety decision-support backend
+for unsafe-act, unsafe-condition, near-miss, and incident reports. Optional LLM
+assistance is limited to a reviewer summary and is never required for analysis.
 
 ## Architecture
 
-`API routes → Pydantic schemas → services → repositories → SQLAlchemy models → PostgreSQL`.
+`report → validation → structured evidence → SIF/LSR → precursor → risk → intervention → human review → audit`.
 
 For report analysis, the flow is `preprocess → TF-IDF/logistic SIF classifier → controlled entity/barrier extraction → Life-Saving Rule mapping → source evidence → weighted confidence → persistence/review routing`. Original report text is never modified. The lexical extraction and JSON knowledge base are deliberately deterministic, versioned, and replaceable by a future semantic layer.
 
-The application uses asynchronous SQLAlchemy sessions, UUID primary keys, JWT bearer authentication, role authorization, database-backed report filtering/pagination, audit records, request IDs, and structured API errors.
+The application uses asynchronous SQLAlchemy sessions, UUID primary keys, JWT
+bearer authentication, role authorization, database-backed report
+filtering/pagination, audit records, request IDs, and structured API errors.
+SQLite and PostgreSQL are supported for tests and migrations.
 
 ## Quick start
 
@@ -21,7 +26,9 @@ The application uses asynchronous SQLAlchemy sessions, UUID primary keys, JWT be
 7. `python scripts/seed.py`
 8. `uvicorn app.main:app --reload`
 
-The tracked prototype model artifact is generated from the clearly labelled synthetic dataset. To regenerate it reproducibly, run `python -m app.ml.training.train_sif_model` from `backend`.
+The tracked prototype model artifact is generated from the versioned,
+clearly labelled synthetic v1 dataset. To regenerate it reproducibly, run
+`python -m app.ml.training.train_sif_model` from `backend`.
 
 API docs: [http://localhost:8000/docs](http://localhost:8000/docs). The API root is `/api/v1`.
 
@@ -57,7 +64,9 @@ pytest
 ruff check .
 ```
 
-Tests use a separate local SQLite database and never target `DATABASE_URL`, so they do not destroy development data.
+Tests default to a separate local SQLite database. Set `TEST_DATABASE_URL` to
+an isolated PostgreSQL test database to run the same suite against PostgreSQL;
+never point it to a development or production database.
 
 ## Demo seed data
 
@@ -65,11 +74,19 @@ Tests use a separate local SQLite database and never target `DATABASE_URL`, so t
 
 ## Tables
 
-`users`, `sites`, `reports`, `report_analyses`, `life_saving_rules`, `precursor_patterns`, `reviews`, `model_predictions`, and `audit_logs`.
+`users`, `sites`, `reports`, `report_analyses`, `life_saving_rules`,
+`precursor_candidates`, `precursor_patterns`, `intervention_recommendations`,
+`reviews`, `model_predictions`, and `audit_logs`.
 
 ## ML baseline and prototype data
 
-The classifier is a TF-IDF (word 1–2 grams) + class-balanced logistic-regression model. Its data is [safety_reports.csv](data/training/safety_reports.csv): 640 synthetic prototype records, balanced between SIF and non-SIF examples and tagged `source_type=SYNTHETIC`. It is not OIL operational data and must not be used to claim real-world performance.
+The classifier is a TF-IDF (word 1–2 grams) + class-balanced logistic-regression
+model. Its versioned training input is
+[safety_reports_v1.csv](data/training/safety_reports_v1.csv): 640 synthetic
+prototype records, balanced between SIF and non-SIF examples and tagged
+`source_type=SYNTHETIC`. It is not OIL operational data and must not be used to
+claim real-world performance. The larger `safety_reports.csv` corpus is retained
+for future validated evaluation and is not silently substituted into the v1 model.
 
 Training performs a stratified 80/20 split with random seed 2026 and writes the model, vectorizer, versioned metadata, classification report, confusion matrix, and ROC-AUC to `app/ml/artifacts/metadata.json`. Metrics returned from `/api/v1/models/.../metrics` are read from that saved evaluation metadata; they are never fabricated at API time. The current synthetic dataset contains repeated controlled templates, so its evaluation numbers are only a pipeline check, not a generalization estimate.
 
@@ -111,6 +128,21 @@ The graph endpoint emits five React Flow-ready nodes (activity, hazard, barrier,
 - `POST/GET /api/v1/reports`, `GET/PATCH/DELETE /api/v1/reports/{report_id}`
 
 See Swagger for endpoint contracts, authentication, enums, and response formats.
+
+## Intervention intelligence
+
+`GET /api/v1/interventions`, `/summary`, and `/{id}` expose deterministic,
+evidence-backed advisory recommendations. `POST /api/v1/interventions/{id}/review`
+records accept, modify, or reject decisions for authorized HSE reviewers.
+Recommendations never execute external actions or change SIF, LSR, precursor,
+or risk results. See [INTERVENTION_INTELLIGENCE.md](INTERVENTION_INTELLIGENCE.md).
+
+## LLM assistance
+
+With `LLM_ENABLED=false` (the baseline demo mode), no provider key or network
+access is required. With assistance enabled, provider failures are recorded as
+metadata and deterministic outputs remain authoritative. See
+[LLM_PROVIDER.md](LLM_PROVIDER.md).
 
 
 

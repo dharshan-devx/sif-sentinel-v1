@@ -5,8 +5,9 @@ Revises: f36b3761116e
 Create Date: 2026-09-03
 """
 
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 revision = "20260903_0004"
 down_revision = "f36b3761116e"
@@ -15,6 +16,8 @@ depends_on = None
 
 
 def upgrade() -> None:
+    if "intervention_recommendations" in sa.inspect(op.get_bind()).get_table_names():
+        return
     op.create_table(
         "intervention_recommendations",
         sa.Column("report_id", sa.Uuid(), sa.ForeignKey("reports.id"), nullable=True),

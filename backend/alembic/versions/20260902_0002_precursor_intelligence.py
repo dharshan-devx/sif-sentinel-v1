@@ -26,8 +26,9 @@ def upgrade() -> None:
     if "department_count" not in columns:
         op.add_column("precursor_patterns", sa.Column("department_count", sa.Integer(), server_default="0", nullable=False))
     existing_indexes = {index["name"] for index in sa.inspect(bind).get_indexes("precursor_patterns")}
+    columns = {column["name"] for column in sa.inspect(bind).get_columns("precursor_patterns")}
     for name, field in (("ix_precursor_patterns_risk_score", "risk_score"), ("ix_precursor_patterns_risk_level", "risk_level"), ("ix_precursor_patterns_last_seen", "last_seen")):
-        if name not in existing_indexes:
+        if name not in existing_indexes and field in columns:
             op.create_index(name, "precursor_patterns", [field])
     analysis_indexes = {index["name"] for index in sa.inspect(bind).get_indexes("report_analyses")}
     for name, field in (("ix_report_analyses_sif_level", "sif_level"), ("ix_report_analyses_life_saving_rule", "life_saving_rule"), ("ix_report_analyses_activity", "activity"), ("ix_report_analyses_hazard", "hazard"), ("ix_report_analyses_barrier", "barrier")):

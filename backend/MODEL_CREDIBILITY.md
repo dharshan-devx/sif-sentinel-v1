@@ -8,7 +8,10 @@ The backend relies on a deterministic **Logistic Regression** model paired with 
 - The model artifacts (`sif_logreg.joblib` and `tfidf.joblib`) are generated via `app/ml/training/train_sif_model.py`.
 
 ## 2. What data was it trained/evaluated on?
-The model is trained on a synthetic prototype dataset (`data/training/safety_reports.csv`) containing 640 safety reports mimicking real-world industrial HSE observations.
+The model is trained on the versioned synthetic prototype dataset
+(`data/training/safety_reports_v1.csv`) containing 640 safety-report records.
+The larger `safety_reports.csv` corpus is not automatically substituted into
+the v1 model; it requires separate validation before a new model version is released.
 - **Features**: Single feature used for ML is `report_text`.
 - **Target**: `sif_potential` (boolean: True for SIF, False for NON_SIF).
 - **Class Distribution**: Balanced via `class_weight="balanced"` during training.
@@ -40,10 +43,10 @@ A report is forced into `REVIEW` state if:
 - No concrete evidence spans can be extracted to support the prediction.
 
 ## 7. Can a safety officer correct the prediction?
-Yes. The Review Workflow (Phase C) provides API endpoints (`POST /api/v1/reviews/{id}/decision`) allowing an authorized human reviewer to `APPROVE`, `REJECT`, or `MODIFY` the AI's analysis. 
+Yes. The Review Workflow provides `POST /api/v1/reviews/{id}/decision`, allowing an authorized human reviewer to `APPROVE`, `REJECT`, or `MODIFY` the analysis.
 
 ## 8. Do you preserve the original AI decision?
-Yes. When a human reviewer submits a modification, the original AI predictions (`sif_probability`, `sif_level`, etc.) in the `report_analyses` table are **never overwritten**. Instead, the human's changes are stored as a `ReviewCorrection` mapped to the `Review` object. This guarantees that the AI's raw output is auditable forever.
+Yes. When a human reviewer submits a modification, the original AI predictions in `report_analyses` are **never overwritten**. The human corrections are stored in the `Review.corrected_*` fields, preserving the original output for audit.
 
 ## 9. Can you explain why the model generated the prediction?
 Yes. Because we use TF-IDF + Logistic Regression, we have direct access to feature coefficients. 

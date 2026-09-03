@@ -18,10 +18,9 @@ AI provenance rule:
         Downstream analytics read corrections from the Review record when present.
 
 Concurrency note:
-    The PENDING guard (if review.decision != PENDING → 409) combined with
-    SQLite's file-level exclusive write lock is sufficient for the current
-    deployment topology (single-process). In PostgreSQL, use SELECT FOR UPDATE
-    on the review row. Documented here for Phase D migration.
+    The PENDING guard is enforced while holding a row lock where the database
+    supports it. This prevents two PostgreSQL reviewers from both observing a
+    pending decision and committing conflicting final decisions.
 
 Precursor rebuild:
     rebuild() is called on APPROVE and MODIFY decisions because:
@@ -37,7 +36,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.constants import ReviewDecision, ReportStatus
+from app.core.constants import ReportStatus, ReviewDecision
 from app.core.exceptions import AppError, NotFoundError
 from app.models.report import Report
 from app.models.report_analysis import ReportAnalysis
@@ -50,7 +49,6 @@ from app.schemas.review import (
 )
 from app.services.audit_service import record_audit
 from app.services.precursor_engine.precursor_service import PrecursorService
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -86,7 +84,6 @@ def _to_queue_item(review: Review, report: Report, analysis: ReportAnalysis | No
 
 def _joined_query():
     """Base SELECT that joins Review → Report → ReportAnalysis."""
-    from sqlalchemy.orm import aliased
     return (
         select(Review, Report, ReportAnalysis)
         .join(Report, Report.id == Review.report_id)
@@ -178,7 +175,9 @@ class ReviewService:
         precursor graph, and commits everything in one transaction.
         """
         # --- Load ---
-        review = await self.db.get(Review, review_id)
+        review = await self.db.scalar(
+            select(Review).where(Review.id == review_id).with_for_update()
+        )
         if not review:
             raise NotFoundError("review")
 

@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 
 from app.core.constants import ReportStatus
 from app.db.session import SessionLocal
+from app.models.precursor_candidate import PrecursorCandidate
 from app.models.report import Report
 from app.models.report_analysis import ReportAnalysis
 from app.models.review import Review
@@ -85,3 +86,29 @@ def test_direct_analysis_and_actual_metrics_api(client, admin_headers):
     metrics = client.get("/api/v1/models/sif-tfidf-logreg/metrics", headers=admin_headers)
     assert metrics.status_code == 200
     assert "confusion_matrix" in metrics.json()
+
+
+def test_reanalysis_replaces_current_precursor_candidates(client, admin_headers):
+    report_id = _create_report(
+        client,
+        admin_headers,
+        "AN-RETRY",
+        "Technician started maintenance before energy isolation was verified.",
+    )
+    assert client.post(f"/api/v1/reports/{report_id}/analyze", headers=admin_headers).status_code == 200
+
+    async def candidate_count():
+        from sqlalchemy import func, select
+
+        async with SessionLocal() as db:
+            report = await db.scalar(select(Report).where(Report.report_id == report_id))
+            return await db.scalar(
+                select(func.count()).select_from(PrecursorCandidate).where(
+                    PrecursorCandidate.report_id == report.id
+                )
+            )
+
+    first_count = asyncio.run(candidate_count())
+    assert first_count > 0
+    assert client.post(f"/api/v1/reports/{report_id}/analyze", headers=admin_headers).status_code == 200
+    assert asyncio.run(candidate_count()) == first_count

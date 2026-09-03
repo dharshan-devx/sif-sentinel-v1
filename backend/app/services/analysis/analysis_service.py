@@ -1,25 +1,25 @@
 from datetime import UTC, datetime
-
-from app.core.config import get_settings
 from uuid import UUID
 
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import get_settings
 from app.core.constants import BarrierStatus, ReportStatus, ReviewDecision
 from app.core.exceptions import AppError
 from app.models.model_prediction import ModelPrediction
-from app.models.report_analysis import ReportAnalysis
 from app.models.precursor_candidate import PrecursorCandidate
 from app.models.precursor_pattern import PrecursorPattern
+from app.models.report_analysis import ReportAnalysis
 from app.models.review import Review
 from app.schemas.analysis import AnalysisResponse
 from app.services.audit_service import record_audit
 from app.services.intervention_service import InterventionService
+from app.services.llm.assistance_service import LLMAssistanceService
 from app.services.nlp.analysis_pipeline import analyze_text
-from app.services.risk_engine.calculator import calculate_risk
 from app.services.precursor_engine.precursor_service import PrecursorService
 from app.services.report_service import ReportService
-from app.services.llm.assistance_service import LLMAssistanceService
+from app.services.risk_engine.calculator import calculate_risk
 
 
 class AnalysisService:
@@ -50,8 +50,9 @@ class AnalysisService:
         # Check if the extracted candidates match any active precursor patterns
         precursor_priority = None
         if result.precursor_candidates:
-            from app.services.precursor_engine.pattern_builder import build_pattern_key
             from sqlalchemy import select
+
+            from app.services.precursor_engine.pattern_builder import build_pattern_key
             keys = [
                 build_pattern_key(c.activity, c.hazard, c.barrier, c.failure_type).key 
                 for c in result.precursor_candidates
@@ -164,6 +165,12 @@ class AnalysisService:
                 },
             ))
 
+            # Candidates represent the current deterministic evidence for a
+            # report. They have no analysis_id, so retaining prior candidates
+            # on a retry would falsely increase precursor recurrence.
+            await self.db.execute(
+                delete(PrecursorCandidate).where(PrecursorCandidate.report_id == report.id)
+            )
             for candidate in result.precursor_candidates:
                 self.db.add(PrecursorCandidate(
                     report_id=report.id,
