@@ -36,8 +36,11 @@ from sqlalchemy import select
 
 from app.core.config import get_settings
 from app.models.precursor_candidate import PrecursorCandidate
+from app.models.precursor_pattern import PrecursorPattern
 from app.schemas.analysis import AnalysisResponse
 from app.services.nlp.analysis_pipeline import analyze_text
+from app.services.precursor_engine.pattern_builder import build_pattern_key
+from app.services.risk_engine.calculator import calculate_risk
 from app.services.llm.assistance_service import LLMAssistanceService
 from app.services.llm.manager import LLMManager
 from app.services.llm.result import LLMResult
@@ -208,6 +211,34 @@ async def _precursor_state(db_session, report_id) -> tuple[tuple[str, str, str, 
     return tuple(
         (candidate.category, candidate.activity, candidate.hazard, candidate.barrier, candidate.failure_type)
         for candidate in candidates
+    )
+
+
+async def _deterministic_risk_for_report(db_session, report_text: str) -> dict[str, Any]:
+    """Derive the authoritative risk before LLM assistance is requested."""
+    deterministic = analyze_text(report_text)
+    keys = [
+        build_pattern_key(candidate.activity, candidate.hazard, candidate.barrier, candidate.failure_type).key
+        for candidate in deterministic.precursor_candidates
+    ]
+    priorities = (
+        await db_session.scalars(
+            select(PrecursorPattern.priority).where(
+                PrecursorPattern.pattern_key.in_(keys),
+                PrecursorPattern.priority.in_(("CRITICAL", "HIGH", "MEDIUM")),
+            )
+        )
+    ).all()
+    precursor_priority = next(
+        (priority for priority in ("CRITICAL", "HIGH", "MEDIUM") if priority in priorities),
+        None,
+    )
+    return calculate_risk(
+        sif_level=deterministic.sif_level,
+        sif_potential=deterministic.sif_potential,
+        barrier_status=deterministic.barrier_status,
+        has_lsr=bool(deterministic.life_saving_rule),
+        precursor_priority=precursor_priority,
     )
 
 
@@ -645,14 +676,18 @@ async def test_G29_llm_cannot_overwrite_risk_score(db_session, enabled_settings,
     """LLM claiming LOW risk cannot change the authoritative risk score."""
     from app.services.analysis.analysis_service import AnalysisService
 
+    report_text = "Worker fell from a 10ft ladder without fall protection."
+    expected_deterministic_score = (await _deterministic_risk_for_report(db_session, report_text))["score"]
+
     monkeypatch.setattr(LLMManager, "get_provider", lambda: _AuthorityOverrideProvider())
-    report, user = await _create_test_report(db_session, "Worker fell from a 10ft ladder without fall protection.")
+    report, user = await _create_test_report(db_session, report_text)
     service = AnalysisService(db_session)
     result: AnalysisResponse = await service.analyze_report(report.report_id, user.id, "127.0.0.1")
 
     # Risk score is from deterministic engine — must not be 0 or "LOW"
     assert result.risk is not None
     assert result.risk.score > 30  # This case should be HIGH risk
+    assert result.risk.score == expected_deterministic_score
 
 
 @pytest.mark.asyncio
@@ -660,13 +695,17 @@ async def test_G30_llm_cannot_overwrite_risk_priority(db_session, enabled_settin
     """LLM claiming LOW priority cannot change the authoritative risk priority."""
     from app.services.analysis.analysis_service import AnalysisService
 
+    report_text = "Worker fell from a 10ft ladder without fall protection."
+    expected_deterministic_priority = (await _deterministic_risk_for_report(db_session, report_text))["priority"]
+
     monkeypatch.setattr(LLMManager, "get_provider", lambda: _AuthorityOverrideProvider())
-    report, user = await _create_test_report(db_session, "Worker fell from a 10ft ladder without fall protection.")
+    report, user = await _create_test_report(db_session, report_text)
     service = AnalysisService(db_session)
     result: AnalysisResponse = await service.analyze_report(report.report_id, user.id, "127.0.0.1")
 
     assert result.risk is not None
     assert result.risk.priority != "LOW"
+    assert result.risk.priority == expected_deterministic_priority
 
 
 @pytest.mark.asyncio
