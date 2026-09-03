@@ -32,13 +32,17 @@ from uuid import uuid4
 
 import pytest
 import pytest_asyncio
+from sqlalchemy import select
 
 from app.core.config import get_settings
+from app.models.precursor_candidate import PrecursorCandidate
 from app.schemas.analysis import AnalysisResponse
+from app.services.nlp.analysis_pipeline import analyze_text
 from app.services.llm.assistance_service import LLMAssistanceService
 from app.services.llm.manager import LLMManager
 from app.services.llm.result import LLMResult
-from app.db.session import SessionLocal
+from app.db.base import Base
+from app.db.session import SessionLocal, engine
 from app.models.report import Report
 from app.models.user import User
 from app.models.site import Site
@@ -53,6 +57,21 @@ from app.models.site import Site
 async def db_session(database):
     async with SessionLocal() as session:
         yield session
+
+
+@pytest_asyncio.fixture(scope="module", autouse=True, loop_scope="session")
+async def cleanup_phase_j_database(database):
+    """Restore an empty schema after this module's committed integration data.
+
+    Phase J exercises the real analysis pipeline and deliberately commits
+    reports, precursor candidates, and rebuilt patterns.  The shared test
+    database must be empty for subsequent modules that assert global pattern
+    counts.
+    """
+    yield
+    async with engine.begin() as connection:
+        await connection.run_sync(Base.metadata.drop_all)
+        await connection.run_sync(Base.metadata.create_all)
 
 
 @pytest.fixture()
@@ -169,6 +188,27 @@ async def _create_test_report(db_session, report_text: str, report_id_suffix: st
     db_session.add(report)
     await db_session.commit()
     return report, user
+
+
+async def _precursor_state(db_session, report_id) -> tuple[tuple[str, str, str, str, str], ...]:
+    """Return the persisted deterministic precursor state for one report."""
+    candidates = (
+        await db_session.scalars(
+            select(PrecursorCandidate)
+            .where(PrecursorCandidate.report_id == report_id)
+            .order_by(
+                PrecursorCandidate.category,
+                PrecursorCandidate.activity,
+                PrecursorCandidate.hazard,
+                PrecursorCandidate.barrier,
+                PrecursorCandidate.failure_type,
+            )
+        )
+    ).all()
+    return tuple(
+        (candidate.category, candidate.activity, candidate.hazard, candidate.barrier, candidate.failure_type)
+        for candidate in candidates
+    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -365,13 +405,14 @@ async def test_C13_llm_used_true_on_success(db_session, enabled_settings, monkey
 
 @pytest.mark.asyncio
 async def test_D14_timeout_provider_returns_failure(enabled_settings, monkeypatch):
-    """When the provider times out, the service returns success=False."""
+    """When the provider times out, the service returns a normalized TIMEOUT error."""
     monkeypatch.setattr(LLMManager, "get_provider", lambda: TimeoutProvider())
 
     result = await LLMAssistanceService.request_reviewer_summary(
         report_text="Test", structured_evidence={}, authoritative_results={}
     )
     assert result.success is False
+    assert result.error_code == "TIMEOUT"
 
 
 @pytest.mark.asyncio
@@ -403,15 +444,13 @@ async def test_D16_timeout_llm_used_false(db_session, enabled_settings, monkeypa
 
 @pytest.mark.asyncio
 async def test_D17_timeout_controlled_error_recorded(enabled_settings, monkeypatch):
-    """Timeout produces a controlled error result with error_code=TIMEOUT or UNEXPECTED_ERROR."""
+    """A raised provider timeout is consistently recorded as TIMEOUT."""
     monkeypatch.setattr(LLMManager, "get_provider", lambda: TimeoutProvider())
 
     result = await LLMAssistanceService.request_reviewer_summary(
         report_text="Test", structured_evidence={}, authoritative_results={}
     )
-    # TimeoutProvider raises asyncio.TimeoutError — caught as UNEXPECTED_ERROR in service
-    # (inner provider handler would catch at TIMEOUT level, outer service catches as UNEXPECTED_ERROR)
-    assert result.error_code in ("TIMEOUT", "UNEXPECTED_ERROR")
+    assert result.error_code == "TIMEOUT"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -554,7 +593,10 @@ class _AuthorityOverrideProvider:
     async def generate_reviewer_summary(self, context: dict) -> LLMResult:
         return LLMResult(
             success=True,
-            summary="Risk is LOW. SIF is NOT significant. No controls failed. This is safe.",
+            summary=(
+                "Risk is LOW. SIF is NOT significant. No controls failed. "
+                "No life-saving rule applies, and a new precursor exists. This is safe."
+            ),
             provider="evil-mock",
             model="evil-model",
             operation="reviewer_summary",
@@ -585,15 +627,17 @@ async def test_G28_llm_cannot_overwrite_lsr(db_session, enabled_settings, monkey
     """LLM output cannot change the life_saving_rule field."""
     from app.services.analysis.analysis_service import AnalysisService
 
+    report_text = "Worker fell from a 10ft ladder without fall protection."
+    expected_lsr = analyze_text(report_text).life_saving_rule
+    assert expected_lsr == "Working at Height"
+
     monkeypatch.setattr(LLMManager, "get_provider", lambda: _AuthorityOverrideProvider())
-    report, user = await _create_test_report(db_session, "Worker fell from a 10ft ladder without fall protection.")
+    report, user = await _create_test_report(db_session, report_text)
     service = AnalysisService(db_session)
     result: AnalysisResponse = await service.analyze_report(report.report_id, user.id, "127.0.0.1")
 
-    # life_saving_rule is set deterministically — LLM summary field is separate
-    assert result.life_saving_rule is not None  # NLP extracted it
-    # The LLM summary is just the reviewer_summary field, not life_saving_rule
-    assert result.life_saving_rule != result.reviewer_summary
+    assert "No life-saving rule applies" in result.reviewer_summary
+    assert result.life_saving_rule == expected_lsr
 
 
 @pytest.mark.asyncio
@@ -627,22 +671,28 @@ async def test_G30_llm_cannot_overwrite_risk_priority(db_session, enabled_settin
 
 @pytest.mark.asyncio
 async def test_G31_llm_cannot_create_precursor(db_session, enabled_settings, monkeypatch):
-    """LLM output cannot cause a PrecursorCandidate to be created that wasn't detected."""
+    """Persisted precursor candidates must match deterministic NLP output exactly."""
     from app.services.analysis.analysis_service import AnalysisService
-    from sqlalchemy import select
-    from app.models.precursor_candidate import PrecursorCandidate
+
+    report_text = "Worker fell from a 10ft ladder without fall protection."
+    expected_precursors = tuple(
+        sorted(
+            (candidate.category, candidate.activity, candidate.hazard, candidate.barrier, candidate.failure_type)
+            for candidate in analyze_text(report_text).precursor_candidates
+        )
+    )
+    assert expected_precursors
 
     monkeypatch.setattr(LLMManager, "get_provider", lambda: _AuthorityOverrideProvider())
+    report, user = await _create_test_report(db_session, report_text)
+    assert await _precursor_state(db_session, report.id) == ()
 
-    # A report unlikely to produce precursor candidates
-    report, user = await _create_test_report(db_session, "Paperwork was filed late.")
     service = AnalysisService(db_session)
     result: AnalysisResponse = await service.analyze_report(report.report_id, user.id, "127.0.0.1")
 
-    # The reviewer_summary may mention precursors but no PrecursorCandidate row was fabricated
-    # (the DB is the source of truth, not the LLM output)
-    assert result.reviewer_summary is not None  # summary was produced
-    # We just verify the pipeline completed — actual precursor count is from NLP, not LLM
+    assert "a new precursor exists" in result.reviewer_summary
+    actual_precursors = await _precursor_state(db_session, report.id)
+    assert actual_precursors == expected_precursors
 
 
 @pytest.mark.asyncio
@@ -650,13 +700,17 @@ async def test_G32_llm_cannot_alter_control_state(db_session, enabled_settings, 
     """The barrier_status field comes from NLP, not from the LLM summary."""
     from app.services.analysis.analysis_service import AnalysisService
 
+    report_text = "Worker fell from a 10ft ladder without fall protection."
+    expected_barrier_status = analyze_text(report_text).barrier_status
+    assert expected_barrier_status == "FAILED"
+
     monkeypatch.setattr(LLMManager, "get_provider", lambda: _AuthorityOverrideProvider())
-    report, user = await _create_test_report(db_session, "Worker fell from a 10ft ladder without fall protection.")
+    report, user = await _create_test_report(db_session, report_text)
     service = AnalysisService(db_session)
     result: AnalysisResponse = await service.analyze_report(report.report_id, user.id, "127.0.0.1")
 
-    # barrier_status comes from the deterministic NLP pipeline
-    assert result.barrier_status is not None
+    assert "No controls failed" in result.reviewer_summary
+    assert result.barrier_status.value == expected_barrier_status
 
 
 @pytest.mark.asyncio
@@ -664,13 +718,16 @@ async def test_G33_llm_cannot_alter_reviewer_decision(db_session, enabled_settin
     """review_required is set by the deterministic confidence threshold, not LLM."""
     from app.services.analysis.analysis_service import AnalysisService
 
+    report_text = "Maintenance activity occurred near equipment."
+    expected_review_required = analyze_text(report_text).review_required
+    assert expected_review_required is True
+
     monkeypatch.setattr(LLMManager, "get_provider", lambda: _AuthorityOverrideProvider())
-    report, user = await _create_test_report(db_session, "Worker fell from a 10ft ladder without fall protection.")
+    report, user = await _create_test_report(db_session, report_text)
     service = AnalysisService(db_session)
     result: AnalysisResponse = await service.analyze_report(report.report_id, user.id, "127.0.0.1")
 
-    # review_required is a boolean from the deterministic pipeline — LLM summary is in a separate field
-    assert isinstance(result.review_required, bool)
+    assert result.review_required is expected_review_required
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -980,6 +1037,10 @@ async def test_M_authority_invariant_llm_enabled_vs_disabled(db_session, monkeyp
         report_c.report_id, user_c.id, "127.0.0.1"
     )
 
+    precursor_state_a = await _precursor_state(db_session, report_a.id)
+    precursor_state_b = await _precursor_state(db_session, report_b.id)
+    precursor_state_c = await _precursor_state(db_session, report_c.id)
+
     # ── Authoritative outputs must be IDENTICAL across all three runs ──────
     for attr in ("sif_potential", "sif_level", "life_saving_rule", "barrier_status"):
         val_a = getattr(result_a, attr)
@@ -995,6 +1056,9 @@ async def test_M_authority_invariant_llm_enabled_vs_disabled(db_session, monkeyp
     )
     assert result_a.risk.priority == result_b.risk.priority == result_c.risk.priority, (
         "risk.priority differs across LLM modes — deterministic pipeline was affected"
+    )
+    assert precursor_state_a == precursor_state_b == precursor_state_c, (
+        "precursor candidate state differs across LLM modes — deterministic pipeline was affected"
     )
 
     # ── LLM metadata must differ between disabled vs enabled runs ──────────

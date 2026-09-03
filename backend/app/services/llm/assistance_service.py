@@ -117,6 +117,19 @@ class LLMAssistanceService:
 
         try:
             result = await provider.generate_reviewer_summary(context)
+        except TimeoutError:
+            logger.warning(
+                "LLM provider timed out",
+                provider=settings.llm_provider,
+                model=settings.llm_model,
+            )
+            return LLMResult(
+                success=False,
+                provider=settings.llm_provider,
+                model=settings.llm_model,
+                operation="reviewer_summary",
+                error_code="TIMEOUT",
+            )
         except Exception as exc:
             # The provider should never raise, but be defensive.
             logger.error(
