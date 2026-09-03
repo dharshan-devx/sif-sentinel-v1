@@ -7,6 +7,8 @@ from app.core.constants import BarrierStatus, ReportStatus, ReviewDecision
 from app.core.exceptions import AppError
 from app.models.model_prediction import ModelPrediction
 from app.models.report_analysis import ReportAnalysis
+from app.models.precursor_candidate import PrecursorCandidate
+from app.models.precursor_pattern import PrecursorPattern
 from app.models.review import Review
 from app.schemas.analysis import AnalysisResponse
 from app.services.audit_service import record_audit
@@ -80,6 +82,17 @@ class AnalysisService:
                     "overall_confidence": result.overall_confidence,
                 },
             ))
+
+            for candidate in result.precursor_candidates:
+                self.db.add(PrecursorCandidate(
+                    report_id=report.id,
+                    category=candidate.category,
+                    activity=candidate.activity,
+                    hazard=candidate.hazard,
+                    barrier=candidate.barrier,
+                    failure_type=candidate.failure_type,
+                    evidence_text=candidate.evidence_text,
+                ))
 
             report.status = (
                 ReportStatus.REVIEW_REQUIRED if result.review_required else ReportStatus.ANALYZED

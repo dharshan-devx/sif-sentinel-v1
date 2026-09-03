@@ -11,10 +11,11 @@ class PrecursorPattern(UUIDTimestampMixin, Base):
     __tablename__ = "precursor_patterns"
     __table_args__ = (
         Index("ix_precursor_patterns_risk_score", "risk_score"),
-        Index("ix_precursor_patterns_risk_level", "risk_level"),
+        Index("ix_precursor_patterns_priority", "priority"),
         Index("ix_precursor_patterns_last_seen", "last_seen"),
     )
     pattern_key: Mapped[str] = mapped_column(String(1100), unique=True, nullable=False)
+    category: Mapped[str] = mapped_column(String(255), index=True, default="UNKNOWN")
     activity: Mapped[str] = mapped_column(String(255), index=True)
     hazard: Mapped[str] = mapped_column(String(255), index=True)
     barrier: Mapped[str] = mapped_column(String(255))
@@ -27,6 +28,6 @@ class PrecursorPattern(UUIDTimestampMixin, Base):
     department_count: Mapped[int] = mapped_column(Integer, default=0)
     trend: Mapped[str] = mapped_column(String(50), default="STABLE")
     risk_score: Mapped[float] = mapped_column(Float, default=0)
-    risk_level: Mapped[str] = mapped_column(String(50), default="LOW")
+    priority: Mapped[str] = mapped_column(String(50), default="LOW")
     first_seen: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     last_seen: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

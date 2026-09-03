@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     risk_recency_weight: float = 0.15
     risk_trend_weight: float = 0.10
     risk_spread_weight: float = 0.05
+    precursor_min_occurrences: int = 3
+    precursor_lookback_days: int = 90
     risk_critical_threshold: float = 0.75
     risk_high_threshold: float = 0.55
     risk_medium_threshold: float = 0.30

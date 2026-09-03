@@ -21,14 +21,14 @@ async def list_precursors(
     activity: str | None = None,
     hazard: str | None = None,
     barrier: str | None = None,
-    risk_level: str | None = None,
+    priority: str | None = None,
     date_from: datetime | None = None,
     date_to: datetime | None = None,
     limit: int = Query(50, ge=1, le=200),
     sort: str = Query("risk_score", pattern="^(risk_score|recent)$"),
 ) -> list[PrecursorSummary]:
     # Stored patterns are all-time; optional dates narrow by observed first/last activity.
-    return await PrecursorService(db).list(site_id=site, activity=activity, hazard=hazard, barrier=barrier, risk_level=risk_level, limit=limit, sort=sort, date_from=date_from, date_to=date_to)
+    return await PrecursorService(db).list(site_id=site, activity=activity, hazard=hazard, barrier=barrier, priority=priority, limit=limit, sort=sort, date_from=date_from, date_to=date_to)
 
 
 @router.get("/trends", response_model=list[PrecursorSummary], summary="List precursor trends")

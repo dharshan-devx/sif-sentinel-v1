@@ -13,6 +13,7 @@ class PrecursorRead(ORMModel):
 
 
 class PrecursorSummary(PrecursorRead):
+    category: str
     barrier: str
     failure_type: str
     occurrence_count: int
@@ -23,7 +24,7 @@ class PrecursorSummary(PrecursorRead):
     department_count: int
     trend: str
     risk_score: float
-    risk_level: str
+    priority: str
     first_seen: datetime | None
     last_seen: datetime | None
     why_it_matters: str

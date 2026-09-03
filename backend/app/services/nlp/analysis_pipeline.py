@@ -7,6 +7,7 @@ from app.services.nlp.confidence import overall_confidence
 from app.services.nlp.entity_extractor import extract_entities, get_structured_evidence
 from app.services.nlp.evidence_extractor import extract_evidence
 from app.services.nlp.evidence_model import EvidenceType, StructuredEvidence
+from app.services.nlp.precursor_rules import PrecursorCandidateItem, generate_precursor_candidates
 from app.services.nlp.preprocessing import preprocess_text
 from app.services.nlp.sif_classifier import classify_sif
 
@@ -31,6 +32,7 @@ class PipelineResult:
     model_name: str
     model_version: str
     explanation: str
+    precursor_candidates: list[PrecursorCandidateItem]
 
 
 def analyze_text(text: str) -> PipelineResult:
@@ -61,6 +63,8 @@ def analyze_text(text: str) -> PipelineResult:
     
     level = SIFLevel.REVIEW if review_required and prediction.sif_level in (SIFLevel.NON_SIF, SIFLevel.LOW, SIFLevel.REVIEW) else prediction.sif_level
     
+    precursor_candidates = generate_precursor_candidates(structured_evidence)
+    
     return PipelineResult(
         prediction.sif_potential, level, prediction.probability, 
         entities.activity, entities.hazard, entities.barrier, 
@@ -69,7 +73,8 @@ def analyze_text(text: str) -> PipelineResult:
         evidence.evidence_sentences, evidence.evidence_terms, 
         confidence, review_required, prediction.model_name, 
         prediction.model_version, 
-        _explain(prediction.sif_level, structured_evidence, rule.rule, evidence.evidence_span, prediction.predictive_terms, review_required, has_unknown_barrier)
+        _explain(prediction.sif_level, structured_evidence, rule.rule, evidence.evidence_span, prediction.predictive_terms, review_required, has_unknown_barrier),
+        precursor_candidates
     )
 
 

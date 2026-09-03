@@ -29,16 +29,28 @@ def test_pattern_normalization_trends_and_risk_levels():
 
 
 def test_precursor_rebuild_graph_risk_and_dashboard_apis(client, admin_headers):
-    first_report = _create_and_analyze(client, admin_headers, "P31", "Technician started maintenance before energy isolation was verified.")
-    _create_and_analyze(client, admin_headers, "P32", "Technician started maintenance before energy isolation was verified.")
-    _create_and_analyze(client, admin_headers, "P33", "Worker entered confined space without gas testing.")
+    # Minimum occurrences is 3, so we create 3 identical observations to form 1 pattern
+    first_report = _create_and_analyze(client, admin_headers, "P31", "Technician started maintenance before electrical energy isolation was verified.")
+    _create_and_analyze(client, admin_headers, "P32", "Technician started maintenance before electrical energy isolation was verified.")
+    _create_and_analyze(client, admin_headers, "P33", "Technician started maintenance before electrical energy isolation was verified.")
+    
+    # 1 observation shouldn't become a precursor on its own due to threshold
+    _create_and_analyze(client, admin_headers, "P34", "Worker entered confined space without gas testing.")
 
     rebuilt = client.post("/api/v1/precursors/rebuild", headers=admin_headers)
     assert rebuilt.status_code == 200
+    
     listed = client.get("/api/v1/precursors", headers=admin_headers)
     assert listed.status_code == 200
     patterns = listed.json()
-    assert patterns and patterns[0]["occurrence_count"] >= 1
+    
+    # There should only be 1 pattern because the other one didn't reach min_occurrences
+    assert len(patterns) == 1
+    
+    assert patterns[0]["occurrence_count"] >= 3
+    assert patterns[0]["category"] == "CONTROL_UNVERIFIED"
+    assert patterns[0]["priority"] in ("CRITICAL", "HIGH", "MEDIUM", "LOW")
+    
     site_id = client.get(f"/api/v1/reports/{first_report}", headers=admin_headers).json()["site_id"]
     assert client.get("/api/v1/precursors", headers=admin_headers, params={"site": site_id}).status_code == 200
     precursor_id = patterns[0]["id"]
@@ -53,9 +65,11 @@ def test_precursor_rebuild_graph_risk_and_dashboard_apis(client, admin_headers):
         response = client.get(endpoint, headers=admin_headers)
         assert response.status_code == 200
         assert response.json()
+        
     summary = client.get("/api/v1/dashboard/summary", headers=admin_headers)
     assert summary.status_code == 200
     assert summary.json()["active_precursors"] >= 1
+    
     for endpoint in ("/api/v1/dashboard/sif-trend", "/api/v1/dashboard/lsr-distribution", "/api/v1/dashboard/site-comparison", "/api/v1/dashboard/activity-distribution", "/api/v1/dashboard/hazard-distribution", "/api/v1/dashboard/barrier-failures"):
         assert client.get(endpoint, headers=admin_headers).status_code == 200
 
