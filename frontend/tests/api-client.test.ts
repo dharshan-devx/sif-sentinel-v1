@@ -15,6 +15,6 @@ describe("ApiClient", () => {
   it("preserves the controlled backend error and request ID", async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response(JSON.stringify({ success: false, error: { code: "VALIDATION_ERROR", message: "Request validation failed", details: [{ loc: ["body", "email"] }] }, request_id: "body-request" }), { status: 422, headers: { "X-Request-ID": "header-request" } })) as unknown as typeof fetch;
     const client = new ApiClient({ baseUrl: "http://api.test", fetchImpl });
-    await expect(client.get("/reports")).rejects.toMatchObject<ApiClientError>({ status: 422, code: "VALIDATION_ERROR", requestId: "body-request" });
+    await expect(client.get("/reports")).rejects.toMatchObject({ status: 422, code: "VALIDATION_ERROR", requestId: "body-request" });
   });
 });
