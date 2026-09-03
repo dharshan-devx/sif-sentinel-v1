@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Enum, Float, ForeignKey, String, Text
+from sqlalchemy import JSON, Enum, Float, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Uuid
 
@@ -14,7 +14,11 @@ class ReportAnalysis(UUIDTimestampMixin, Base):
     report_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("reports.id"), index=True, nullable=False)
     sif_potential: Mapped[bool | None]
     sif_level: Mapped[SIFLevel | None] = mapped_column(Enum(SIFLevel, native_enum=False), index=True)
-    sif_probability: Mapped[float | None] = mapped_column(Float)
+    model_probability: Mapped[float | None] = mapped_column(Float)
+    risk_score: Mapped[int | None] = mapped_column(Float) # SQLite doesn't strictly type ints vs floats, but Float is safe. Let's use Float or Integer. The score is 1-100, let's use Float for future proofing or integer. I'll use Float.
+    risk_priority: Mapped[str | None] = mapped_column(String(50))
+    risk_components: Mapped[dict | None] = mapped_column(JSON)
+    risk_version: Mapped[str | None] = mapped_column(String(50))
     activity: Mapped[str | None] = mapped_column(String(255), index=True)
     hazard: Mapped[str | None] = mapped_column(String(255), index=True)
     barrier: Mapped[str | None] = mapped_column(String(255), index=True)

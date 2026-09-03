@@ -10,7 +10,7 @@ from app.models.report import Report
 from app.models.report_analysis import ReportAnalysis
 from app.services.precursor_engine.pattern_builder import build_pattern_key
 from app.services.precursor_engine.trend_analyzer import determine_trend
-from app.services.risk_engine.scoring import risk_level, risk_score
+from app.services.risk_engine.scoring import aggregate_risk_level, aggregate_risk_score
 
 
 @dataclass(frozen=True)
@@ -101,7 +101,7 @@ async def aggregate_patterns(db: AsyncSession, date_from: datetime | None = None
             last_seen = last_seen.replace(tzinfo=UTC)
             
         age_days = (now - last_seen).total_seconds() / 86400 if last_seen else 365.0
-        score = risk_score(
+        score = aggregate_risk_score(
             sif_density=density, 
             occurrence_count=occurrence, 
             barrier_failure_rate=1.0, 
@@ -127,7 +127,7 @@ async def aggregate_patterns(db: AsyncSession, date_from: datetime | None = None
             last_seen=row["last_seen"],
             trend=trend,
             risk_score=score,
-            priority=risk_level(score)
+            priority=aggregate_risk_level(score)
         ))
         
     return result

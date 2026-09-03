@@ -9,7 +9,7 @@ from app.models.report_analysis import ReportAnalysis
 from app.models.site import Site
 from app.schemas.risk import BarrierRiskItem, RiskItem, SiteRiskItem
 from app.services.precursor_engine.pattern_aggregator import latest_analysis_subquery
-from app.services.risk_engine.scoring import risk_level, risk_score
+from app.services.risk_engine.scoring import aggregate_risk_level, aggregate_risk_score
 
 
 class RiskService:
@@ -31,8 +31,8 @@ class RiskService:
         for row in (await self.db.execute(statement)).mappings():
             total, sif, failed = int(row["total"]), int(row["sif"]), int(row["failed"])
             density = sif / total if total else 0.0
-            score = risk_score(sif_density=density, occurrence_count=total, barrier_failure_rate=failed / total if total else 0.0, age_days=0 if row["recent"] else 90, trend="STABLE", site_count=1)
-            items.append(SiteRiskItem(name=row["name"], site_id=row["id"], report_count=total, sif_count=sif, sif_density=round(density, 3), barrier_failure_count=failed, risk_score=score, risk_level=risk_level(score), explanation=f"Risk signal based on {sif} SIF-associated reports out of {total}, with {failed} reported barrier failures.", total_reports=total, sif_reports=sif, sif_rate=round(density, 3), high_risk_reports=int(row["high"]), active_precursor_patterns=int(row["patterns"]), recent_reports=int(row["recent"])))
+            score = aggregate_risk_score(sif_density=density, occurrence_count=total, barrier_failure_rate=failed / total if total else 0.0, age_days=0 if row["recent"] else 90, trend="STABLE", site_count=1)
+            items.append(SiteRiskItem(name=row["name"], site_id=row["id"], report_count=total, sif_count=sif, sif_density=round(density, 3), barrier_failure_count=failed, risk_score=score, risk_level=aggregate_risk_level(score), explanation=f"Risk signal based on {sif} SIF-associated reports out of {total}, with {failed} reported barrier failures.", total_reports=total, sif_reports=sif, sif_rate=round(density, 3), high_risk_reports=int(row["high"]), active_precursor_patterns=int(row["patterns"]), recent_reports=int(row["recent"])))
         return sorted(items, key=lambda item: item.risk_score, reverse=True)[:limit]
 
     async def dimensions(self, field: str, date_from: datetime | None, date_to: datetime | None, limit: int) -> list[RiskItem]:
@@ -48,8 +48,8 @@ class RiskService:
             if last_seen and last_seen.tzinfo is None:
                 last_seen = last_seen.replace(tzinfo=UTC)
             age = (now - last_seen).days if last_seen else 365
-            score = risk_score(sif_density=density, occurrence_count=total, barrier_failure_rate=failed / total if total else 0.0, age_days=age, trend="STABLE", site_count=1)
-            items.append(RiskItem(name=row["name"], report_count=total, sif_count=sif, sif_density=round(density, 3), barrier_failure_count=failed, risk_score=score, risk_level=risk_level(score), explanation=f"Risk signal based on {sif} SIF-associated reports out of {total}, including {failed} barrier failures."))
+            score = aggregate_risk_score(sif_density=density, occurrence_count=total, barrier_failure_rate=failed / total if total else 0.0, age_days=age, trend="STABLE", site_count=1)
+            items.append(RiskItem(name=row["name"], report_count=total, sif_count=sif, sif_density=round(density, 3), barrier_failure_count=failed, risk_score=score, risk_level=aggregate_risk_level(score), explanation=f"Risk signal based on {sif} SIF-associated reports out of {total}, including {failed} barrier failures."))
         return sorted(items, key=lambda item: item.risk_score, reverse=True)[:limit]
 
     async def barriers(self, date_from: datetime | None, date_to: datetime | None, limit: int) -> list[BarrierRiskItem]:
@@ -63,8 +63,8 @@ class RiskService:
             seen = row["last_seen"]
             if seen and seen.tzinfo is None:
                 seen = seen.replace(tzinfo=UTC)
-            score = risk_score(sif_density=sif / total if total else 0.0, occurrence_count=total, barrier_failure_rate=rate, age_days=(now - seen).days if seen else 365, trend="STABLE", site_count=1)
-            items.append(BarrierRiskItem(barrier=row["barrier"], total_occurrences=total, failed_count=failed, failure_rate=round(rate, 3), associated_sif_count=sif, risk_score=score, risk_level=risk_level(score), explanation=f"Control weakness signal: {failed} failures across {total} occurrences, with {sif} SIF-associated reports."))
+            score = aggregate_risk_score(sif_density=sif / total if total else 0.0, occurrence_count=total, barrier_failure_rate=rate, age_days=(now - seen).days if seen else 365, trend="STABLE", site_count=1)
+            items.append(BarrierRiskItem(barrier=row["barrier"], total_occurrences=total, failed_count=failed, failure_rate=round(rate, 3), associated_sif_count=sif, risk_score=score, risk_level=aggregate_risk_level(score), explanation=f"Control weakness signal: {failed} failures across {total} occurrences, with {sif} SIF-associated reports."))
         return sorted(items, key=lambda item: item.risk_score, reverse=True)[:limit]
 
     @staticmethod

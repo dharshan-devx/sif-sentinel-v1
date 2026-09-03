@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 
 from app.services.precursor_engine.pattern_builder import build_pattern_key
 from app.services.precursor_engine.trend_analyzer import Trend, determine_trend
-from app.services.risk_engine.scoring import risk_level, risk_score
+from app.services.risk_engine.scoring import aggregate_risk_level, aggregate_risk_score
 
 
 def _create_and_analyze(client, headers, code: str, text: str) -> str:
@@ -24,8 +24,8 @@ def test_pattern_normalization_trends_and_risk_levels():
     assert determine_trend(3, 3, 6) == Trend.STABLE
     assert determine_trend(1, 0, 5) == Trend.NEW
     assert determine_trend(1, 0, 1) == Trend.INSUFFICIENT_DATA
-    assert risk_score(sif_density=0, occurrence_count=0, barrier_failure_rate=0, age_days=365, trend="STABLE", site_count=0) >= 0
-    assert risk_level(0.95) == "CRITICAL"
+    assert aggregate_risk_score(sif_density=0, occurrence_count=0, barrier_failure_rate=0, age_days=365, trend="STABLE", site_count=0) >= 0
+    assert aggregate_risk_level(0.95) == "CRITICAL"
 
 
 def test_precursor_rebuild_graph_risk_and_dashboard_apis(client, admin_headers):

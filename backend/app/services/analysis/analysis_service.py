@@ -13,6 +13,7 @@ from app.models.review import Review
 from app.schemas.analysis import AnalysisResponse
 from app.services.audit_service import record_audit
 from app.services.nlp.analysis_pipeline import analyze_text
+from app.services.risk_engine.calculator import calculate_risk
 from app.services.precursor_engine.precursor_service import PrecursorService
 from app.services.report_service import ReportService
 
@@ -37,16 +38,54 @@ class AnalysisService:
         report = await ReportService(self.db).get(human_id)
 
         try:
+            # We first extract text to get candidates, ignoring precursor priority for now
             result = analyze_text(report.report_text)
         except RuntimeError as exc:
             raise AppError("MODEL_UNAVAILABLE", "Safety classifier is unavailable", 503) from exc
+
+        # Check if the extracted candidates match any active precursor patterns
+        precursor_priority = None
+        if result.precursor_candidates:
+            from app.services.precursor_engine.pattern_builder import build_pattern_key
+            from sqlalchemy import select
+            keys = [
+                build_pattern_key(c.activity, c.hazard, c.barrier, c.failure_type).key 
+                for c in result.precursor_candidates
+            ]
+            statement = select(PrecursorPattern.priority).where(
+                PrecursorPattern.pattern_key.in_(keys),
+                PrecursorPattern.priority.in_(["CRITICAL", "HIGH", "MEDIUM"]) # Only care about elevated risk
+            )
+            rows = (await self.db.execute(statement)).scalars().all()
+            if rows:
+                if "CRITICAL" in rows:
+                    precursor_priority = "CRITICAL"
+                elif "HIGH" in rows:
+                    precursor_priority = "HIGH"
+                else:
+                    precursor_priority = "MEDIUM"
+        
+        # Recalculate risk with precursor intelligence
+        import dataclasses
+        risk_data = calculate_risk(
+            sif_level=result.sif_level,
+            sif_potential=result.sif_potential,
+            barrier_status=result.barrier_status,
+            has_lsr=bool(result.life_saving_rule),
+            precursor_priority=precursor_priority
+        )
+        result = dataclasses.replace(result, risk=risk_data)
 
         try:
             analysis = ReportAnalysis(
                 report_id=report.id,
                 sif_potential=result.sif_potential,
                 sif_level=result.sif_level,
-                sif_probability=result.sif_probability,
+                model_probability=result.sif_probability,
+                risk_score=result.risk["score"],
+                risk_priority=result.risk["priority"],
+                risk_components=result.risk["components"],
+                risk_version=result.risk["version"],
                 activity=result.activity,
                 hazard=result.hazard,
                 barrier=result.barrier,
@@ -138,7 +177,7 @@ class AnalysisService:
             analysis_id=analysis_id,
             sif_potential=result.sif_potential,
             sif_level=result.sif_level,
-            sif_probability=result.sif_probability,
+            model_probability=result.sif_probability,
             activity=result.activity,
             hazard=result.hazard,
             barrier=result.barrier,
@@ -153,4 +192,5 @@ class AnalysisService:
             review_required=result.review_required,
             model_version=result.model_version,
             explanation=result.explanation,
+            risk=result.risk,
         )

@@ -7,6 +7,19 @@ from app.core.validators import validate_report_text
 from app.schemas.common import ORMModel
 
 
+class RiskComponent(BaseModel):
+    name: str
+    score: int
+    reason: str
+
+
+class RiskDetail(BaseModel):
+    score: int
+    priority: str
+    components: list[RiskComponent]
+    version: str
+
+
 class AnalysisRead(ORMModel):
     sif_potential: bool | None
     sif_level: SIFLevel | None
@@ -29,7 +42,7 @@ class AnalysisResponse(BaseModel):
     analysis_id: UUID | None = None
     sif_potential: bool
     sif_level: SIFLevel
-    sif_probability: float
+    model_probability: float
     activity: str | None
     hazard: str | None
     barrier: str | None
@@ -44,3 +57,4 @@ class AnalysisResponse(BaseModel):
     review_required: bool
     model_version: str
     explanation: str
+    risk: RiskDetail | None = None

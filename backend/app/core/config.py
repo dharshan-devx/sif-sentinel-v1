@@ -19,17 +19,31 @@ class Settings(BaseSettings):
     rule_weight: float = 0.20
     evidence_weight: float = 0.10
     precursor_recency_lambda: float = 0.03
-    risk_density_weight: float = 0.30
-    risk_frequency_weight: float = 0.20
-    risk_failure_weight: float = 0.20
-    risk_recency_weight: float = 0.15
-    risk_trend_weight: float = 0.10
-    risk_spread_weight: float = 0.05
+    # Precursor / Aggregate Risk (Phase H)
+    aggregate_density_weight: float = 0.30
+    aggregate_frequency_weight: float = 0.20
+    aggregate_failure_weight: float = 0.20
+    aggregate_recency_weight: float = 0.15
+    aggregate_trend_weight: float = 0.10
+    aggregate_spread_weight: float = 0.05
+    
+    # Precursor Logic
     precursor_min_occurrences: int = 3
     precursor_lookback_days: int = 90
-    risk_critical_threshold: float = 0.75
-    risk_high_threshold: float = 0.55
-    risk_medium_threshold: float = 0.30
+    
+    # Phase I Safety Risk Engine (1-100 Scale)
+    risk_engine_version: str = "v1"
+    risk_score_min: int = 1
+    risk_score_max: int = 100
+    risk_critical_threshold: int = 81
+    risk_high_threshold: int = 56
+    risk_medium_threshold: int = 31
+    
+    # Phase I Risk Engine Weights
+    risk_weight_consequence: int = 30
+    risk_weight_control: int = 30
+    risk_weight_lsr: int = 15
+    risk_weight_precursor: int = 25
     demo_mode: bool = False
     # Report text validation — minimum is 10 chars to allow short but meaningful
     # safety observations (e.g. "Slip near valve"). Maximum is 20 000 chars to

@@ -10,6 +10,7 @@ from app.services.nlp.evidence_model import EvidenceType, StructuredEvidence
 from app.services.nlp.precursor_rules import PrecursorCandidateItem, generate_precursor_candidates
 from app.services.nlp.preprocessing import preprocess_text
 from app.services.nlp.sif_classifier import classify_sif
+from app.services.risk_engine.calculator import calculate_risk
 
 
 @dataclass(frozen=True)
@@ -33,9 +34,10 @@ class PipelineResult:
     model_version: str
     explanation: str
     precursor_candidates: list[PrecursorCandidateItem]
+    risk: dict | None
 
 
-def analyze_text(text: str) -> PipelineResult:
+def analyze_text(text: str, precursor_priority: str | None = None) -> PipelineResult:
     document = preprocess_text(text)
     prediction = classify_sif(document.normalized_text)
     
@@ -65,6 +67,14 @@ def analyze_text(text: str) -> PipelineResult:
     
     precursor_candidates = generate_precursor_candidates(structured_evidence)
     
+    risk_data = calculate_risk(
+        sif_level=level,
+        sif_potential=prediction.sif_potential,
+        barrier_status=entities.barrier_status,
+        has_lsr=bool(rule.rule),
+        precursor_priority=precursor_priority
+    )
+    
     return PipelineResult(
         prediction.sif_potential, level, prediction.probability, 
         entities.activity, entities.hazard, entities.barrier, 
@@ -74,7 +84,8 @@ def analyze_text(text: str) -> PipelineResult:
         confidence, review_required, prediction.model_name, 
         prediction.model_version, 
         _explain(prediction.sif_level, structured_evidence, rule.rule, evidence.evidence_span, prediction.predictive_terms, review_required, has_unknown_barrier),
-        precursor_candidates
+        precursor_candidates,
+        risk_data
     )
 
 
