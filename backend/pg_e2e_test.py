@@ -1,5 +1,6 @@
-import requests
 import uuid
+
+import requests
 
 BASE_URL = "http://localhost:8000"
 email = "admin@sif.demo"

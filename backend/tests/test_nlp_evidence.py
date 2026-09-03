@@ -1,5 +1,3 @@
-import pytest
-from app.core.constants import SIFLevel
 from app.services.nlp.analysis_pipeline import analyze_text
 
 

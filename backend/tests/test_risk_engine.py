@@ -1,10 +1,7 @@
-from datetime import UTC, datetime
-from uuid import uuid4
 
-import pytest
 
 from app.core.config import get_settings
-from app.core.constants import BarrierStatus, SIFLevel
+from app.core.constants import SIFLevel
 from app.services.risk_engine.calculator import calculate_risk
 
 

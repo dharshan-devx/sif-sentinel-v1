@@ -24,13 +24,13 @@ else:
 os.environ["JWT_SECRET_KEY"] = "test-only-secret-key-that-is-long-enough"
 os.environ["CORS_ORIGINS"] = "http://localhost:3000"
 
+import pytest_asyncio
+
 import app.models  # noqa: E402,F401
 from app.db.base import Base  # noqa: E402
 from app.db.session import SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
 
-
-import pytest_asyncio
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def database():

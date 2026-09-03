@@ -5,6 +5,7 @@ from app.core.constants import BarrierStatus
 from app.services.nlp.evidence_model import EvidenceItem, EvidenceType, StructuredEvidence
 from app.services.nlp.preprocessing import PreprocessedText
 
+
 # Backward compatibility for typing in analysis_pipeline until fully migrated
 @dataclass(frozen=True)
 class ExtractedEntities:

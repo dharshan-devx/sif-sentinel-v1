@@ -23,11 +23,10 @@ interactions use Fake/Mock providers.
 
 from __future__ import annotations
 
-import asyncio
 import inspect
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock
 from uuid import uuid4
 
 import pytest
@@ -35,21 +34,20 @@ import pytest_asyncio
 from sqlalchemy import select
 
 from app.core.config import get_settings
+from app.db.base import Base
+from app.db.session import SessionLocal, engine
 from app.models.precursor_candidate import PrecursorCandidate
 from app.models.precursor_pattern import PrecursorPattern
+from app.models.report import Report
+from app.models.site import Site
+from app.models.user import User
 from app.schemas.analysis import AnalysisResponse
-from app.services.nlp.analysis_pipeline import analyze_text
-from app.services.precursor_engine.pattern_builder import build_pattern_key
-from app.services.risk_engine.calculator import calculate_risk
 from app.services.llm.assistance_service import LLMAssistanceService
 from app.services.llm.manager import LLMManager
 from app.services.llm.result import LLMResult
-from app.db.base import Base
-from app.db.session import SessionLocal, engine
-from app.models.report import Report
-from app.models.user import User
-from app.models.site import Site
-
+from app.services.nlp.analysis_pipeline import analyze_text
+from app.services.precursor_engine.pattern_builder import build_pattern_key
+from app.services.risk_engine.calculator import calculate_risk
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Shared fixtures
@@ -118,7 +116,7 @@ class TimeoutProvider:
     """Simulates a provider that always times out."""
 
     async def generate_reviewer_summary(self, context: dict) -> LLMResult:
-        raise asyncio.TimeoutError("simulated timeout")
+        raise TimeoutError("simulated timeout")
 
     async def check_health(self) -> bool:
         return False
@@ -267,7 +265,6 @@ def test_A2_manager_selects_gemini_provider(enabled_settings):
 
 def test_A3_gemini_sdk_import_isolated():
     """google.genai must NOT be imported anywhere except gemini_provider.py."""
-    import importlib
     import sys
 
     # After importing analysis_service, routes, etc. — verify google.genai is only

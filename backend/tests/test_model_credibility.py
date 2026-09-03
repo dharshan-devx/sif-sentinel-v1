@@ -1,10 +1,11 @@
 import hashlib
 import json
+from pathlib import Path
 
 import sklearn
 
 from app.ml.inference.predictor import ARTIFACT_DIR, SIFPredictor
-from pathlib import Path
+
 DATASET = Path(__file__).parents[2] / "data" / "processed" / "safety_reports_v1.csv"
 from app.services.nlp.confidence import overall_confidence
 

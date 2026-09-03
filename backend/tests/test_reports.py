@@ -1,7 +1,7 @@
+import uuid
 from datetime import UTC, datetime
 
 
-import uuid
 def create_site(client, headers, code=None):
     code = code or f"TST-{str(uuid.uuid4())[:6]}"
     response = client.post("/api/v1/sites", headers=headers, json={"name": "Test Site", "code": code, "location": "Assam", "region": "North East"})

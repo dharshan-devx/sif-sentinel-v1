@@ -1,7 +1,7 @@
 ﻿from datetime import UTC, datetime
+
 from app.services.precursor_engine.pattern_builder import build_pattern_key
-from app.services.precursor_engine.trend_analyzer import Trend, determine_trend
-from app.services.risk_engine.scoring import aggregate_risk_level, aggregate_risk_score
+
 
 def _create_and_analyze(client, headers, code: str, text: str) -> str:
     site = client.post("/api/v1/sites", headers=headers, json={"name": code, "code": code, "location": "Assam", "region": "North East"})

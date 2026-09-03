@@ -1,5 +1,7 @@
-from typing import Protocol, Any
+from typing import Any, Protocol
+
 from app.services.llm.result import LLMResult
+
 
 class LLMProvider(Protocol):
     async def generate_reviewer_summary(self, context: dict[str, Any]) -> LLMResult:

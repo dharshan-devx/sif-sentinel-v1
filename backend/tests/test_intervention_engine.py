@@ -6,7 +6,11 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from app.core.constants import InterventionActionType, InterventionCategory, InterventionReviewStatus
+from app.core.constants import (
+    InterventionActionType,
+    InterventionCategory,
+    InterventionReviewStatus,
+)
 from app.core.exceptions import AppError
 from app.db.session import SessionLocal
 from app.models.precursor_pattern import PrecursorPattern

@@ -2,7 +2,6 @@ from typing import Any
 
 from app.core.config import get_settings
 from app.core.constants import BarrierStatus, SIFLevel
-from app.services.nlp.evidence_model import StructuredEvidence
 
 
 def calculate_risk(

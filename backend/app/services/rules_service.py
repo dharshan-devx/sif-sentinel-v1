@@ -3,7 +3,6 @@
 Responsibility: LSR database access and analytics aggregation.
 Routes delegate all DB operations to this service.
 """
-from uuid import UUID
 
 from sqlalchemy import case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession

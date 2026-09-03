@@ -21,11 +21,11 @@ Maximum 1 retry.  Only transient HTTP errors (429, 503) are retried.
 Auth failures, malformed requests, and invalid configurations are NOT retried.
 """
 
+import asyncio
 import json
 import time
 from typing import Any
 
-import asyncio
 import structlog
 from pydantic import BaseModel, Field, ValidationError
 
@@ -149,7 +149,7 @@ class GeminiProvider:
                 # Validate and parse the structured response
                 return self._parse_response(response, latency_ms)
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 latency_ms = int((time.time() - start_time) * 1000)
                 logger.warning(
                     "Gemini request timed out",

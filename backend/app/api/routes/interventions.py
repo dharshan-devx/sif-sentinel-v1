@@ -5,7 +5,11 @@ from fastapi import APIRouter, Depends, Request
 from app.api.deps import DBSession, require_roles
 from app.core.constants import UserRole
 from app.models.user import User
-from app.schemas.intervention import InterventionRead, InterventionReviewRequest, InterventionSummary
+from app.schemas.intervention import (
+    InterventionRead,
+    InterventionReviewRequest,
+    InterventionSummary,
+)
 from app.services.intervention_service import InterventionService
 
 router = APIRouter(prefix="/interventions", tags=["Intervention intelligence"])

@@ -1,7 +1,8 @@
-from app.core.config import get_settings
-from app.services.llm.provider_interface import LLMProvider
-from app.services.llm.gemini_provider import GeminiProvider
 import structlog
+
+from app.core.config import get_settings
+from app.services.llm.gemini_provider import GeminiProvider
+from app.services.llm.provider_interface import LLMProvider
 
 logger = structlog.get_logger(__name__)
 

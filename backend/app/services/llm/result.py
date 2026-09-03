@@ -18,13 +18,13 @@ LLM unavailability must NOT be misrepresented as a successful provider call.
   success=True,  summary="..."                → usable reviewer summary
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from pydantic import BaseModel, Field
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class LLMResult(BaseModel):

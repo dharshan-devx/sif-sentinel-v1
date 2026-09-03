@@ -21,12 +21,10 @@ from uuid import UUID
 
 import pytest
 
-from app.core.constants import ReportStatus, ReviewDecision, UserRole
+from app.core.constants import UserRole
 from app.db.session import SessionLocal
-from app.models.report import Report
 from app.models.report_analysis import ReportAnalysis
 from app.models.review import Review
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -102,6 +100,7 @@ def reviewer_headers(client):
 
     async def promote():
         from sqlalchemy import select
+
         from app.models.user import User
         async with SessionLocal() as db:
             user = await db.scalar(select(User).where(User.email == email))
@@ -508,6 +507,7 @@ class TestAuditLog:
 
     def test_audit_log_created_for_approve(self, client, admin_headers, reviewer_headers):
         from sqlalchemy import select
+
         from app.models.audit_log import AuditLog
 
         review_id = _make_pending_review(client, admin_headers, reviewer_headers)
@@ -534,6 +534,7 @@ class TestAuditLog:
 
     def test_audit_log_created_for_reject(self, client, admin_headers, reviewer_headers):
         from sqlalchemy import select
+
         from app.models.audit_log import AuditLog
 
         review_id = _make_pending_review(client, admin_headers, reviewer_headers)
@@ -556,6 +557,7 @@ class TestAuditLog:
 
     def test_audit_log_for_modify_includes_correction_keys(self, client, admin_headers, reviewer_headers):
         from sqlalchemy import select
+
         from app.models.audit_log import AuditLog
 
         review_id = _make_pending_review(client, admin_headers, reviewer_headers)

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from app.knowledge.taxonomy import life_saving_rules
-from app.services.nlp.evidence_model import EvidenceItem, EvidenceType, StructuredEvidence
+from app.services.nlp.evidence_model import EvidenceType, StructuredEvidence
 
 
 @dataclass(frozen=True)
