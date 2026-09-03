@@ -38,7 +38,7 @@ class SIFPredictor:
             vectorizer_path = ARTIFACT_DIR / "vectorizer" / "tfidf.joblib"
             metadata_path = ARTIFACT_DIR / "metadata.json"
             if not all(path.exists() for path in (model_path, vectorizer_path, metadata_path)):
-                raise RuntimeError("SIF model artifacts are unavailable; run python -m app.ml.training.train_sif_model")
+                raise RuntimeError("SIF model artifacts are unavailable; run python ml/training/train_sif_model.py from the repository root")
             self._model = joblib.load(model_path)
             self._vectorizer = joblib.load(vectorizer_path)
             self._metadata = json.loads(metadata_path.read_text(encoding="utf-8"))

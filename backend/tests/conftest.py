@@ -15,8 +15,9 @@ if sys.platform == "win32":
 # asyncpg "Future attached to a different loop" errors in pytest-asyncio.
 os.environ["TESTING"] = "1"
 
-if "TEST_DATABASE_URL" in os.environ:
-    os.environ["DATABASE_URL"] = os.environ["TEST_DATABASE_URL"]
+test_db_url = os.environ.get("TEST_DATABASE_URL", "").strip()
+if test_db_url:
+    os.environ["DATABASE_URL"] = test_db_url
 else:
     os.environ["DATABASE_URL"] = f"sqlite+aiosqlite:///{TEST_DB.as_posix()}"
 
