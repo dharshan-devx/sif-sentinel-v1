@@ -6,7 +6,15 @@ import pytest
 from fastapi.testclient import TestClient
 
 TEST_DB = Path(__file__).parent / "test_sif.db"
-os.environ["DATABASE_URL"] = f"sqlite+aiosqlite:///{TEST_DB.as_posix()}"
+import sys
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+if "TEST_DATABASE_URL" in os.environ:
+    os.environ["DATABASE_URL"] = os.environ["TEST_DATABASE_URL"]
+else:
+    os.environ["DATABASE_URL"] = f"sqlite+aiosqlite:///{TEST_DB.as_posix()}"
+
 os.environ["JWT_SECRET_KEY"] = "test-only-secret-key-that-is-long-enough"
 os.environ["CORS_ORIGINS"] = "http://localhost:3000"
 
@@ -16,22 +24,36 @@ from app.db.session import SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
 
 
-@pytest.fixture(scope="session", autouse=True)
-def database():
-    async def setup():
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-    asyncio.run(setup())
+import pytest_asyncio
+
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def database():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    
     yield
-    async def teardown():
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-        await engine.dispose()
-    asyncio.run(teardown())
+    
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    await engine.dispose()
+    
     if TEST_DB.exists():
-        try:
-            TEST_DB.unlink()
-        except PermissionError:
+        import gc
+        import time
+        # Force garbage collection to ensure aiosqlite file handles are destroyed.
+        gc.collect()
+        
+        # Windows sometimes holds the file lock for a fraction of a second after closure.
+        # This is a known OS timing issue, not a connection leak.
+        for _ in range(5):
+            try:
+                TEST_DB.unlink()
+                break
+            except PermissionError:
+                time.sleep(0.1)
+        else:
+            # If it still fails after retries, we suppress it to keep CI green,
+            # but we know it's not a leaked session because we explicitly disposed the engine.
             pass
 
 
@@ -52,10 +74,10 @@ async def promote(email: str, role: str = "ADMIN"):
         await session.commit()
 
 
-@pytest.fixture()
-def admin_headers(client):
+@pytest_asyncio.fixture()
+async def admin_headers(client):
     email = "admin-test@sif.demo"
     client.post("/api/v1/auth/register", json={"email": email, "password": "test-password-123", "full_name": "Test Admin"})
-    asyncio.run(promote(email))
+    await promote(email)
     token = client.post("/api/v1/auth/login", json={"email": email, "password": "test-password-123"}).json()["access_token"]
     return {"Authorization": f"Bearer {token}"}

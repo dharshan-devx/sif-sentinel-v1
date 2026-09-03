@@ -8,8 +8,8 @@ from app.core.config import get_settings
 from app.db.base import Base
 
 config = context.config
-sync_url = get_settings().database_url.replace("+aiosqlite", "").replace("+psycopg", "")
-config.set_main_option("sqlalchemy.url", sync_url)
+sync_url = get_settings().database_url.replace("+aiosqlite", "").replace("+psycopg", "").replace("+asyncpg", "")
+config.set_main_option("sqlalchemy.url", sync_url.replace('%', '%%'))
 if config.config_file_name:
     fileConfig(config.config_file_name)
 target_metadata = Base.metadata

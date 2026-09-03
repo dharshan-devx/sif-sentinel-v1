@@ -1,6 +1,6 @@
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import case, func, select
+from sqlalchemy import Date, case, cast, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.constants import ReportStatus, SIFLevel
@@ -32,7 +32,8 @@ class AnalyticsService:
         days = {"7d": 7, "30d": 30, "90d": 90, "1y": 365}[window]
         start = datetime.now(UTC) - timedelta(days=days)
         latest = latest_analysis_subquery()
-        day = func.date(Report.reported_at).label("day")
+        dialect = self.db.bind.dialect.name
+        day = func.date(Report.reported_at).label("day") if dialect == "sqlite" else cast(Report.reported_at, Date).label("day")
         statement = select(day, func.count(Report.id).label("total"), func.coalesce(func.sum(case((ReportAnalysis.sif_potential.is_(True), 1), else_=0)), 0).label("sif"), func.coalesce(func.sum(case((ReportAnalysis.sif_level == SIFLevel.HIGH, 1), else_=0)), 0).label("high")).select_from(Report).outerjoin(latest, latest.c.report_id == Report.id).outerjoin(ReportAnalysis, (ReportAnalysis.report_id == latest.c.report_id) & (ReportAnalysis.created_at == latest.c.latest_created)).where(Report.reported_at >= start).group_by(day).order_by(day)
         return [TimeSeriesPoint(date=str(row.day), total_reports=int(row.total), sif_reports=int(row.sif), high_sif_reports=int(row.high), sif_rate=round(int(row.sif) / int(row.total), 3) if row.total else 0.0) for row in (await self.db.execute(statement)).all()]
 
@@ -52,6 +53,7 @@ class AnalyticsService:
     async def barrier_failures(self, window: str) -> list[BarrierFailurePoint]:
         days = {"7d": 7, "30d": 30, "90d": 90, "1y": 365}[window]
         latest = latest_analysis_subquery()
-        day = func.date(Report.reported_at).label("day")
+        dialect = self.db.bind.dialect.name
+        day = func.date(Report.reported_at).label("day") if dialect == "sqlite" else cast(Report.reported_at, Date).label("day")
         statement = select(day, func.count(Report.id).label("failed")).select_from(Report).join(ReportAnalysis, ReportAnalysis.report_id == Report.id).join(latest, (latest.c.report_id == ReportAnalysis.report_id) & (latest.c.latest_created == ReportAnalysis.created_at)).where(Report.reported_at >= datetime.now(UTC) - timedelta(days=days), ReportAnalysis.barrier_failure.is_not(None)).group_by(day).order_by(day)
         return [BarrierFailurePoint(date=str(row.day), failed_count=int(row.failed)) for row in (await self.db.execute(statement)).all()]
