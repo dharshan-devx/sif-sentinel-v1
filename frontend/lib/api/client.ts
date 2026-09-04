@@ -47,7 +47,7 @@ export class ApiClient {
   private readonly fetchImpl: typeof fetch;
 
   constructor(options: ApiClientOptions = {}) {
-    this.baseUrl = normaliseBaseUrl(options.baseUrl ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? DEFAULT_BASE_URL);
+    this.baseUrl = normaliseBaseUrl(options.baseUrl ?? DEFAULT_BASE_URL);
     this.getToken = options.getToken ?? tokenStore.get;
     this.timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     this.fetchImpl = options.fetchImpl ?? fetch;
