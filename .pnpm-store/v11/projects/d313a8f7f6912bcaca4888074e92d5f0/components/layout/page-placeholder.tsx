@@ -1,3 +1,0 @@
-import { Card, CardTitle } from "@/components/ui/card";
-import { StatusIndicator } from "@/components/ui/status-indicator";
-export function PagePlaceholder({ title, description }: { title: string; description: string }) { return <div className="space-y-6"><div><p className="text-sm font-bold uppercase tracking-wider text-sky-800">SIF Sentinel</p><h1 className="mt-1 text-3xl font-bold tracking-tight">{title}</h1><p className="mt-2 max-w-2xl text-slate-600">{description}</p></div><Card><CardTitle>Foundation route ready</CardTitle><div className="mt-3"><StatusIndicator tone="neutral" label="Business functionality is scheduled for a later frontend phase." /></div></Card></div>; }
