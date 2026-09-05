@@ -14,12 +14,8 @@
   "validation_records": 1500,
   "test_records": 1500,
   "preprocessing_version": "phase2_canonical_normalization",
-  "scikit_learn_version": "1.9.0",
+  "scikit_learn_version": "1.8.0",
   "vectorizer_configuration": {
-    "ngram_range": [
-      1,
-      2
-    ],
     "min_df": 2,
     "max_df": 0.95,
     "sublinear_tf": true,

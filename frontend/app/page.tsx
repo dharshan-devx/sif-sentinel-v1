@@ -1,15 +1,84 @@
-import { ArrowRight, CheckCircle2, ShieldCheck, UsersRound } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Header, PageContainer, SectionContainer } from "@/components/layout";
+import { ShieldCheck, Activity, BrainCircuit } from "lucide-react";
+import { Header } from "@/components/layout";
+import * as motion from "framer-motion/client";
 
-const principles = [
-  { icon: ShieldCheck, title: "Structured safety signals", text: "A clear home for consistent incident and near-miss information." },
-  { icon: CheckCircle2, title: "Deterministic by design", text: "Evidence-led analysis is kept distinct from optional reviewer assistance." },
-  { icon: UsersRound, title: "Human decision authority", text: "Review remains visible, accountable, and central to every safety decision." },
-];
+export default function LandingPage() {
+  return (
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <main className="flex-1">
+        <section className="relative overflow-hidden py-24 sm:py-32 lg:pb-40">
+          <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+            <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#0f766e] to-[#0f5a5a] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
+          </div>
 
-export default function Home() {
-  return <div className="min-h-screen bg-background"><Header /><main><SectionContainer className="overflow-hidden"><PageContainer><div className="grid items-center gap-10 lg:grid-cols-[1.15fr_.85fr] lg:gap-16"><div><Badge variant="secondary">Safety intelligence foundation</Badge><h1 className="mt-6 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-6xl">Make safety signals easier to see, understand, and review.</h1><p className="mt-6 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">SIF Sentinel brings disciplined structure to operational safety information—supporting meaningful review without replacing professional judgment.</p><div className="mt-8 flex items-center gap-2 text-sm font-medium text-primary"><span>Foundation release</span><ArrowRight className="size-4" aria-hidden="true" /></div></div><Card className="border-primary/15 bg-card"><CardHeader><div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-lg bg-primary text-primary-foreground"><ShieldCheck className="size-5" aria-hidden="true" /></span><div><CardTitle>Designed for careful work</CardTitle><CardDescription>Purposeful tools, ready to grow.</CardDescription></div></div></CardHeader><CardContent><div className="space-y-4 text-sm leading-6 text-muted-foreground"><p>The workspace foundation is ready for authenticated, role-aware safety operations in the next phase.</p><Separator /><p>Until then, no operational status, incident data, or risk scoring is represented here.</p></div></CardContent></Card></div></PageContainer></SectionContainer><SectionContainer className="border-t border-border bg-muted/30"><PageContainer><div className="max-w-2xl"><p className="text-sm font-semibold text-primary">Our operating principles</p><h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Clarity before complexity.</h2></div><div className="mt-8 grid gap-4 md:grid-cols-3">{principles.map(({ icon: Icon, title, text }) => <Card key={title} className="h-full"><CardHeader><Icon className="size-5 text-primary" aria-hidden="true" /><CardTitle className="mt-4">{title}</CardTitle><CardDescription className="leading-6">{text}</CardDescription></CardHeader></Card>)}</div></PageContainer></SectionContainer></main><footer className="border-t border-border"><PageContainer className="flex min-h-16 items-center text-sm text-muted-foreground">SIF Sentinel · Safety intelligence with human oversight</PageContainer></footer></div>;
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              >
+                <div className="mb-8 inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary backdrop-blur-sm">
+                  <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
+                  Foundation Release
+                </div>
+                <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
+                  Make safety signals <span className="bg-gradient-to-r from-primary to-teal-400 bg-clip-text text-transparent">easier to see.</span>
+                </h1>
+                <p className="mt-6 text-lg leading-8 text-muted-foreground">
+                  SIF Sentinel brings disciplined structure to operational safety information—supporting meaningful review without replacing professional judgment.
+                </p>
+              </motion.div>
+            </div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none"
+            >
+              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+                <div className="flex flex-col glass-card rounded-2xl p-8 hover:-translate-y-1 transition-transform duration-300">
+                  <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-foreground">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                      <ShieldCheck className="h-6 w-6 text-primary" aria-hidden="true" />
+                    </div>
+                    Clarity before complexity
+                  </dt>
+                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
+                    <p className="flex-auto">A clear home for consistent incident and near-miss information.</p>
+                  </dd>
+                </div>
+                
+                <div className="flex flex-col glass-card rounded-2xl p-8 hover:-translate-y-1 transition-transform duration-300">
+                  <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-foreground">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                      <Activity className="h-6 w-6 text-primary" aria-hidden="true" />
+                    </div>
+                    Structured safety signals
+                  </dt>
+                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
+                    <p className="flex-auto">Deterministic analysis is kept distinct from optional reviewer assistance.</p>
+                  </dd>
+                </div>
+                
+                <div className="flex flex-col glass-card rounded-2xl p-8 hover:-translate-y-1 transition-transform duration-300">
+                  <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-foreground">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                      <BrainCircuit className="h-6 w-6 text-primary" aria-hidden="true" />
+                    </div>
+                    Deterministic by design
+                  </dt>
+                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
+                    <p className="flex-auto">The workspace foundation is ready for authenticated, role-aware safety operations.</p>
+                  </dd>
+                </div>
+              </dl>
+            </motion.div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
 }

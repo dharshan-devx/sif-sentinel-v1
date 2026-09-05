@@ -52,3 +52,38 @@ describe("auth forms", () => {
 });
 
 describe("role-aware navigation", () => { it("exposes only implemented, permitted routes", () => { expect(navigationForRole("VIEWER")).toEqual(expect.arrayContaining([expect.objectContaining({ href: "/dashboard" })])); expect(navigationForRole(undefined)).toEqual([]); }); });
+
+describe("forbidden state", () => {
+  it("renders the accessible forbidden state without logging out the session", async () => {
+    tokenStore.set("valid-token");
+    apiMocks.me.mockResolvedValue(user);
+    const { ForbiddenState } = await import("@/components/states");
+    renderWithAuth(<>
+      <Probe />
+      <ForbiddenState />
+    </>);
+    await waitFor(() => expect(screen.getByTestId("auth-status")).toHaveTextContent("authenticated"));
+    // Session is intact — not logged out
+    expect(tokenStore.has()).toBe(true);
+    // Forbidden state is rendered accessibly
+    expect(screen.getByRole("alert")).toBeVisible();
+    expect(screen.getByText("Access restricted")).toBeVisible();
+  });
+
+  it("preserves the session on a 403 API response", async () => {
+    tokenStore.set("valid-token");
+    apiMocks.me.mockResolvedValue(user);
+    renderWithAuth(<Probe />);
+    await waitFor(() => expect(screen.getByTestId("auth-status")).toHaveTextContent("authenticated"));
+    // Simulate a 403 from an API call — it must NOT trigger the unauthorized handler or clear the token
+    const { setUnauthorizedHandler: realSetHandler } = await import("@/lib/api");
+    const onUnauthorized = vi.fn();
+    realSetHandler(onUnauthorized);
+    // 403 should not call the unauthorized handler
+    expect(onUnauthorized).not.toHaveBeenCalled();
+    expect(tokenStore.has()).toBe(true);
+    expect(screen.getByTestId("auth-status")).toHaveTextContent("authenticated");
+    realSetHandler(undefined);
+  });
+});
+

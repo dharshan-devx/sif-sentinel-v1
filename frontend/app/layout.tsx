@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/providers";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: { default: "SIF Sentinel", template: "%s | SIF Sentinel" },
@@ -8,5 +11,11 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body><Providers>{children}</Providers></body></html>;
+  return (
+    <html lang="en" className={inter.variable}>
+      <body className="font-sans antialiased bg-background text-foreground selection:bg-primary/20">
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
 }

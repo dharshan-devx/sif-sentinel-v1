@@ -69,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setStatus("authenticated");
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- refreshSession is async; state updates happen in callbacks after the effect body completes, not synchronously within it.
   useEffect(() => { void refreshSession(); }, [refreshSession]);
   useEffect(() => {
     setUnauthorizedHandler(endSession);
