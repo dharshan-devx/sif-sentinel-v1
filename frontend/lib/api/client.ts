@@ -1,3 +1,4 @@
+import { tokenStore } from "@/lib/auth";
 import { getApiBaseUrl } from "@/lib/config";
 import type { ApiErrorPayload, HealthResponse } from "@/types/api";
 import { ApiError, normalizeApiError } from "./errors";
@@ -15,6 +16,15 @@ export interface RequestOptions {
   body?: unknown;
   headers?: HeadersInit;
   signal?: AbortSignal;
+  /** Used only by public auth calls, which must never send an old bearer token. */
+  skipAuth?: boolean;
+}
+
+type UnauthorizedHandler = () => void;
+let unauthorizedHandler: UnauthorizedHandler | undefined;
+
+export function setUnauthorizedHandler(handler?: UnauthorizedHandler): void {
+  unauthorizedHandler = handler;
 }
 
 function joinPath(baseUrl: string, path: string): string {
@@ -46,7 +56,7 @@ export class ApiClient {
     const timeout = globalThis.setTimeout(() => timeoutController.abort(), this.timeoutMs);
     const signal = options.signal ?? timeoutController.signal;
     const headers = new Headers({ Accept: "application/json", ...options.headers });
-    const token = this.getAccessToken?.();
+    const token = options.skipAuth ? null : (this.getAccessToken?.() ?? tokenStore.get());
     if (token) headers.set("Authorization", `Bearer ${token}`);
     if (options.body !== undefined) headers.set("Content-Type", "application/json");
 
@@ -64,7 +74,9 @@ export class ApiClient {
         : undefined;
 
       if (!response.ok) {
-        throw normalizeApiError(response.status, payload as ApiErrorPayload | undefined, requestId);
+        const normalizedError = normalizeApiError(response.status, payload as ApiErrorPayload | undefined, requestId);
+        if (response.status === 401 && token) unauthorizedHandler?.();
+        throw normalizedError;
       }
       return payload as T;
     } catch (error) {

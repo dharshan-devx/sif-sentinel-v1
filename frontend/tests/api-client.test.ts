@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { ApiClient, ApiError, normalizeApiError } from "@/lib/api";
+import { ApiClient, ApiError, normalizeApiError, setUnauthorizedHandler } from "@/lib/api";
 import { getApiBaseUrl } from "@/lib/config";
+import { tokenStore } from "@/lib/auth";
 
 function response(body: unknown, init: ResponseInit = {}) {
   return new Response(JSON.stringify(body), { status: 200, ...init, headers: { "content-type": "application/json", ...init.headers } });
@@ -37,5 +38,15 @@ describe("ApiClient", () => {
     const networkClient = new ApiClient({ baseUrl: "https://api.example.test", fetcher: vi.fn().mockRejectedValue(new TypeError("offline")) });
     await expect(networkClient.get("health")).rejects.toBeInstanceOf(ApiError);
     await expect(networkClient.get("health")).rejects.toMatchObject({ code: "NETWORK_ERROR" });
+  });
+
+  it("centrally notifies the session boundary of an authenticated 401", async () => {
+    const onUnauthorized = vi.fn();
+    tokenStore.set("expired-session");
+    setUnauthorizedHandler(onUnauthorized);
+    const client = new ApiClient({ baseUrl: "https://api.example.test", fetcher: vi.fn().mockResolvedValue(response({ success: false, error: { code: "INVALID_TOKEN", message: "Invalid" } }, { status: 401 })) });
+    await expect(client.get("reports")).rejects.toMatchObject({ status: 401 });
+    expect(onUnauthorized).toHaveBeenCalledOnce();
+    tokenStore.clear(); setUnauthorizedHandler(undefined);
   });
 });
