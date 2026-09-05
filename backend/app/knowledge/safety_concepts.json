@@ -1,0 +1,435 @@
+{
+  "activities": {
+    "Confined Space Work": [
+      "confined space",
+      "confined space entry",
+      "entered tank",
+      "entered nitrogen tank",
+      "nitrogen tank",
+      "tank entry",
+      "entered vessel",
+      "vessel entry",
+      "entry into vessel",
+      "manhole entry",
+      "sewer entry",
+      "tank cleaning",
+      "reactor entry",
+      "entered the vessel",
+      "entered the tank",
+      "entering vessel",
+      "prior to entry"
+    ],
+    "Maintenance": [
+      "maintenance",
+      "repair",
+      "servicing",
+      "service",
+      "overhaul",
+      "troubleshooting",
+      "fixing",
+      "replacing parts",
+      "preventive maintenance",
+      "corrective maintenance"
+    ],
+    "Inspection": [
+      "inspection",
+      "inspect",
+      "inspecting",
+      "audit",
+      "walkthrough",
+      "visual check",
+      "examination",
+      "checklist review"
+    ],
+    "Construction": [
+      "construction",
+      "civil work",
+      "building work",
+      "erection",
+      "structural work",
+      "site excavation"
+    ],
+    "Excavation": [
+      "excavation",
+      "excavat",
+      "trench",
+      "trenching",
+      "digging",
+      "ground breaking",
+      "shoring",
+      "ditch work"
+    ],
+    "Lifting": [
+      "lifting",
+      "crane",
+      "hoist",
+      "crane lifting",
+      "rigging",
+      "hoisting",
+      "crane operation",
+      "suspended load",
+      "tandem lift"
+    ],
+    "Driving": [
+      "driving",
+      "vehicle",
+      "truck",
+      "forklift",
+      "reversing",
+      "transporting",
+      "mobile equipment",
+      "operating vehicle",
+      "haul truck"
+    ],
+    "Hot Work": [
+      "hot work",
+      "welding",
+      "cutting",
+      "grinding",
+      "brazing",
+      "torch cutting",
+      "soldering",
+      "oxy-acetylene"
+    ],
+    "Electrical Work": [
+      "electrical",
+      "electrical work",
+      "energized",
+      "wiring",
+      "substation",
+      "switchgear",
+      "breaker",
+      "cable pulling",
+      "terminations"
+    ],
+    "Material Handling": [
+      "material handling",
+      "manual handling",
+      "carrying",
+      "lifting boxes",
+      "loading cargo",
+      "stacking"
+    ],
+    "Work at Height": [
+      "work at height",
+      "working at height",
+      "height work",
+      "elevated work",
+      "ladder",
+      "scaffold",
+      "scaffolding",
+      "roof",
+      "rooftop",
+      "aerial lift",
+      "manlift",
+      "platform at height",
+      "elevated platform"
+    ],
+    "Pipeline/Line Work": [
+      "pipeline",
+      "line work",
+      "pipe work",
+      "line break",
+      "breaking containment",
+      "opening line",
+      "flange breaking",
+      "pipe spools"
+    ],
+    "Loading/Unloading": [
+      "loading",
+      "unloading",
+      "offloading",
+      "loading dock",
+      "cargo transfer",
+      "tanker loading"
+    ],
+    "Operations": [
+      "operations",
+      "operator",
+      "operating",
+      "production",
+      "process operations",
+      "operating plant",
+      "operating equipment"
+    ]
+  },
+  "hazards": {
+    "Stored Energy": [
+      "stored energy",
+      "energy isolation",
+      "isolation",
+      "residual pressure",
+      "hydraulic energy",
+      "pneumatic energy",
+      "spring energy",
+      "lockout",
+      "pressure release",
+      "energized system"
+    ],
+    "Electrical Energy": [
+      "electrical energy",
+      "electrical",
+      "energized",
+      "live wire",
+      "arc flash",
+      "electrocution",
+      "high voltage",
+      "live circuit",
+      "electric shock"
+    ],
+    "Pressure": [
+      "pressure",
+      "pressurized",
+      "pneumatic",
+      "hydraulic",
+      "high pressure",
+      "pressure line",
+      "compressed air",
+      "pressure release"
+    ],
+    "Toxic Atmosphere": [
+      "toxic atmosphere",
+      "toxic gas",
+      "hazardous atmosphere",
+      "h2s",
+      "gas testing",
+      "gas test",
+      "toxic fumes",
+      "flammable atmosphere",
+      "gas leak",
+      "gas monitoring",
+      "atmospheric testing"
+    ],
+    "Oxygen Deficiency": [
+      "oxygen deficiency",
+      "low oxygen",
+      "oxygen deficient",
+      "asphyxiation",
+      "confined space"
+    ],
+    "Fall Hazard": [
+      "fall hazard",
+      "fall",
+      "falling from height",
+      "fall from height",
+      "working at height",
+      "unprotected edge",
+      "open floor",
+      "ladder",
+      "scaffold",
+      "dropped object"
+    ],
+    "Suspended Load": [
+      "suspended load",
+      "overhead load",
+      "hanging load",
+      "crane load",
+      "crane",
+      "lifted object",
+      "load swing"
+    ],
+    "Vehicle Movement": [
+      "vehicle movement",
+      "traffic",
+      "reversing vehicle",
+      "moving vehicle",
+      "blind spot",
+      "truck movement",
+      "mobile plant",
+      "vehicle collision"
+    ],
+    "Fire": [
+      "fire",
+      "flame",
+      "ignition",
+      "spark",
+      "combustion",
+      "welding spark",
+      "hot work"
+    ],
+    "Explosion": [
+      "explosion",
+      "explosive atmosphere",
+      "blast",
+      "deflagration",
+      "flammable vapors"
+    ],
+    "Line of Fire": [
+      "line of fire",
+      "stood below",
+      "path of travel",
+      "recoil path",
+      "pinch point",
+      "crush point"
+    ],
+    "Chemical Exposure": [
+      "chemical exposure",
+      "chemical splash",
+      "chemical spill",
+      "acid",
+      "caustic",
+      "toxic chemical",
+      "solvent"
+    ],
+    "Moving Machinery": [
+      "moving machinery",
+      "rotating equipment",
+      "conveyor",
+      "moving parts",
+      "unguarded machine",
+      "nip point",
+      "rotating shaft"
+    ],
+    "Excavation Collapse": [
+      "excavation collapse",
+      "cave-in",
+      "trench collapse",
+      "unsupported trench",
+      "soil collapse"
+    ],
+    "Mechanical Energy": [
+      "mechanical energy",
+      "mechanical hazard",
+      "kinetic energy",
+      "rotating parts"
+    ]
+  },
+  "barriers": {
+    "Energy Isolation": [
+      "energy isolation",
+      "isolation",
+      "isolated",
+      "isolation of energy",
+      "isolating energy",
+      "zero energy state",
+      "mechanical isolation",
+      "electrical isolation"
+    ],
+    "Lockout Tagout": [
+      "lockout tagout",
+      "lockout",
+      "tagout",
+      "loto",
+      "lock out tag out",
+      "lock out",
+      "padlock and tag",
+      "loto procedure"
+    ],
+    "Gas Testing": [
+      "gas testing",
+      "gas test",
+      "atmospheric testing",
+      "atmospheric test",
+      "atmospheric verification",
+      "gas monitoring",
+      "continuous gas test",
+      "multigas detector"
+    ],
+    "Atmospheric Monitoring": [
+      "atmospheric monitoring",
+      "continuous monitoring",
+      "air monitoring",
+      "area gas monitor"
+    ],
+    "Permit": [
+      "permit",
+      "safe work permit",
+      "hot work permit",
+      "confined space permit",
+      "ptw",
+      "permit to work",
+      "work permit"
+    ],
+    "Fall Protection": [
+      "fall protection",
+      "harness",
+      "safety harness",
+      "lanyard",
+      "lifeline",
+      "fall arrest",
+      "safety belt",
+      "tie-off",
+      "fall restraint"
+    ],
+    "Guardrail": [
+      "guardrail",
+      "guard rail",
+      "handrail",
+      "toe board",
+      "safety railing"
+    ],
+    "Barricading": [
+      "barricading",
+      "barricade",
+      "exclusion zone",
+      "safety tape",
+      "warning tape",
+      "cordoned off",
+      "barrier tape"
+    ],
+    "Lifting Plan": [
+      "lifting plan",
+      "lift plan",
+      "rigging plan",
+      "critical lift plan"
+    ],
+    "Spotter": [
+      "spotter",
+      "banksman",
+      "signal person",
+      "traffic guide",
+      "flagman"
+    ],
+    "Fire Watch": [
+      "fire watch",
+      "standby fire person",
+      "fire guard",
+      "firewatcher"
+    ],
+    "PPE": [
+      "ppe",
+      "helmet",
+      "safety glasses",
+      "gloves",
+      "face shield",
+      "respirator",
+      "personal protective equipment"
+    ],
+    "Vehicle Controls": [
+      "vehicle controls",
+      "seatbelt",
+      "speed limiter",
+      "chock blocks",
+      "parking brake",
+      "flashing beacon"
+    ],
+    "Competent Person": [
+      "competent person",
+      "qualified rigger",
+      "certified crane operator",
+      "authorized person",
+      "scaffold inspector"
+    ],
+    "Authorization": [
+      "authorization",
+      "authorisation",
+      "approved",
+      "sign-off",
+      "work approval"
+    ],
+    "Interlock": [
+      "interlock",
+      "safety interlock",
+      "machine guard",
+      "guard door interlock"
+    ],
+    "Procedure": [
+      "procedure",
+      "safe operating procedure",
+      "sop",
+      "jsa",
+      "job safety analysis",
+      "method statement"
+    ]
+  }
+}

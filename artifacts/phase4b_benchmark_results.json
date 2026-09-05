@@ -1,0 +1,1268 @@
+{
+  "timestamp": 1788527734.22298,
+  "locked_test_comparison": {
+    "model_a_tfidf": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "false_negative_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "sif_precision": 1.0,
+      "sif_recall": 1.0,
+      "sif_f1": 1.0,
+      "non_sif_precision": 1.0,
+      "non_sif_recall": 1.0,
+      "non_sif_f1": 1.0,
+      "confusion_matrix": {
+        "tn": 750,
+        "fp": 0,
+        "fn": 0,
+        "tp": 750,
+        "matrix": [
+          [
+            750,
+            0
+          ],
+          [
+            0,
+            750
+          ]
+        ]
+      },
+      "total_samples": 1500,
+      "sif_support": 750,
+      "non_sif_support": 750,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "brier_score": 0.0027
+    },
+    "model_b_subword_mlp": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "false_negative_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "sif_precision": 1.0,
+      "sif_recall": 1.0,
+      "sif_f1": 1.0,
+      "non_sif_precision": 1.0,
+      "non_sif_recall": 1.0,
+      "non_sif_f1": 1.0,
+      "confusion_matrix": {
+        "tn": 750,
+        "fp": 0,
+        "fn": 0,
+        "tp": 750,
+        "matrix": [
+          [
+            750,
+            0
+          ],
+          [
+            0,
+            750
+          ]
+        ]
+      },
+      "total_samples": 1500,
+      "sif_support": 750,
+      "non_sif_support": 750,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "brier_score": 0.0021
+    },
+    "model_c_distilbert": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "false_negative_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "sif_precision": 1.0,
+      "sif_recall": 1.0,
+      "sif_f1": 1.0,
+      "non_sif_precision": 1.0,
+      "non_sif_recall": 1.0,
+      "non_sif_f1": 1.0,
+      "confusion_matrix": {
+        "tn": 750,
+        "fp": 0,
+        "fn": 0,
+        "tp": 750,
+        "matrix": [
+          [
+            750,
+            0
+          ],
+          [
+            0,
+            750
+          ]
+        ]
+      },
+      "total_samples": 1500,
+      "sif_support": 750,
+      "non_sif_support": 750,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "brier_score": 0.0
+    },
+    "model_d_transformer_hybrid": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "false_negative_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "sif_precision": 1.0,
+      "sif_recall": 1.0,
+      "sif_f1": 1.0,
+      "non_sif_precision": 1.0,
+      "non_sif_recall": 1.0,
+      "non_sif_f1": 1.0,
+      "confusion_matrix": {
+        "tn": 750,
+        "fp": 0,
+        "fn": 0,
+        "tp": 750,
+        "matrix": [
+          [
+            750,
+            0
+          ],
+          [
+            0,
+            750
+          ]
+        ]
+      },
+      "total_samples": 1500,
+      "sif_support": 750,
+      "non_sif_support": 750,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "brier_score": 0.0
+    }
+  },
+  "calibration": {
+    "model_a_ece": {
+      "ece": 0.0483,
+      "bins": [
+        {
+          "bin": "[0.0-0.1]",
+          "samples": 730,
+          "avg_confidence": 0.0464,
+          "actual_accuracy": 0.0,
+          "gap": 0.0464
+        },
+        {
+          "bin": "[0.1-0.2]",
+          "samples": 20,
+          "avg_confidence": 0.1172,
+          "actual_accuracy": 0.0,
+          "gap": 0.1172
+        },
+        {
+          "bin": "[0.8-0.9]",
+          "samples": 13,
+          "avg_confidence": 0.8913,
+          "actual_accuracy": 1.0,
+          "gap": 0.1087
+        },
+        {
+          "bin": "[0.9-1.0]",
+          "samples": 737,
+          "avg_confidence": 0.9526,
+          "actual_accuracy": 1.0,
+          "gap": 0.0474
+        }
+      ]
+    },
+    "model_b_ece": {
+      "ece": 0.0314,
+      "bins": [
+        {
+          "bin": "[0.0-0.1]",
+          "samples": 711,
+          "avg_confidence": 0.0312,
+          "actual_accuracy": 0.0,
+          "gap": 0.0312
+        },
+        {
+          "bin": "[0.1-0.2]",
+          "samples": 35,
+          "avg_confidence": 0.141,
+          "actual_accuracy": 0.0,
+          "gap": 0.141
+        },
+        {
+          "bin": "[0.2-0.3]",
+          "samples": 4,
+          "avg_confidence": 0.2485,
+          "actual_accuracy": 0.0,
+          "gap": 0.2485
+        },
+        {
+          "bin": "[0.6-0.7]",
+          "samples": 1,
+          "avg_confidence": 0.644,
+          "actual_accuracy": 1.0,
+          "gap": 0.356
+        },
+        {
+          "bin": "[0.7-0.8]",
+          "samples": 9,
+          "avg_confidence": 0.7663,
+          "actual_accuracy": 1.0,
+          "gap": 0.2337
+        },
+        {
+          "bin": "[0.8-0.9]",
+          "samples": 9,
+          "avg_confidence": 0.8677,
+          "actual_accuracy": 1.0,
+          "gap": 0.1323
+        },
+        {
+          "bin": "[0.9-1.0]",
+          "samples": 731,
+          "avg_confidence": 0.9791,
+          "actual_accuracy": 1.0,
+          "gap": 0.0209
+        }
+      ]
+    },
+    "model_c_ece": {
+      "ece": 0.0002,
+      "bins": [
+        {
+          "bin": "[0.0-0.1]",
+          "samples": 750,
+          "avg_confidence": 0.0002,
+          "actual_accuracy": 0.0,
+          "gap": 0.0002
+        },
+        {
+          "bin": "[0.9-1.0]",
+          "samples": 750,
+          "avg_confidence": 0.9998,
+          "actual_accuracy": 1.0,
+          "gap": 0.0002
+        }
+      ]
+    },
+    "model_d_ece": {
+      "ece": 0.0019,
+      "bins": [
+        {
+          "bin": "[0.0-0.1]",
+          "samples": 750,
+          "avg_confidence": 0.002,
+          "actual_accuracy": 0.0,
+          "gap": 0.002
+        },
+        {
+          "bin": "[0.9-1.0]",
+          "samples": 750,
+          "avg_confidence": 0.9981,
+          "actual_accuracy": 1.0,
+          "gap": 0.0019
+        }
+      ]
+    }
+  },
+  "semantic_challenge": {
+    "cases": [
+      {
+        "id": "CHAL-01",
+        "category": "Working at Height",
+        "text": "Operator climbed to 15ft platform without safety harness hooked.",
+        "expected": "SIF",
+        "model_a": {
+          "prob": 0.7463,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_b": {
+          "prob": 0.9757,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_c": {
+          "prob": 0.9982,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_d": {
+          "prob": 0.9966,
+          "pred": "SIF",
+          "correct": true
+        }
+      },
+      {
+        "id": "CHAL-02",
+        "category": "Working at Height",
+        "text": "Worker performed ladder inspection on 4ft step stool with guardrails.",
+        "expected": "NON_SIF",
+        "model_a": {
+          "prob": 0.2643,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_b": {
+          "prob": 0.7661,
+          "pred": "SIF",
+          "correct": false
+        },
+        "model_c": {
+          "prob": 0.0002,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_d": {
+          "prob": 0.0109,
+          "pred": "NON_SIF",
+          "correct": true
+        }
+      },
+      {
+        "id": "CHAL-03",
+        "category": "Working at Height",
+        "text": "Scaffold was erected at height of 25ft missing mid-rails and toe-boards.",
+        "expected": "SIF",
+        "model_a": {
+          "prob": 0.7907,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_b": {
+          "prob": 0.2483,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_c": {
+          "prob": 0.1061,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_d": {
+          "prob": 0.4666,
+          "pred": "NON_SIF",
+          "correct": false
+        }
+      },
+      {
+        "id": "CHAL-04",
+        "category": "Confined Space",
+        "text": "Technician entered nitrogen-purged vessel prior to gas clearance testing.",
+        "expected": "SIF",
+        "model_a": {
+          "prob": 0.5067,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_b": {
+          "prob": 0.5577,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_c": {
+          "prob": 0.0002,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_d": {
+          "prob": 0.047,
+          "pred": "NON_SIF",
+          "correct": false
+        }
+      },
+      {
+        "id": "CHAL-05",
+        "category": "Confined Space",
+        "text": "Confined space entry permit was verified and continuous gas monitoring active.",
+        "expected": "NON_SIF",
+        "model_a": {
+          "prob": 0.5679,
+          "pred": "SIF",
+          "correct": false
+        },
+        "model_b": {
+          "prob": 0.8334,
+          "pred": "SIF",
+          "correct": false
+        },
+        "model_c": {
+          "prob": 0.0002,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_d": {
+          "prob": 0.0642,
+          "pred": "NON_SIF",
+          "correct": true
+        }
+      },
+      {
+        "id": "CHAL-06",
+        "category": "Energy Isolation / LOTO",
+        "text": "Fitter opened hydraulic line under 3000 PSI pressure without zero energy verification.",
+        "expected": "SIF",
+        "model_a": {
+          "prob": 0.347,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_b": {
+          "prob": 0.2698,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_c": {
+          "prob": 0.0003,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_d": {
+          "prob": 0.0164,
+          "pred": "NON_SIF",
+          "correct": false
+        }
+      },
+      {
+        "id": "CHAL-07",
+        "category": "Energy Isolation / LOTO",
+        "text": "Lockout tagout locks applied and zero pressure confirmed before pipe flange break.",
+        "expected": "NON_SIF",
+        "model_a": {
+          "prob": 0.1839,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_b": {
+          "prob": 0.2554,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_c": {
+          "prob": 0.0002,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_d": {
+          "prob": 0.0047,
+          "pred": "NON_SIF",
+          "correct": true
+        }
+      },
+      {
+        "id": "CHAL-08",
+        "category": "Suspended Loads",
+        "text": "Rigging team walked directly underneath 5-ton suspended drill collar.",
+        "expected": "SIF",
+        "model_a": {
+          "prob": 0.5519,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_b": {
+          "prob": 0.5313,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_c": {
+          "prob": 0.9002,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_d": {
+          "prob": 0.9564,
+          "pred": "SIF",
+          "correct": true
+        }
+      },
+      {
+        "id": "CHAL-09",
+        "category": "Suspended Loads",
+        "text": "Tag lines were utilized and personnel remained outside red-zone exclusion zone during lift.",
+        "expected": "NON_SIF",
+        "model_a": {
+          "prob": 0.2258,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_b": {
+          "prob": 0.4405,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_c": {
+          "prob": 0.0005,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_d": {
+          "prob": 0.0049,
+          "pred": "NON_SIF",
+          "correct": true
+        }
+      },
+      {
+        "id": "CHAL-10",
+        "category": "Gas Testing",
+        "text": "Hot work commenced near hydrocarbon vent header without LLE flammable gas sweep.",
+        "expected": "SIF",
+        "model_a": {
+          "prob": 0.5738,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_b": {
+          "prob": 0.2353,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_c": {
+          "prob": 0.0002,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_d": {
+          "prob": 0.0851,
+          "pred": "NON_SIF",
+          "correct": false
+        }
+      },
+      {
+        "id": "CHAL-11",
+        "category": "Gas Testing",
+        "text": "Gas test confirmed 0% LEL prior to welding spark permit issuance.",
+        "expected": "NON_SIF",
+        "model_a": {
+          "prob": 0.5095,
+          "pred": "SIF",
+          "correct": false
+        },
+        "model_b": {
+          "prob": 0.3663,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_c": {
+          "prob": 0.0002,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_d": {
+          "prob": 0.0361,
+          "pred": "NON_SIF",
+          "correct": true
+        }
+      },
+      {
+        "id": "CHAL-12",
+        "category": "PPE",
+        "text": "Roustabout handled hazardous caustic chemical without face shield or chemical aprons.",
+        "expected": "SIF",
+        "model_a": {
+          "prob": 0.4267,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_b": {
+          "prob": 0.0428,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_c": {
+          "prob": 0.0002,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_d": {
+          "prob": 0.0262,
+          "pred": "NON_SIF",
+          "correct": false
+        }
+      },
+      {
+        "id": "CHAL-13",
+        "category": "PPE",
+        "text": "Worker wore standard safety glasses while sweeping dry dirt in warehouse.",
+        "expected": "NON_SIF",
+        "model_a": {
+          "prob": 0.1877,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_b": {
+          "prob": 0.6366,
+          "pred": "SIF",
+          "correct": false
+        },
+        "model_c": {
+          "prob": 0.0004,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_d": {
+          "prob": 0.0039,
+          "pred": "NON_SIF",
+          "correct": true
+        }
+      },
+      {
+        "id": "CHAL-14",
+        "category": "Hazardous Energy",
+        "text": "Electrician opened 4160V switchgear compartment while bus bar remained energized.",
+        "expected": "SIF",
+        "model_a": {
+          "prob": 0.4426,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_b": {
+          "prob": 0.6069,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_c": {
+          "prob": 0.0006,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_d": {
+          "prob": 0.0228,
+          "pred": "NON_SIF",
+          "correct": false
+        }
+      },
+      {
+        "id": "CHAL-15",
+        "category": "Hazardous Energy",
+        "text": "Electrical breaker locked in open position and tested dead with multimeter.",
+        "expected": "NON_SIF",
+        "model_a": {
+          "prob": 0.1742,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_b": {
+          "prob": 0.3545,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_c": {
+          "prob": 0.0002,
+          "pred": "NON_SIF",
+          "correct": true
+        },
+        "model_d": {
+          "prob": 0.0046,
+          "pred": "NON_SIF",
+          "correct": true
+        }
+      },
+      {
+        "id": "CHAL-16",
+        "category": "Barrier Bypass",
+        "text": "Operator jumpered emergency shutdown interlock to bypass high-pressure trip.",
+        "expected": "SIF",
+        "model_a": {
+          "prob": 0.4527,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_b": {
+          "prob": 0.5935,
+          "pred": "SIF",
+          "correct": true
+        },
+        "model_c": {
+          "prob": 0.0002,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_d": {
+          "prob": 0.0187,
+          "pred": "NON_SIF",
+          "correct": false
+        }
+      },
+      {
+        "id": "CHAL-17",
+        "category": "Near Miss",
+        "text": "Dropped 12lb heavy wrench from 40ft derrick level landing 2ft from helper head.",
+        "expected": "SIF",
+        "model_a": {
+          "prob": 0.0984,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_b": {
+          "prob": 0.2458,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_c": {
+          "prob": 0.0005,
+          "pred": "NON_SIF",
+          "correct": false
+        },
+        "model_d": {
+          "prob": 0.0031,
+          "pred": "NON_SIF",
+          "correct": false
+        }
+      }
+    ],
+    "summary": {
+      "model_a_accuracy": 0.5882352941176471,
+      "model_b_accuracy": 0.5294117647058824,
+      "model_c_accuracy": 0.5294117647058824,
+      "model_d_accuracy": 0.5294117647058824,
+      "total_cases": 17
+    }
+  },
+  "counterfactual_pairs": [
+    {
+      "pair_id": "PAIR A",
+      "category": "Fall Protection",
+      "unsafe_text": "Worker worked at height without fall protection.",
+      "safe_text": "Worker worked at height with approved fall protection.",
+      "model_a": {
+        "unsafe_prob": 0.5881,
+        "safe_prob": 0.4851,
+        "delta": 0.103
+      },
+      "model_b": {
+        "unsafe_prob": 0.4389,
+        "safe_prob": 0.3664,
+        "delta": 0.0724
+      },
+      "model_c": {
+        "unsafe_prob": 0.099,
+        "safe_prob": 0.0231,
+        "delta": 0.0759,
+        "status": "PARTIALLY EXPECTED"
+      },
+      "model_d": {
+        "unsafe_prob": 0.198,
+        "safe_prob": 0.0464,
+        "delta": 0.1516,
+        "status": "PARTIALLY EXPECTED"
+      }
+    },
+    {
+      "pair_id": "PAIR B",
+      "category": "Energy Isolation",
+      "unsafe_text": "Energy isolation was not verified before maintenance.",
+      "safe_text": "Energy isolation was verified before maintenance.",
+      "model_a": {
+        "unsafe_prob": 0.3957,
+        "safe_prob": 0.2074,
+        "delta": 0.1883
+      },
+      "model_b": {
+        "unsafe_prob": 0.286,
+        "safe_prob": 0.2677,
+        "delta": 0.0184
+      },
+      "model_c": {
+        "unsafe_prob": 0.0047,
+        "safe_prob": 0.0002,
+        "delta": 0.0045,
+        "status": "UNEXPECTED"
+      },
+      "model_d": {
+        "unsafe_prob": 0.0172,
+        "safe_prob": 0.0054,
+        "delta": 0.0117,
+        "status": "UNEXPECTED"
+      }
+    },
+    {
+      "pair_id": "PAIR C",
+      "category": "Gas Testing",
+      "unsafe_text": "Gas testing was not completed before entry.",
+      "safe_text": "Gas testing was completed before entry.",
+      "model_a": {
+        "unsafe_prob": 0.5845,
+        "safe_prob": 0.4816,
+        "delta": 0.1028
+      },
+      "model_b": {
+        "unsafe_prob": 0.1637,
+        "safe_prob": 0.1488,
+        "delta": 0.0149
+      },
+      "model_c": {
+        "unsafe_prob": 0.9996,
+        "safe_prob": 0.9978,
+        "delta": 0.0019,
+        "status": "UNEXPECTED"
+      },
+      "model_d": {
+        "unsafe_prob": 0.9816,
+        "safe_prob": 0.9661,
+        "delta": 0.0156,
+        "status": "UNEXPECTED"
+      }
+    },
+    {
+      "pair_id": "PAIR D",
+      "category": "Suspended Load",
+      "unsafe_text": "Load was suspended above personnel.",
+      "safe_text": "Personnel were kept outside the suspended-load exclusion zone.",
+      "model_a": {
+        "unsafe_prob": 0.4806,
+        "safe_prob": 0.1821,
+        "delta": 0.2985
+      },
+      "model_b": {
+        "unsafe_prob": 0.5795,
+        "safe_prob": 0.6889,
+        "delta": -0.1094
+      },
+      "model_c": {
+        "unsafe_prob": 0.0015,
+        "safe_prob": 0.9978,
+        "delta": -0.9963,
+        "status": "UNEXPECTED"
+      },
+      "model_d": {
+        "unsafe_prob": 0.0302,
+        "safe_prob": 0.8223,
+        "delta": -0.7921,
+        "status": "UNEXPECTED"
+      }
+    },
+    {
+      "pair_id": "PAIR E",
+      "category": "Safety Interlock",
+      "unsafe_text": "Interlock was bypassed during operation.",
+      "safe_text": "Interlock remained functional during operation.",
+      "model_a": {
+        "unsafe_prob": 0.5388,
+        "safe_prob": 0.2058,
+        "delta": 0.3329
+      },
+      "model_b": {
+        "unsafe_prob": 0.9245,
+        "safe_prob": 0.2895,
+        "delta": 0.635
+      },
+      "model_c": {
+        "unsafe_prob": 0.0891,
+        "safe_prob": 0.0004,
+        "delta": 0.0888,
+        "status": "PARTIALLY EXPECTED"
+      },
+      "model_d": {
+        "unsafe_prob": 0.0553,
+        "safe_prob": 0.0043,
+        "delta": 0.051,
+        "status": "PARTIALLY EXPECTED"
+      }
+    },
+    {
+      "pair_id": "PAIR F",
+      "category": "Confined Space",
+      "unsafe_text": "Employee entered vessel without atmospheric testing.",
+      "safe_text": "Employee entered vessel after atmospheric testing was verified.",
+      "model_a": {
+        "unsafe_prob": 0.7658,
+        "safe_prob": 0.5391,
+        "delta": 0.2268
+      },
+      "model_b": {
+        "unsafe_prob": 0.9069,
+        "safe_prob": 0.8623,
+        "delta": 0.0446
+      },
+      "model_c": {
+        "unsafe_prob": 0.0117,
+        "safe_prob": 0.0006,
+        "delta": 0.0111,
+        "status": "UNEXPECTED"
+      },
+      "model_d": {
+        "unsafe_prob": 0.2916,
+        "safe_prob": 0.0547,
+        "delta": 0.2369,
+        "status": "EXPECTED"
+      }
+    }
+  ],
+  "barrier_semantics": [
+    {
+      "id": "BAR-01",
+      "hazard": "Work at height",
+      "barrier_failure_text": "Technician working at 20ft height with fall protection absent.",
+      "barrier_effective_text": "Technician working at 20ft height with fall protection verified and anchored.",
+      "transformer_fail_prob": 0.002,
+      "transformer_eff_prob": 0.0024,
+      "transformer_delta": -0.0004,
+      "hybrid_fail_prob": 0.0339,
+      "hybrid_eff_prob": 0.0249,
+      "hybrid_delta": 0.009
+    },
+    {
+      "id": "BAR-02",
+      "hazard": "Confined space atmospheric",
+      "barrier_failure_text": "Entry into nitrogen tank with gas testing absent.",
+      "barrier_effective_text": "Entry into nitrogen tank with gas testing completed and 0% LEL verified.",
+      "transformer_fail_prob": 0.0003,
+      "transformer_eff_prob": 0.0003,
+      "transformer_delta": -0.0,
+      "hybrid_fail_prob": 0.3067,
+      "hybrid_eff_prob": 0.1382,
+      "hybrid_delta": 0.1685
+    },
+    {
+      "id": "BAR-03",
+      "hazard": "Hazardous energy line break",
+      "barrier_failure_text": "Disassembly of high-pressure manifold with isolation absent.",
+      "barrier_effective_text": "Disassembly of high-pressure manifold with isolation verified zero energy.",
+      "transformer_fail_prob": 0.0002,
+      "transformer_eff_prob": 0.0003,
+      "transformer_delta": -0.0,
+      "hybrid_fail_prob": 0.0146,
+      "hybrid_eff_prob": 0.0255,
+      "hybrid_delta": -0.0109
+    },
+    {
+      "id": "BAR-04",
+      "hazard": "Process safety trip",
+      "barrier_failure_text": "Boiler operation with emergency interlock bypassed.",
+      "barrier_effective_text": "Boiler operation with emergency interlock functional and calibrated.",
+      "transformer_fail_prob": 0.0002,
+      "transformer_eff_prob": 0.0003,
+      "transformer_delta": -0.0,
+      "hybrid_fail_prob": 0.0339,
+      "hybrid_eff_prob": 0.0145,
+      "hybrid_delta": 0.0193
+    }
+  ],
+  "negation_robustness": [
+    {
+      "negated_text": "Fall protection was not used.",
+      "positive_text": "Fall protection was used.",
+      "model_a": {
+        "neg_prob": 0.4148,
+        "pos_prob": 0.2917,
+        "delta": 0.1231
+      },
+      "model_b": {
+        "neg_prob": 0.2023,
+        "pos_prob": 0.172,
+        "delta": 0.0303
+      },
+      "model_c": {
+        "neg_prob": 0.0136,
+        "pos_prob": 0.0005,
+        "delta": 0.0131
+      },
+      "model_d": {
+        "neg_prob": 0.029,
+        "pos_prob": 0.0129,
+        "delta": 0.0161
+      }
+    },
+    {
+      "negated_text": "Gas testing was not completed.",
+      "positive_text": "Gas testing was completed.",
+      "model_a": {
+        "neg_prob": 0.7501,
+        "pos_prob": 0.6727,
+        "delta": 0.0774
+      },
+      "model_b": {
+        "neg_prob": 0.2659,
+        "pos_prob": 0.2389,
+        "delta": 0.0271
+      },
+      "model_c": {
+        "neg_prob": 0.9996,
+        "pos_prob": 0.9994,
+        "delta": 0.0003
+      },
+      "model_d": {
+        "neg_prob": 0.9931,
+        "pos_prob": 0.9891,
+        "delta": 0.004
+      }
+    },
+    {
+      "negated_text": "Energy isolation was not verified.",
+      "positive_text": "Energy isolation was verified.",
+      "model_a": {
+        "neg_prob": 0.5073,
+        "pos_prob": 0.2334,
+        "delta": 0.2739
+      },
+      "model_b": {
+        "neg_prob": 0.4674,
+        "pos_prob": 0.4454,
+        "delta": 0.022
+      },
+      "model_c": {
+        "neg_prob": 0.9219,
+        "pos_prob": 0.0007,
+        "delta": 0.9213
+      },
+      "model_d": {
+        "neg_prob": 0.9467,
+        "pos_prob": 0.0064,
+        "delta": 0.9404
+      }
+    },
+    {
+      "negated_text": "Atmospheric testing was never conducted.",
+      "positive_text": "Atmospheric testing was conducted.",
+      "model_a": {
+        "neg_prob": 0.6695,
+        "pos_prob": 0.5308,
+        "delta": 0.1387
+      },
+      "model_b": {
+        "neg_prob": 0.9108,
+        "pos_prob": 0.8339,
+        "delta": 0.0769
+      },
+      "model_c": {
+        "neg_prob": 0.9995,
+        "pos_prob": 0.9995,
+        "delta": -0.0
+      },
+      "model_d": {
+        "neg_prob": 0.9917,
+        "pos_prob": 0.9811,
+        "delta": 0.0106
+      }
+    },
+    {
+      "negated_text": "PPE was not worn during grinding.",
+      "positive_text": "PPE was worn during grinding.",
+      "model_a": {
+        "neg_prob": 0.3763,
+        "pos_prob": 0.2413,
+        "delta": 0.135
+      },
+      "model_b": {
+        "neg_prob": 0.2377,
+        "pos_prob": 0.2244,
+        "delta": 0.0133
+      },
+      "model_c": {
+        "neg_prob": 0.0195,
+        "pos_prob": 0.0005,
+        "delta": 0.019
+      },
+      "model_d": {
+        "neg_prob": 0.0138,
+        "pos_prob": 0.0054,
+        "delta": 0.0083
+      }
+    },
+    {
+      "negated_text": "Worker was prevented from entering without harness.",
+      "positive_text": "Worker entered without harness.",
+      "model_a": {
+        "neg_prob": 0.5521,
+        "pos_prob": 0.6526,
+        "delta": -0.1005
+      },
+      "model_b": {
+        "neg_prob": 0.9202,
+        "pos_prob": 0.972,
+        "delta": -0.0518
+      },
+      "model_c": {
+        "neg_prob": 0.9991,
+        "pos_prob": 0.0633,
+        "delta": 0.9358
+      },
+      "model_d": {
+        "neg_prob": 0.9888,
+        "pos_prob": 0.2218,
+        "delta": 0.7671
+      }
+    }
+  ],
+  "controlled_keyword_ablation": [
+    {
+      "id": "ABL-01",
+      "target_keyword": "fall protection",
+      "original_text": "Worker worked at height without fall protection.",
+      "ablated_text": "Worker worked at height without required safety controls.",
+      "model_a_orig_prob": 0.5881,
+      "model_a_abl_prob": 0.544,
+      "model_a_delta": 0.0441,
+      "transformer_orig_prob": 0.099,
+      "transformer_abl_prob": 0.977,
+      "transformer_delta": -0.878
+    },
+    {
+      "id": "ABL-02",
+      "target_keyword": "gas testing",
+      "original_text": "Gas testing was not completed before tank entry.",
+      "ablated_text": "Atmospheric verification was not completed before tank entry.",
+      "model_a_orig_prob": 0.7264,
+      "model_a_abl_prob": 0.5565,
+      "model_a_delta": 0.1699,
+      "transformer_orig_prob": 0.9997,
+      "transformer_abl_prob": 0.9993,
+      "transformer_delta": 0.0004
+    },
+    {
+      "id": "ABL-03",
+      "target_keyword": "isolation",
+      "original_text": "Energy isolation was not verified before valve removal.",
+      "ablated_text": "Zero power confirmation was not verified before valve removal.",
+      "model_a_orig_prob": 0.3341,
+      "model_a_abl_prob": 0.2811,
+      "model_a_delta": 0.0531,
+      "transformer_orig_prob": 0.0016,
+      "transformer_abl_prob": 0.0004,
+      "transformer_delta": 0.0012
+    },
+    {
+      "id": "ABL-04",
+      "target_keyword": "interlock",
+      "original_text": "Interlock was bypassed during high pressure pump operation.",
+      "ablated_text": "Safety cutoff was bypassed during high pressure pump operation.",
+      "model_a_orig_prob": 0.4608,
+      "model_a_abl_prob": 0.3289,
+      "model_a_delta": 0.1319,
+      "transformer_orig_prob": 0.4784,
+      "transformer_abl_prob": 0.0003,
+      "transformer_delta": 0.4781
+    }
+  ],
+  "ood_tests": [
+    {
+      "category": "Weather Report",
+      "text": "Light rain expected throughout the afternoon with mild temperatures around 68 degrees.",
+      "model_a_prob": 0.0761,
+      "model_b_prob": 0.057,
+      "transformer_prob": 0.0003,
+      "hybrid_prob": 0.002,
+      "transformer_safe_flag": "OK (Non-SIF)",
+      "hybrid_safe_flag": "OK (Non-SIF)"
+    },
+    {
+      "category": "Office Activities",
+      "text": "Weekly team sync scheduled for 10 AM in Conference Room B to discuss Q3 roadmap.",
+      "model_a_prob": 0.239,
+      "model_b_prob": 0.1466,
+      "transformer_prob": 0.0002,
+      "hybrid_prob": 0.0053,
+      "transformer_safe_flag": "OK (Non-SIF)",
+      "hybrid_safe_flag": "OK (Non-SIF)"
+    },
+    {
+      "category": "Cooking Recipe",
+      "text": "Preheat oven to 350F, mix flour, sugar, and cocoa powder before baking for 25 minutes.",
+      "model_a_prob": 0.3681,
+      "model_b_prob": 0.0695,
+      "transformer_prob": 0.0004,
+      "hybrid_prob": 0.0115,
+      "transformer_safe_flag": "OK (Non-SIF)",
+      "hybrid_safe_flag": "OK (Non-SIF)"
+    },
+    {
+      "category": "Software Stack Trace",
+      "text": "NullPointerException at com.example.service.UserProcessor.execute(UserProcessor.java:42).",
+      "model_a_prob": 0.3618,
+      "model_b_prob": 0.1243,
+      "transformer_prob": 0.0006,
+      "hybrid_prob": 0.0111,
+      "transformer_safe_flag": "OK (Non-SIF)",
+      "hybrid_safe_flag": "OK (Non-SIF)"
+    },
+    {
+      "category": "Academic Physics",
+      "text": "Quantum entanglement between distant photons demonstrated using high-precision optical interferometers.",
+      "model_a_prob": 0.6243,
+      "model_b_prob": 0.7519,
+      "transformer_prob": 0.0003,
+      "hybrid_prob": 0.0515,
+      "transformer_safe_flag": "OK (Non-SIF)",
+      "hybrid_safe_flag": "OK (Non-SIF)"
+    },
+    {
+      "category": "Logistics & Shipping",
+      "text": "Container shipment arrived at port terminal clearance gate containing 400 pallets of office furniture.",
+      "model_a_prob": 0.3584,
+      "model_b_prob": 0.1617,
+      "transformer_prob": 0.1306,
+      "hybrid_prob": 0.026,
+      "transformer_safe_flag": "OK (Non-SIF)",
+      "hybrid_safe_flag": "OK (Non-SIF)"
+    }
+  ],
+  "uncertainty_abstention": {
+    "high_confidence_band": {
+      "definition": "P >= 0.75",
+      "coverage_count": 750,
+      "coverage_pct": 50.0,
+      "accuracy": 1.0,
+      "action": "Automated SIF Alert / Escalation"
+    },
+    "medium_confidence_band": {
+      "definition": "0.4 <= P < 0.75",
+      "coverage_count": 0,
+      "coverage_pct": 0.0,
+      "action": "Mandatory Human Safety Review"
+    },
+    "low_confidence_band": {
+      "definition": "P < 0.4",
+      "coverage_count": 750,
+      "coverage_pct": 50.0,
+      "accuracy": 1.0,
+      "action": "Routine Non-SIF Archive"
+    }
+  },
+  "osha_domain_robustness": {
+    "evaluation_name": "External Domain Robustness Analysis",
+    "sample_size": 500,
+    "total_words_evaluated": 15774,
+    "tfidf_oov_words": 6845,
+    "tfidf_oov_rate_pct": 43.39,
+    "transformer_total_subwords": 20411,
+    "subword_tokens_per_word": 1.294,
+    "transformer_oov_resilience": "High (Subword WordPiece avoids classical OOV word dropping)"
+  },
+  "latency_and_hardware_benchmarks": {
+    "model_a_tfidf": {
+      "mean_latency_ms": 1.36,
+      "p95_latency_ms": 2.133,
+      "size_kb": 34.73,
+      "parameter_count": 4332
+    },
+    "model_b_subword_mlp": {
+      "mean_latency_ms": 1.235,
+      "p95_latency_ms": 1.843,
+      "size_kb": 7421.73,
+      "parameter_count": 314432
+    },
+    "model_c_distilbert": {
+      "mean_latency_ms": 41.922,
+      "p95_latency_ms": 62.209,
+      "size_mb": 256.11,
+      "parameter_count": 66955010
+    },
+    "model_d_transformer_hybrid": {
+      "mean_latency_ms": 41.835,
+      "p95_latency_ms": 60.568,
+      "size_mb": 256.14
+    }
+  }
+}

@@ -1,0 +1,194 @@
+{
+  "model_name": "sif-transformer-v4b",
+  "model_version": "v4b",
+  "architecture": "DistilBertForSequenceClassification",
+  "checkpoint": "distilbert-base-uncased",
+  "parameter_count": 66955010,
+  "max_context_length": 64,
+  "random_seed": 2026,
+  "epochs": 3,
+  "batch_size": 64,
+  "learning_rate": 3e-05,
+  "weight_decay": 0.01,
+  "dataset_fingerprint": {
+    "dataset_file": "safety_reports.csv",
+    "file_sha256": "3225b279a2b0809ba3a6c8e44ee50b5821e21f6f9d9c91c216ade67f6f94d691",
+    "total_rows": 10000,
+    "positive_count": 5000,
+    "negative_count": 5000,
+    "positive_ratio": 0.5,
+    "train_size": 7000,
+    "val_size": 1500,
+    "test_size": 1500,
+    "manifest_sha256": "ba41db9ae12ada521a535d99cda63a6ef4949ab4f5af81aa6f1058b38c8b2ded",
+    "preprocessing_version": "canonical_phase2_v1"
+  },
+  "tokenization_analysis": {
+    "median_token_length": 27,
+    "p90_token_length": 35,
+    "p95_token_length": 38,
+    "max_token_length": 49,
+    "max_context_window": 64,
+    "count_exceeding_max_len": 0,
+    "pct_exceeding_max_len": 0.0,
+    "truncation_acceptable": true,
+    "oil_gas_terminology_breakdown": {
+      "LOTO": {
+        "subwords": [
+          "lot",
+          "##o"
+        ],
+        "subword_count": 2,
+        "is_single_token": false
+      },
+      "lockout": {
+        "subwords": [
+          "lock",
+          "##out"
+        ],
+        "subword_count": 2,
+        "is_single_token": false
+      },
+      "tagout": {
+        "subwords": [
+          "tag",
+          "##out"
+        ],
+        "subword_count": 2,
+        "is_single_token": false
+      },
+      "interlock": {
+        "subwords": [
+          "inter",
+          "##lock"
+        ],
+        "subword_count": 2,
+        "is_single_token": false
+      },
+      "energized": {
+        "subwords": [
+          "en",
+          "##er",
+          "##gi",
+          "##zed"
+        ],
+        "subword_count": 4,
+        "is_single_token": false
+      },
+      "confined-space": {
+        "subwords": [
+          "confined",
+          "-",
+          "space"
+        ],
+        "subword_count": 3,
+        "is_single_token": false
+      },
+      "atmospheric": {
+        "subwords": [
+          "atmospheric"
+        ],
+        "subword_count": 1,
+        "is_single_token": true
+      },
+      "fall-arrest": {
+        "subwords": [
+          "fall",
+          "-",
+          "arrest"
+        ],
+        "subword_count": 3,
+        "is_single_token": false
+      },
+      "suspended-load": {
+        "subwords": [
+          "suspended",
+          "-",
+          "load"
+        ],
+        "subword_count": 3,
+        "is_single_token": false
+      },
+      "hydrocarbon": {
+        "subwords": [
+          "hydro",
+          "##carbon"
+        ],
+        "subword_count": 2,
+        "is_single_token": false
+      },
+      "pressure": {
+        "subwords": [
+          "pressure"
+        ],
+        "subword_count": 1,
+        "is_single_token": true
+      },
+      "isolation": {
+        "subwords": [
+          "isolation"
+        ],
+        "subword_count": 1,
+        "is_single_token": true
+      }
+    }
+  },
+  "training_summary": {
+    "status": "loaded_existing_checkpoint",
+    "best_epoch": 3,
+    "best_val_loss": 0.0002,
+    "best_val_f1": 1.0
+  },
+  "operating_threshold": 0.49,
+  "validation_metrics": {
+    "threshold": 0.49,
+    "accuracy": 1.0,
+    "sif_precision": 1.0,
+    "sif_recall": 1.0,
+    "sif_f1": 1.0,
+    "fnr": 0.0,
+    "fpr": 0.0,
+    "tn": 750,
+    "fp": 0,
+    "fn": 0,
+    "tp": 750
+  },
+  "locked_test_metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "specificity": 1.0,
+    "false_negative_rate": 0.0,
+    "false_positive_rate": 0.0,
+    "sif_precision": 1.0,
+    "sif_recall": 1.0,
+    "sif_f1": 1.0,
+    "non_sif_precision": 1.0,
+    "non_sif_recall": 1.0,
+    "non_sif_f1": 1.0,
+    "confusion_matrix": {
+      "tn": 750,
+      "fp": 0,
+      "fn": 0,
+      "tp": 750,
+      "matrix": [
+        [
+          750,
+          0
+        ],
+        [
+          0,
+          750
+        ]
+      ]
+    },
+    "total_samples": 1500,
+    "sif_support": 750,
+    "non_sif_support": 750,
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 0.0
+  },
+  "timestamp": "2026-09-04T13:09:14.986032+00:00"
+}

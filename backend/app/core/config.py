@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     cors_origins: str = "http://localhost:3000"
     analysis_review_threshold: float = 0.62
+    sif_model_version: str = "v2"
+    sif_model_backend: str = "v2"
     classifier_weight: float = 0.45
     entity_weight: float = 0.25
     rule_weight: float = 0.20

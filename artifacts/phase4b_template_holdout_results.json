@@ -1,0 +1,117 @@
+{
+  "train_records": 8000,
+  "holdout_records": 2000,
+  "train_families": 465,
+  "holdout_families": 101,
+  "model_a_metrics": {
+    "accuracy": 0.815,
+    "precision": 0.9986,
+    "recall": 0.6667,
+    "f1": 0.7996,
+    "specificity": 0.9989,
+    "false_negative_rate": 0.3333,
+    "false_positive_rate": 0.0011,
+    "sif_precision": 0.9986,
+    "sif_recall": 0.6667,
+    "sif_f1": 0.7996,
+    "non_sif_precision": 0.7074,
+    "non_sif_recall": 0.9989,
+    "non_sif_f1": 0.8282,
+    "confusion_matrix": {
+      "tn": 892,
+      "fp": 1,
+      "fn": 369,
+      "tp": 738,
+      "matrix": [
+        [
+          892,
+          1
+        ],
+        [
+          369,
+          738
+        ]
+      ]
+    },
+    "total_samples": 2000,
+    "sif_support": 1107,
+    "non_sif_support": 893,
+    "roc_auc": 0.9899,
+    "pr_auc": 0.9912,
+    "brier_score": 0.0932
+  },
+  "model_b_metrics": {
+    "accuracy": 0.773,
+    "precision": 0.9837,
+    "recall": 0.5998,
+    "f1": 0.7452,
+    "specificity": 0.9877,
+    "false_negative_rate": 0.4002,
+    "false_positive_rate": 0.0123,
+    "sif_precision": 0.9837,
+    "sif_recall": 0.5998,
+    "sif_f1": 0.7452,
+    "non_sif_precision": 0.6657,
+    "non_sif_recall": 0.9877,
+    "non_sif_f1": 0.7953,
+    "confusion_matrix": {
+      "tn": 882,
+      "fp": 11,
+      "fn": 443,
+      "tp": 664,
+      "matrix": [
+        [
+          882,
+          11
+        ],
+        [
+          443,
+          664
+        ]
+      ]
+    },
+    "total_samples": 2000,
+    "sif_support": 1107,
+    "non_sif_support": 893,
+    "roc_auc": 0.967,
+    "pr_auc": 0.9701,
+    "brier_score": 0.1897
+  },
+  "model_c_metrics": {
+    "accuracy": 0.9895,
+    "precision": 1.0,
+    "recall": 0.981,
+    "f1": 0.9904,
+    "specificity": 1.0,
+    "false_negative_rate": 0.019,
+    "false_positive_rate": 0.0,
+    "sif_precision": 1.0,
+    "sif_recall": 0.981,
+    "sif_f1": 0.9904,
+    "non_sif_precision": 0.977,
+    "non_sif_recall": 1.0,
+    "non_sif_f1": 0.9884,
+    "confusion_matrix": {
+      "tn": 893,
+      "fp": 0,
+      "fn": 21,
+      "tp": 1086,
+      "matrix": [
+        [
+          893,
+          0
+        ],
+        [
+          21,
+          1086
+        ]
+      ]
+    },
+    "total_samples": 2000,
+    "sif_support": 1107,
+    "non_sif_support": 893,
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 0.007
+  }
+}

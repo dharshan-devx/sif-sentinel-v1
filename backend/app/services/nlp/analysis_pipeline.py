@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from app.core.config import get_settings
 from app.core.constants import SIFLevel
 from app.knowledge.lsr_mapper import map_to_life_saving_rule
+from app.services.nlp.causal_engine import SafetyCausalReasoningEngine
 from app.services.nlp.confidence import overall_confidence
 from app.services.nlp.entity_extractor import extract_entities, get_structured_evidence
 from app.services.nlp.evidence_extractor import extract_evidence
@@ -35,6 +36,9 @@ class PipelineResult:
     explanation: str
     precursor_candidates: list[PrecursorCandidateItem]
     risk: dict | None
+    safety_graph: dict | None = None
+    causal_chains: list[dict] | None = None
+    reasoning_summary: str | None = None
 
 
 def analyze_text(text: str, precursor_priority: str | None = None) -> PipelineResult:
@@ -43,6 +47,15 @@ def analyze_text(text: str, precursor_priority: str | None = None) -> PipelineRe
     
     structured_evidence = get_structured_evidence(document)
     entities = extract_entities(document)
+    
+    # Phase 5B Causal Safety Reasoning
+    safety_graph_obj = SafetyCausalReasoningEngine.evaluate_causal_safety(
+        document=document,
+        structured_evidence=structured_evidence,
+        model_probability=prediction.probability,
+    )
+    safety_graph_dict = safety_graph_obj.to_dict()
+    causal_chains_list = [c.to_dict() for c in safety_graph_obj.causal_chains]
     
     rule = map_to_life_saving_rule(
         entities.activity, 
@@ -54,7 +67,12 @@ def analyze_text(text: str, precursor_priority: str | None = None) -> PipelineRe
     )
     
     evidence = extract_evidence(document, entities)
-    confidence = overall_confidence(max(prediction.probability, 1 - prediction.probability), entities.confidence, rule.confidence, evidence.confidence)
+    confidence = overall_confidence(
+        max(prediction.probability, 1 - prediction.probability),
+        entities.confidence,
+        rule.confidence,
+        evidence.confidence
+    )
     ambiguous = 0.42 <= prediction.probability <= 0.58
     
     # If a barrier is explicitly 'unknown', force review
@@ -83,13 +101,16 @@ def analyze_text(text: str, precursor_priority: str | None = None) -> PipelineRe
         evidence.evidence_sentences, evidence.evidence_terms, 
         confidence, review_required, prediction.model_name, 
         prediction.model_version, 
-        _explain(prediction.sif_level, structured_evidence, rule.rule, evidence.evidence_span, prediction.predictive_terms, review_required, has_unknown_barrier),
+        _explain(prediction.sif_level, structured_evidence, rule.rule, evidence.evidence_span, prediction.predictive_terms, review_required, has_unknown_barrier, safety_graph_obj.reasoning_summary),
         precursor_candidates,
-        risk_data
+        risk_data,
+        safety_graph=safety_graph_dict,
+        causal_chains=causal_chains_list,
+        reasoning_summary=safety_graph_obj.reasoning_summary
     )
 
 
-def _explain(level: SIFLevel, structured: StructuredEvidence, rule: str | None, evidence: str | None, predictive_terms: list[str], review_required: bool, has_unknown_barrier: bool) -> str:
+def _explain(level: SIFLevel, structured: StructuredEvidence, rule: str | None, evidence: str | None, predictive_terms: list[str], review_required: bool, has_unknown_barrier: bool, reasoning_summary: str | None = None) -> str:
     parts = []
     
     activities = structured.get_by_type(EvidenceType.ACTIVITY)
@@ -105,13 +126,13 @@ def _explain(level: SIFLevel, structured: StructuredEvidence, rule: str | None, 
             parts.append(f"The report states that {ctrl.normalized_concept} was explicitly verified.")
         elif ctrl.verification_status == "not verified":
             parts.append(f"The report states that {ctrl.normalized_concept} was NOT verified.")
-        elif ctrl.verification_status == "failed":
+        elif ctrl.verification_status in ("failed", "bypassed"):
             parts.append(f"The report states that {ctrl.normalized_concept} failed or was bypassed.")
         elif ctrl.verification_status == "not performed":
             parts.append(f"The report states that the activity was performed without {ctrl.normalized_concept}.")
         elif ctrl.verification_status == "unknown":
             parts.append(f"The report mentions {ctrl.normalized_concept} but its verification status is ambiguous or unknown.")
-            
+        
     if rule:
         parts.append(f"This evidence maps to the {rule} Life-Saving Rule.")
     else:
@@ -129,5 +150,8 @@ def _explain(level: SIFLevel, structured: StructuredEvidence, rule: str | None, 
             parts.append("Human review is recommended because the assessment depends on an ambiguous or unknown verification state.")
         else:
             parts.append("Human review is recommended to confirm this assessment.")
+
+    if reasoning_summary and reasoning_summary not in " ".join(parts):
+        parts.append(f"Causal reasoning: {reasoning_summary}")
 
     return " ".join(parts)

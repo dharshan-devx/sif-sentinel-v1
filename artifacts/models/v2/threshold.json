@@ -1,0 +1,6 @@
+{
+  "selected_threshold": 0.49,
+  "default_threshold": 0.5,
+  "min_recall_constraint": 0.8,
+  "selection_strategy": "safety_first"
+}
