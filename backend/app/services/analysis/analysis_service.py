@@ -248,7 +248,27 @@ class AnalysisService:
             model_version=result.model_version,
             explanation=result.explanation,
             risk=result.risk,
+            safety_graph=getattr(result, "safety_graph", None),
+            causal_chains=getattr(result, "causal_chains", None),
+            reasoning_summary=getattr(result, "reasoning_summary", None),
         )
+
+        # Phase 5F: Generate Deterministic Interventions & Prevention Plan
+        if getattr(result, "safety_graph", None):
+            try:
+                from app.services.nlp.intervention_engine import SafetyInterventionEngine
+                int_res = SafetyInterventionEngine.generate_interventions(
+                    safety_graph=result.safety_graph,
+                    risk_score=result.risk.score if result.risk else None,
+                    risk_priority=result.risk.priority if result.risk else None,
+                    life_saving_rule=result.life_saving_rule,
+                    sif_level=result.sif_level.value if hasattr(result.sif_level, "value") else str(result.sif_level),
+                )
+                resp.interventions = [r.to_dict() for r in int_res.recommendations]
+                resp.prevention_plan = int_res.cumulative_prevention_plan.to_dict()
+            except Exception:
+                pass
+
         if analysis_db_obj:
             resp.reviewer_summary = analysis_db_obj.reviewer_summary
             resp.llm_attempted = analysis_db_obj.llm_attempted
@@ -259,3 +279,4 @@ class AnalysisService:
             resp.llm_error_code = analysis_db_obj.llm_error_code
             
         return resp
+

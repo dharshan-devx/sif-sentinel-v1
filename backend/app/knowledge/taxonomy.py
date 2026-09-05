@@ -26,3 +26,8 @@ def barriers() -> list[str]:
 
 def life_saving_rules() -> list[dict]:
     return load_json("life_saving_rules.json")
+
+
+def safety_concepts() -> dict:
+    return load_json("safety_concepts.json")
+

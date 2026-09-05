@@ -6,3 +6,7 @@ __pycache__/
 *.db
 .env
 .venv/
+
+# Large Model Weights (>100MB GitHub file limit)
+*.safetensors
+*_transformer_hybrid_model.joblib

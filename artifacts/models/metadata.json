@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "model_name": "sif-tfidf-randomforest",
   "model_version": "sif-tfidf-rf-v1",
   "training_timestamp": "2026-09-03T16:15:22.379128+00:00",
@@ -6,11 +7,44 @@
   "dataset_hash": "4512698c83a59ca347609c1057c34325ebd56f983d9e7b5fa3648a6619b589ba",
   "scikit_learn_version": "1.8.0",
   "feature_configuration": {
+=======
+  "model_name": "sif-tfidf-logreg",
+  "model_version": "sif-tfidf-logreg-v2",
+  "training_timestamp": "2026-09-03T18:12:07.031751+00:00",
+  "training_dataset_identifier": "safety-reports-raw-10k",
+  "dataset_filename": "safety_reports.csv",
+  "dataset_hash": "3225b279a2b0809ba3a6c8e44ee50b5821e21f6f9d9c91c216ade67f6f94d691",
+  "total_records": 10000,
+  "positive_count": 5000,
+  "negative_count": 5000,
+  "split_strategy": "deterministic_group_aware_70_15_15",
+  "split_seed": 2026,
+  "train_records": 7000,
+  "validation_records": 1500,
+  "test_records": 1500,
+  "preprocessing_version": "phase2_canonical_normalization",
+  "scikit_learn_version": "1.9.0",
+  "vectorizer_configuration": {
+>>>>>>> 1afc93c0b7ef1a31932121a640586ced99233f55
     "ngram_range": [
       1,
       2
     ],
-    "sublinear_tf": true
+    "min_df": 2,
+    "max_df": 0.95,
+    "sublinear_tf": true,
+    "vocabulary_size": 4332
+  },
+  "classifier_configuration": {
+    "model_type": "LogisticRegression",
+    "winning_candidate_name": "Logistic Regression (C=1.0, balanced, n-grams 1-2)"
+  },
+  "operating_threshold": 0.49,
+  "threshold_config": {
+    "selected_threshold": 0.49,
+    "default_threshold": 0.5,
+    "min_recall_constraint": 0.8,
+    "selection_strategy": "safety_first"
   },
   "class_labels": [
     "NON_SIF",
@@ -28,39 +62,370 @@
         "precision": 1.0,
         "recall": 1.0,
         "f1-score": 1.0,
-        "support": 64.0
+        "support": 750
       },
       "SIF": {
         "precision": 1.0,
         "recall": 1.0,
         "f1-score": 1.0,
-        "support": 64.0
+        "support": 750
       },
-      "accuracy": 1.0,
-      "macro avg": {
-        "precision": 1.0,
-        "recall": 1.0,
-        "f1-score": 1.0,
-        "support": 128.0
-      },
-      "weighted avg": {
-        "precision": 1.0,
-        "recall": 1.0,
-        "f1-score": 1.0,
-        "support": 128.0
-      }
+      "accuracy": 1.0
     },
     "confusion_matrix": [
       [
-        64,
+        750,
         0
       ],
       [
         0,
-        64
+        750
       ]
     ],
     "roc_auc": 1.0,
-    "test_records": 128
-  }
+    "pr_auc": 1.0,
+    "brier_score": 0.0027,
+    "test_records": 1500
+  },
+  "validation_metrics_at_selected_threshold": {
+    "threshold": 0.49,
+    "accuracy": 1.0,
+    "sif_precision": 1.0,
+    "sif_recall": 1.0,
+    "sif_f1": 1.0,
+    "fnr": 0.0,
+    "fpr": 0.0,
+    "tn": 750,
+    "fp": 0,
+    "fn": 0,
+    "tp": 750
+  },
+  "test_metrics_at_selected_threshold": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "specificity": 1.0,
+    "false_negative_rate": 0.0,
+    "false_positive_rate": 0.0,
+    "sif_precision": 1.0,
+    "sif_recall": 1.0,
+    "sif_f1": 1.0,
+    "non_sif_precision": 1.0,
+    "non_sif_recall": 1.0,
+    "non_sif_f1": 1.0,
+    "confusion_matrix": {
+      "tn": 750,
+      "fp": 0,
+      "fn": 0,
+      "tp": 750,
+      "matrix": [
+        [
+          750,
+          0
+        ],
+        [
+          0,
+          750
+        ]
+      ]
+    },
+    "total_samples": 1500,
+    "sif_support": 750,
+    "non_sif_support": 750,
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 0.0027
+  },
+  "test_metrics_at_default_threshold": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "specificity": 1.0,
+    "false_negative_rate": 0.0,
+    "false_positive_rate": 0.0,
+    "sif_precision": 1.0,
+    "sif_recall": 1.0,
+    "sif_f1": 1.0,
+    "non_sif_precision": 1.0,
+    "non_sif_recall": 1.0,
+    "non_sif_f1": 1.0,
+    "confusion_matrix": {
+      "tn": 750,
+      "fp": 0,
+      "fn": 0,
+      "tp": 750,
+      "matrix": [
+        [
+          750,
+          0
+        ],
+        [
+          0,
+          750
+        ]
+      ]
+    },
+    "total_samples": 1500,
+    "sif_support": 750,
+    "non_sif_support": 750,
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 0.0027
+  },
+  "calibration": {
+    "validation_brier_score": 0.0027,
+    "validation_ece": 0.0484,
+    "test_brier_score": 0.0027,
+    "test_ece": 0.0483
+  },
+  "historical_baseline_comparison": {
+    "accuracy": 0.564,
+    "precision": 0.5552,
+    "recall": 0.644,
+    "f1": 0.5963,
+    "specificity": 0.484,
+    "false_negative_rate": 0.356,
+    "false_positive_rate": 0.516,
+    "sif_precision": 0.5552,
+    "sif_recall": 0.644,
+    "sif_f1": 0.5963,
+    "non_sif_precision": 0.5762,
+    "non_sif_recall": 0.484,
+    "non_sif_f1": 0.5261,
+    "confusion_matrix": {
+      "tn": 363,
+      "fp": 387,
+      "fn": 267,
+      "tp": 483,
+      "matrix": [
+        [
+          363,
+          387
+        ],
+        [
+          267,
+          483
+        ]
+      ]
+    },
+    "total_samples": 1500,
+    "sif_support": 750,
+    "non_sif_support": 750,
+    "roc_auc": 0.5953,
+    "pr_auc": 0.5644,
+    "brier_score": 0.2558
+  },
+  "experiment_comparison": [
+    {
+      "index": 0,
+      "name": "Logistic Regression (C=1.0, balanced, n-grams 1-2)",
+      "vocab_size": 4332,
+      "val_accuracy": 1.0,
+      "val_roc_auc": 1.0,
+      "val_pr_auc": 1.0,
+      "val_sif_precision": 1.0,
+      "val_sif_recall": 1.0,
+      "val_sif_f1": 1.0,
+      "val_fnr": 0.0,
+      "val_fpr": 0.0,
+      "val_brier_score": 0.0027
+    },
+    {
+      "index": 1,
+      "name": "Logistic Regression (C=2.0, balanced, n-grams 1-2)",
+      "vocab_size": 4332,
+      "val_accuracy": 1.0,
+      "val_roc_auc": 1.0,
+      "val_pr_auc": 1.0,
+      "val_sif_precision": 1.0,
+      "val_sif_recall": 1.0,
+      "val_sif_f1": 1.0,
+      "val_fnr": 0.0,
+      "val_fpr": 0.0,
+      "val_brier_score": 0.001
+    },
+    {
+      "index": 2,
+      "name": "Logistic Regression (C=0.5, balanced, n-grams 1-2)",
+      "vocab_size": 4332,
+      "val_accuracy": 1.0,
+      "val_roc_auc": 1.0,
+      "val_pr_auc": 1.0,
+      "val_sif_precision": 1.0,
+      "val_sif_recall": 1.0,
+      "val_sif_f1": 1.0,
+      "val_fnr": 0.0,
+      "val_fpr": 0.0,
+      "val_brier_score": 0.007
+    },
+    {
+      "index": 3,
+      "name": "Linear SVM / SGD (log_loss, alpha=1e-4, balanced)",
+      "vocab_size": 4332,
+      "val_accuracy": 1.0,
+      "val_roc_auc": 1.0,
+      "val_pr_auc": 1.0,
+      "val_sif_precision": 1.0,
+      "val_sif_recall": 1.0,
+      "val_sif_f1": 1.0,
+      "val_fnr": 0.0,
+      "val_fpr": 0.0,
+      "val_brier_score": 0.0016
+    },
+    {
+      "index": 4,
+      "name": "Calibrated Linear SVM (LinearSVC, C=1.0, Platt scaling)",
+      "vocab_size": 4332,
+      "val_accuracy": 1.0,
+      "val_roc_auc": 1.0,
+      "val_pr_auc": 1.0,
+      "val_sif_precision": 1.0,
+      "val_sif_recall": 1.0,
+      "val_sif_f1": 1.0,
+      "val_fnr": 0.0,
+      "val_fpr": 0.0,
+      "val_brier_score": 0.0082
+    },
+    {
+      "index": 5,
+      "name": "Multinomial Naive Bayes (alpha=0.5, n-grams 1-2)",
+      "vocab_size": 4332,
+      "val_accuracy": 1.0,
+      "val_roc_auc": 1.0,
+      "val_pr_auc": 1.0,
+      "val_sif_precision": 1.0,
+      "val_sif_recall": 1.0,
+      "val_sif_f1": 1.0,
+      "val_fnr": 0.0,
+      "val_fpr": 0.0,
+      "val_brier_score": 0.0
+    }
+  ],
+  "top_sif_features": [
+    {
+      "feature": "of",
+      "weight": 2.9492
+    },
+    {
+      "feature": "was",
+      "weight": 2.8745
+    },
+    {
+      "feature": "or",
+      "weight": 2.4909
+    },
+    {
+      "feature": "without",
+      "weight": 2.4907
+    },
+    {
+      "feature": "had",
+      "weight": 2.4665
+    },
+    {
+      "feature": "inside",
+      "weight": 2.4229
+    },
+    {
+      "feature": "load",
+      "weight": 2.3637
+    },
+    {
+      "feature": "to",
+      "weight": 2.2241
+    },
+    {
+      "feature": "worked",
+      "weight": 2.1268
+    },
+    {
+      "feature": "tag",
+      "weight": 1.98
+    },
+    {
+      "feature": "using",
+      "weight": 1.9652
+    },
+    {
+      "feature": "clear",
+      "weight": 1.9341
+    },
+    {
+      "feature": "gas",
+      "weight": 1.9022
+    },
+    {
+      "feature": "out",
+      "weight": 1.8857
+    },
+    {
+      "feature": "sling",
+      "weight": 1.8454
+    }
+  ],
+  "top_non_sif_features": [
+    {
+      "feature": "reported",
+      "weight": -2.6608
+    },
+    {
+      "feature": "it",
+      "weight": -1.6842
+    },
+    {
+      "feature": "in the",
+      "weight": -1.6728
+    },
+    {
+      "feature": "floor",
+      "weight": -1.6584
+    },
+    {
+      "feature": "as",
+      "weight": -1.5408
+    },
+    {
+      "feature": "when",
+      "weight": -1.4558
+    },
+    {
+      "feature": "walkway",
+      "weight": -1.4545
+    },
+    {
+      "feature": "spill",
+      "weight": -1.4341
+    },
+    {
+      "feature": "stopped",
+      "weight": -1.4187
+    },
+    {
+      "feature": "noted",
+      "weight": -1.3504
+    },
+    {
+      "feature": "slip",
+      "weight": -1.3237
+    },
+    {
+      "feature": "minor",
+      "weight": -1.3231
+    },
+    {
+      "feature": "per",
+      "weight": -1.2665
+    },
+    {
+      "feature": "were",
+      "weight": -1.2454
+    },
+    {
+      "feature": "during",
+      "weight": -1.2295
+    }
+  ],
+  "inference_latency_ms": 0.0
 }

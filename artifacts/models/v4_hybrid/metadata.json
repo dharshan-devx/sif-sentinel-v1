@@ -1,0 +1,169 @@
+{
+  "model_name": "sif-calibrated-hybrid",
+  "model_version": "sif-hybrid-v1",
+  "training_timestamp": "2026-09-04T08:58:54.783244+00:00",
+  "operating_threshold": 0.49,
+  "validation_metrics": {
+    "threshold": 0.49,
+    "accuracy": 1.0,
+    "sif_precision": 1.0,
+    "sif_recall": 1.0,
+    "sif_f1": 1.0,
+    "fnr": 0.0,
+    "fpr": 0.0,
+    "tn": 750,
+    "fp": 0,
+    "fn": 0,
+    "tp": 750
+  },
+  "test_metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "specificity": 1.0,
+    "false_negative_rate": 0.0,
+    "false_positive_rate": 0.0,
+    "sif_precision": 1.0,
+    "sif_recall": 1.0,
+    "sif_f1": 1.0,
+    "non_sif_precision": 1.0,
+    "non_sif_recall": 1.0,
+    "non_sif_f1": 1.0,
+    "confusion_matrix": {
+      "tn": 750,
+      "fp": 0,
+      "fn": 0,
+      "tp": 750,
+      "matrix": [
+        [
+          750,
+          0
+        ],
+        [
+          0,
+          750
+        ]
+      ]
+    },
+    "total_samples": 1500,
+    "sif_support": 750,
+    "non_sif_support": 750,
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 0.0
+  },
+  "template_holdout_metrics": {
+    "accuracy": 0.7504,
+    "precision": 0.9425,
+    "recall": 0.5528,
+    "f1": 0.6969,
+    "specificity": 0.9636,
+    "false_negative_rate": 0.4472,
+    "false_positive_rate": 0.0364,
+    "sif_precision": 0.9425,
+    "sif_recall": 0.5528,
+    "sif_f1": 0.6969,
+    "non_sif_precision": 0.6664,
+    "non_sif_recall": 0.9636,
+    "non_sif_f1": 0.7879,
+    "confusion_matrix": {
+      "tn": 1404,
+      "fp": 53,
+      "fn": 703,
+      "tp": 869,
+      "matrix": [
+        [
+          1404,
+          53
+        ],
+        [
+          703,
+          869
+        ]
+      ]
+    },
+    "total_samples": 3029,
+    "sif_support": 1572,
+    "non_sif_support": 1457,
+    "roc_auc": 0.9596,
+    "pr_auc": 0.958,
+    "brier_score": 0.1838
+  },
+  "model_a_comparison": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "specificity": 1.0,
+    "false_negative_rate": 0.0,
+    "false_positive_rate": 0.0,
+    "sif_precision": 1.0,
+    "sif_recall": 1.0,
+    "sif_f1": 1.0,
+    "non_sif_precision": 1.0,
+    "non_sif_recall": 1.0,
+    "non_sif_f1": 1.0,
+    "confusion_matrix": {
+      "tn": 750,
+      "fp": 0,
+      "fn": 0,
+      "tp": 750,
+      "matrix": [
+        [
+          750,
+          0
+        ],
+        [
+          0,
+          750
+        ]
+      ]
+    },
+    "total_samples": 1500,
+    "sif_support": 750,
+    "non_sif_support": 750,
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 0.0027
+  },
+  "model_b_comparison": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "specificity": 1.0,
+    "false_negative_rate": 0.0,
+    "false_positive_rate": 0.0,
+    "sif_precision": 1.0,
+    "sif_recall": 1.0,
+    "sif_f1": 1.0,
+    "non_sif_precision": 1.0,
+    "non_sif_recall": 1.0,
+    "non_sif_f1": 1.0,
+    "confusion_matrix": {
+      "tn": 750,
+      "fp": 0,
+      "fn": 0,
+      "tp": 750,
+      "matrix": [
+        [
+          750,
+          0
+        ],
+        [
+          0,
+          750
+        ]
+      ]
+    },
+    "total_samples": 1500,
+    "sif_support": 750,
+    "non_sif_support": 750,
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 0.0021
+  },
+  "has_torch": true,
+  "has_transformers": true
+}

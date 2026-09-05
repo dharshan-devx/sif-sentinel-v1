@@ -23,6 +23,7 @@ else:
 
 os.environ["JWT_SECRET_KEY"] = "test-only-secret-key-that-is-long-enough"
 os.environ["CORS_ORIGINS"] = "http://localhost:3000"
+os.environ.setdefault("SIF_MODEL_VERSION", "v1")
 
 import pytest_asyncio
 

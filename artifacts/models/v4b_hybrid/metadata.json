@@ -1,0 +1,57 @@
+{
+  "model_name": "sif-transformer-hybrid-v4b",
+  "model_version": "v4b_hybrid",
+  "architecture": "LogisticRegressionMetaLearner(TFIDF + DistilBERT + Phase2NLP)",
+  "operating_threshold": 0.49,
+  "validation_metrics": {
+    "threshold": 0.49,
+    "accuracy": 1.0,
+    "sif_precision": 1.0,
+    "sif_recall": 1.0,
+    "sif_f1": 1.0,
+    "fnr": 0.0,
+    "fpr": 0.0,
+    "tn": 750,
+    "fp": 0,
+    "fn": 0,
+    "tp": 750
+  },
+  "locked_test_metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "specificity": 1.0,
+    "false_negative_rate": 0.0,
+    "false_positive_rate": 0.0,
+    "sif_precision": 1.0,
+    "sif_recall": 1.0,
+    "sif_f1": 1.0,
+    "non_sif_precision": 1.0,
+    "non_sif_recall": 1.0,
+    "non_sif_f1": 1.0,
+    "confusion_matrix": {
+      "tn": 750,
+      "fp": 0,
+      "fn": 0,
+      "tp": 750,
+      "matrix": [
+        [
+          750,
+          0
+        ],
+        [
+          0,
+          750
+        ]
+      ]
+    },
+    "total_samples": 1500,
+    "sif_support": 750,
+    "non_sif_support": 750,
+    "roc_auc": 1.0,
+    "pr_auc": 1.0,
+    "brier_score": 0.0
+  },
+  "timestamp": "2026-09-04T13:09:14.987134+00:00"
+}

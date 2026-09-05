@@ -1,0 +1,814 @@
+{
+  "part1_audit": {
+    "model_version": "sif-tfidf-logreg-v2",
+    "model_type": "LogisticRegression",
+    "vectorizer": {
+      "ngram_range": [
+        1,
+        2
+      ],
+      "min_df": 2,
+      "max_df": 0.95,
+      "sublinear_tf": true,
+      "vocabulary_size": 4332
+    },
+    "preprocessing": "phase2_canonical_normalization",
+    "threshold": 0.49,
+    "calibration": {
+      "validation_brier_score": 0.0027,
+      "validation_ece": 0.0484,
+      "test_brier_score": 0.0027,
+      "test_ece": 0.0483
+    },
+    "train_size": 7000,
+    "val_size": 1500,
+    "test_size": 1500
+  },
+  "part2_reproduce": {
+    "val_metrics": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "false_negative_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "sif_precision": 1.0,
+      "sif_recall": 1.0,
+      "sif_f1": 1.0,
+      "non_sif_precision": 1.0,
+      "non_sif_recall": 1.0,
+      "non_sif_f1": 1.0,
+      "confusion_matrix": {
+        "tn": 750,
+        "fp": 0,
+        "fn": 0,
+        "tp": 750,
+        "matrix": [
+          [
+            750,
+            0
+          ],
+          [
+            0,
+            750
+          ]
+        ]
+      },
+      "total_samples": 1500,
+      "sif_support": 750,
+      "non_sif_support": 750,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "brier_score": 0.0027
+    },
+    "test_metrics": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "false_negative_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "sif_precision": 1.0,
+      "sif_recall": 1.0,
+      "sif_f1": 1.0,
+      "non_sif_precision": 1.0,
+      "non_sif_recall": 1.0,
+      "non_sif_f1": 1.0,
+      "confusion_matrix": {
+        "tn": 750,
+        "fp": 0,
+        "fn": 0,
+        "tp": 750,
+        "matrix": [
+          [
+            750,
+            0
+          ],
+          [
+            0,
+            750
+          ]
+        ]
+      },
+      "total_samples": 1500,
+      "sif_support": 750,
+      "non_sif_support": 750,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "brier_score": 0.0027
+    },
+    "expected_test": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "specificity": 1.0,
+      "false_negative_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "sif_precision": 1.0,
+      "sif_recall": 1.0,
+      "sif_f1": 1.0,
+      "non_sif_precision": 1.0,
+      "non_sif_recall": 1.0,
+      "non_sif_f1": 1.0,
+      "confusion_matrix": {
+        "tn": 750,
+        "fp": 0,
+        "fn": 0,
+        "tp": 750,
+        "matrix": [
+          [
+            750,
+            0
+          ],
+          [
+            0,
+            750
+          ]
+        ]
+      },
+      "total_samples": 1500,
+      "sif_support": 750,
+      "non_sif_support": 750,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "brier_score": 0.0027
+    },
+    "matches_expected": true
+  },
+  "part3_duplicate_leakage": {
+    "train_val_overlap_count": 0,
+    "train_test_overlap_count": 0,
+    "val_test_overlap_count": 0,
+    "train_groups": 5883,
+    "val_groups": 1264,
+    "test_groups": 1260,
+    "cross_split_duplicate_groups": 0
+  },
+  "part4_template_leakage": {
+    "total_records": 10000,
+    "number_of_major_template_families": 535,
+    "records_in_template_families": 9969,
+    "percentage_records_in_template_families": 99.69,
+    "train_test_family_overlap_count": 348,
+    "train_val_test_family_overlap_count": 451,
+    "top_5_family_sizes": [
+      230,
+      223,
+      207,
+      201,
+      196
+    ],
+    "explains_perfect_score": true
+  },
+  "part5_template_holdout": {
+    "diagnostic_experiment_name": "Template-Held-Out Diagnostic LogisticRegression",
+    "train_records": 6971,
+    "test_records": 3029,
+    "metrics": {
+      "accuracy": 0.7917,
+      "precision": 0.9443,
+      "recall": 0.6361,
+      "f1": 0.7602,
+      "specificity": 0.9595,
+      "false_negative_rate": 0.3639,
+      "false_positive_rate": 0.0405,
+      "sif_precision": 0.9443,
+      "sif_recall": 0.6361,
+      "sif_f1": 0.7602,
+      "non_sif_precision": 0.7096,
+      "non_sif_recall": 0.9595,
+      "non_sif_f1": 0.8159,
+      "confusion_matrix": {
+        "tn": 1398,
+        "fp": 59,
+        "fn": 572,
+        "tp": 1000,
+        "matrix": [
+          [
+            1398,
+            59
+          ],
+          [
+            572,
+            1000
+          ]
+        ]
+      },
+      "total_samples": 3029,
+      "sif_support": 1572,
+      "non_sif_support": 1457,
+      "roc_auc": 0.9698,
+      "pr_auc": 0.9656,
+      "brier_score": 0.1202
+    }
+  },
+  "part6_adversarial": [
+    {
+      "text": "Operator climbed to 15ft platform without safety harness hooked.",
+      "category": "Working at Height",
+      "expected": "SIF",
+      "probability": 0.7463,
+      "prediction": "SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.7463, Exp=SIF"
+    },
+    {
+      "text": "Worker performed ladder inspection on 4ft step stool with guardrails.",
+      "category": "Working at Height",
+      "expected": "NON_SIF",
+      "probability": 0.2643,
+      "prediction": "NON_SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.2643, Exp=NON_SIF"
+    },
+    {
+      "text": "Scaffold was erected at height of 25ft missing mid-rails and toe-boards.",
+      "category": "Working at Height",
+      "expected": "SIF",
+      "probability": 0.7907,
+      "prediction": "SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.7907, Exp=SIF"
+    },
+    {
+      "text": "Technician entered nitrogen-purged vessel prior to gas clearance testing.",
+      "category": "Confined Space",
+      "expected": "SIF",
+      "probability": 0.5067,
+      "prediction": "SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.5067, Exp=SIF"
+    },
+    {
+      "text": "Confined space entry permit was verified and continuous gas monitoring active.",
+      "category": "Confined Space",
+      "expected": "NON_SIF",
+      "probability": 0.5679,
+      "prediction": "SIF",
+      "result": "INCORRECT",
+      "observation": "Prob=0.5679, Exp=NON_SIF"
+    },
+    {
+      "text": "Fitter opened hydraulic line under 3000 PSI pressure without zero energy verification.",
+      "category": "Energy Isolation / LOTO",
+      "expected": "SIF",
+      "probability": 0.347,
+      "prediction": "NON_SIF",
+      "result": "INCORRECT",
+      "observation": "Prob=0.3470, Exp=SIF"
+    },
+    {
+      "text": "Lockout tagout locks applied and zero pressure confirmed before pipe flange break.",
+      "category": "Energy Isolation / LOTO",
+      "expected": "NON_SIF",
+      "probability": 0.1839,
+      "prediction": "NON_SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.1839, Exp=NON_SIF"
+    },
+    {
+      "text": "Rigging team walked directly underneath 5-ton suspended drill collar.",
+      "category": "Suspended Loads",
+      "expected": "SIF",
+      "probability": 0.5519,
+      "prediction": "SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.5519, Exp=SIF"
+    },
+    {
+      "text": "Tag lines were utilized and personnel remained outside red-zone exclusion zone during lift.",
+      "category": "Suspended Loads",
+      "expected": "NON_SIF",
+      "probability": 0.2258,
+      "prediction": "NON_SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.2258, Exp=NON_SIF"
+    },
+    {
+      "text": "Hot work commenced near hydrocarbon vent header without LLE flammable gas sweep.",
+      "category": "Gas Testing",
+      "expected": "SIF",
+      "probability": 0.5738,
+      "prediction": "SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.5738, Exp=SIF"
+    },
+    {
+      "text": "Gas test confirmed 0% LEL prior to welding spark permit issuance.",
+      "category": "Gas Testing",
+      "expected": "NON_SIF",
+      "probability": 0.5095,
+      "prediction": "SIF",
+      "result": "INCORRECT",
+      "observation": "Prob=0.5095, Exp=NON_SIF"
+    },
+    {
+      "text": "Roustabout handled hazardous caustic chemical without face shield or chemical aprons.",
+      "category": "PPE",
+      "expected": "SIF",
+      "probability": 0.4267,
+      "prediction": "NON_SIF",
+      "result": "INCORRECT",
+      "observation": "Prob=0.4267, Exp=SIF"
+    },
+    {
+      "text": "Worker wore standard safety glasses while sweeping dry dirt in warehouse.",
+      "category": "PPE",
+      "expected": "NON_SIF",
+      "probability": 0.1877,
+      "prediction": "NON_SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.1877, Exp=NON_SIF"
+    },
+    {
+      "text": "Electrician opened 4160V switchgear compartment while bus bar remained energized.",
+      "category": "Hazardous Energy",
+      "expected": "SIF",
+      "probability": 0.4426,
+      "prediction": "NON_SIF",
+      "result": "INCORRECT",
+      "observation": "Prob=0.4426, Exp=SIF"
+    },
+    {
+      "text": "Electrical breaker locked in open position and tested dead with multimeter.",
+      "category": "Hazardous Energy",
+      "expected": "NON_SIF",
+      "probability": 0.1742,
+      "prediction": "NON_SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.1742, Exp=NON_SIF"
+    },
+    {
+      "text": "Operator jumpered emergency shutdown interlock to bypass high-pressure trip.",
+      "category": "Barrier Bypass",
+      "expected": "SIF",
+      "probability": 0.4527,
+      "prediction": "NON_SIF",
+      "result": "INCORRECT",
+      "observation": "Prob=0.4527, Exp=SIF"
+    },
+    {
+      "text": "Safety interlock trip tested during scheduled maintenance per SOP.",
+      "category": "Barrier Bypass",
+      "expected": "NON_SIF",
+      "probability": 0.0735,
+      "prediction": "NON_SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.0735, Exp=NON_SIF"
+    },
+    {
+      "text": "Floor opening around cell hatch uncovered and un-barricaded in dark area.",
+      "category": "Unsafe Condition",
+      "expected": "SIF",
+      "probability": 0.0563,
+      "prediction": "NON_SIF",
+      "result": "INCORRECT",
+      "observation": "Prob=0.0563, Exp=SIF"
+    },
+    {
+      "text": "Wet floor sign placed near main office corridor after floor washing.",
+      "category": "Unsafe Condition",
+      "expected": "NON_SIF",
+      "probability": 0.056,
+      "prediction": "NON_SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.0560, Exp=NON_SIF"
+    },
+    {
+      "text": "Dropped 12lb heavy wrench from 40ft derrick level landing 2ft from helper head.",
+      "category": "Near Miss",
+      "expected": "SIF",
+      "probability": 0.0984,
+      "prediction": "NON_SIF",
+      "result": "INCORRECT",
+      "observation": "Prob=0.0984, Exp=SIF"
+    },
+    {
+      "text": "Dropped small plastic pen from desk surface onto carpeted office floor.",
+      "category": "Near Miss",
+      "expected": "NON_SIF",
+      "probability": 0.0579,
+      "prediction": "NON_SIF",
+      "result": "CORRECT",
+      "observation": "Prob=0.0579, Exp=NON_SIF"
+    }
+  ],
+  "part7_counterfactuals": [
+    {
+      "pair_id": "PAIR A",
+      "category": "Fall Protection",
+      "unsafe_text": "Worker worked at height without fall protection.",
+      "unsafe_prob": 0.5881,
+      "unsafe_pred": "SIF",
+      "safe_text": "Worker worked at height with approved fall protection.",
+      "safe_prob": 0.4851,
+      "safe_pred": "NON_SIF",
+      "prob_delta": 0.103,
+      "status": "PARTIALLY EXPECTED",
+      "explanation": "Delta = +0.1030. Unsafe prob: 0.5881, Safe prob: 0.4851"
+    },
+    {
+      "pair_id": "PAIR B",
+      "category": "Energy Isolation",
+      "unsafe_text": "Energy isolation was not verified before maintenance.",
+      "unsafe_prob": 0.3957,
+      "unsafe_pred": "NON_SIF",
+      "safe_text": "Energy isolation was verified before maintenance.",
+      "safe_prob": 0.2074,
+      "safe_pred": "NON_SIF",
+      "prob_delta": 0.1883,
+      "status": "PARTIALLY EXPECTED",
+      "explanation": "Delta = +0.1883. Unsafe prob: 0.3957, Safe prob: 0.2074"
+    },
+    {
+      "pair_id": "PAIR C",
+      "category": "Gas Testing",
+      "unsafe_text": "Gas testing was not completed before entry.",
+      "unsafe_prob": 0.5845,
+      "unsafe_pred": "SIF",
+      "safe_text": "Gas testing was completed before entry.",
+      "safe_prob": 0.4816,
+      "safe_pred": "NON_SIF",
+      "prob_delta": 0.1028,
+      "status": "PARTIALLY EXPECTED",
+      "explanation": "Delta = +0.1028. Unsafe prob: 0.5845, Safe prob: 0.4816"
+    },
+    {
+      "pair_id": "PAIR D",
+      "category": "Suspended Load",
+      "unsafe_text": "Load was suspended above personnel.",
+      "unsafe_prob": 0.4806,
+      "unsafe_pred": "NON_SIF",
+      "safe_text": "Personnel were kept outside the suspended-load exclusion zone.",
+      "safe_prob": 0.1821,
+      "safe_pred": "NON_SIF",
+      "prob_delta": 0.2985,
+      "status": "PARTIALLY EXPECTED",
+      "explanation": "Delta = +0.2985. Unsafe prob: 0.4806, Safe prob: 0.1821"
+    },
+    {
+      "pair_id": "PAIR E",
+      "category": "Safety Interlock",
+      "unsafe_text": "Interlock was bypassed during operation.",
+      "unsafe_prob": 0.5388,
+      "unsafe_pred": "SIF",
+      "safe_text": "Interlock remained functional during operation.",
+      "safe_prob": 0.2058,
+      "safe_pred": "NON_SIF",
+      "prob_delta": 0.3329,
+      "status": "EXPECTED",
+      "explanation": "Delta = +0.3329. Unsafe prob: 0.5388, Safe prob: 0.2058"
+    },
+    {
+      "pair_id": "PAIR F",
+      "category": "Confined Space",
+      "unsafe_text": "Employee entered vessel without atmospheric testing.",
+      "unsafe_prob": 0.7658,
+      "unsafe_pred": "SIF",
+      "safe_text": "Employee entered vessel after atmospheric testing was verified.",
+      "safe_prob": 0.5391,
+      "safe_pred": "SIF",
+      "prob_delta": 0.2268,
+      "status": "PARTIALLY EXPECTED",
+      "explanation": "Delta = +0.2268. Unsafe prob: 0.7658, Safe prob: 0.5391"
+    }
+  ],
+  "part8_negation": [
+    {
+      "negated_text": "Fall protection was not used.",
+      "negated_prob": 0.4148,
+      "negated_pred": "NON_SIF",
+      "positive_text": "Fall protection was used.",
+      "positive_prob": 0.2917,
+      "positive_pred": "NON_SIF",
+      "prob_delta": 0.1231,
+      "sensitive_to_negation": false
+    },
+    {
+      "negated_text": "Gas testing was not completed.",
+      "negated_prob": 0.7501,
+      "negated_pred": "SIF",
+      "positive_text": "Gas testing was completed.",
+      "positive_prob": 0.6727,
+      "positive_pred": "SIF",
+      "prob_delta": 0.0774,
+      "sensitive_to_negation": false
+    },
+    {
+      "negated_text": "Energy isolation was not verified.",
+      "negated_prob": 0.5073,
+      "negated_pred": "SIF",
+      "positive_text": "Energy isolation was verified.",
+      "positive_prob": 0.2334,
+      "positive_pred": "NON_SIF",
+      "prob_delta": 0.2739,
+      "sensitive_to_negation": true
+    },
+    {
+      "negated_text": "Atmospheric testing was never conducted.",
+      "negated_prob": 0.6695,
+      "negated_pred": "SIF",
+      "positive_text": "Atmospheric testing was conducted.",
+      "positive_prob": 0.5308,
+      "positive_pred": "SIF",
+      "prob_delta": 0.1387,
+      "sensitive_to_negation": false
+    },
+    {
+      "negated_text": "PPE was not worn during grinding.",
+      "negated_prob": 0.3763,
+      "negated_pred": "NON_SIF",
+      "positive_text": "PPE was worn during grinding.",
+      "positive_prob": 0.2413,
+      "positive_pred": "NON_SIF",
+      "prob_delta": 0.135,
+      "sensitive_to_negation": false
+    },
+    {
+      "negated_text": "Worker was prevented from entering without harness.",
+      "negated_prob": 0.5521,
+      "negated_pred": "SIF",
+      "positive_text": "Worker entered without harness.",
+      "positive_prob": 0.6526,
+      "positive_pred": "SIF",
+      "prob_delta": -0.1005,
+      "sensitive_to_negation": false
+    }
+  ],
+  "part9_keyword_shortcuts": {
+    "top_sif_features": [
+      {
+        "feature": "of",
+        "weight": 2.9492
+      },
+      {
+        "feature": "was",
+        "weight": 2.8745
+      },
+      {
+        "feature": "or",
+        "weight": 2.4909
+      },
+      {
+        "feature": "without",
+        "weight": 2.4907
+      },
+      {
+        "feature": "had",
+        "weight": 2.4665
+      },
+      {
+        "feature": "inside",
+        "weight": 2.4229
+      },
+      {
+        "feature": "load",
+        "weight": 2.3637
+      },
+      {
+        "feature": "to",
+        "weight": 2.2241
+      },
+      {
+        "feature": "worked",
+        "weight": 2.1268
+      },
+      {
+        "feature": "tag",
+        "weight": 1.98
+      },
+      {
+        "feature": "using",
+        "weight": 1.9652
+      },
+      {
+        "feature": "clear",
+        "weight": 1.9341
+      },
+      {
+        "feature": "gas",
+        "weight": 1.9022
+      },
+      {
+        "feature": "out",
+        "weight": 1.8857
+      },
+      {
+        "feature": "sling",
+        "weight": 1.8454
+      }
+    ],
+    "top_non_sif_features": [
+      {
+        "feature": "reported",
+        "weight": -2.6608
+      },
+      {
+        "feature": "it",
+        "weight": -1.6842
+      },
+      {
+        "feature": "in the",
+        "weight": -1.6728
+      },
+      {
+        "feature": "floor",
+        "weight": -1.6584
+      },
+      {
+        "feature": "as",
+        "weight": -1.5408
+      },
+      {
+        "feature": "when",
+        "weight": -1.4558
+      },
+      {
+        "feature": "walkway",
+        "weight": -1.4545
+      },
+      {
+        "feature": "spill",
+        "weight": -1.4341
+      },
+      {
+        "feature": "stopped",
+        "weight": -1.4187
+      },
+      {
+        "feature": "noted",
+        "weight": -1.3504
+      },
+      {
+        "feature": "slip",
+        "weight": -1.3237
+      },
+      {
+        "feature": "minor",
+        "weight": -1.3231
+      },
+      {
+        "feature": "per",
+        "weight": -1.2665
+      },
+      {
+        "feature": "were",
+        "weight": -1.2454
+      },
+      {
+        "feature": "during",
+        "weight": -1.2295
+      }
+    ],
+    "generic_stopwords_in_top": [
+      "of",
+      "was",
+      "or",
+      "had",
+      "to",
+      "using",
+      "out"
+    ],
+    "keyword_ablations": [
+      {
+        "removed_keyword": "without",
+        "original_prob": 0.9048,
+        "ablated_prob": 0.8564,
+        "prob_drop": 0.0484
+      },
+      {
+        "removed_keyword": "inside",
+        "original_prob": 0.9048,
+        "ablated_prob": 0.8526,
+        "prob_drop": 0.0523
+      },
+      {
+        "removed_keyword": "gas",
+        "original_prob": 0.9048,
+        "ablated_prob": 0.8733,
+        "prob_drop": 0.0315
+      },
+      {
+        "removed_keyword": "vessel",
+        "original_prob": 0.9048,
+        "ablated_prob": 0.8655,
+        "prob_drop": 0.0393
+      }
+    ]
+  },
+  "part10_shuffled_text": [
+    {
+      "original_text": "Worker entered vessel without atmospheric gas testing before maintenance.",
+      "original_prob": 0.7375,
+      "shuffled_text": "before without vessel maintenance. Worker testing atmospheric gas entered",
+      "shuffled_prob": 0.8371,
+      "prob_difference": -0.0996
+    },
+    {
+      "original_text": "Scaffold erected at 25 feet missing mid-rails and toe boards.",
+      "original_prob": 0.4493,
+      "shuffled_text": "missing at Scaffold erected 25 feet mid-rails and toe boards.",
+      "shuffled_prob": 0.4493,
+      "prob_difference": 0.0
+    },
+    {
+      "original_text": "Electrician opened 4160V breaker cabinet without wearing arc flash suit.",
+      "original_prob": 0.4755,
+      "shuffled_text": "flash arc without 4160V wearing Electrician breaker suit. cabinet opened",
+      "shuffled_prob": 0.4755,
+      "prob_difference": 0.0
+    },
+    {
+      "original_text": "Dropped heavy steel pipe from crane load into busy walkways.",
+      "original_prob": 0.361,
+      "shuffled_text": "into heavy steel Dropped walkways. pipe load busy crane from",
+      "shuffled_prob": 0.361,
+      "prob_difference": 0.0
+    },
+    {
+      "original_text": "Slip and trip on oily walkway in warehouse causing minor knee bruise.",
+      "original_prob": 0.0221,
+      "shuffled_text": "in walkway Slip trip warehouse bruise. on minor oily knee causing and",
+      "shuffled_prob": 0.0223,
+      "prob_difference": -0.0002
+    }
+  ],
+  "part11_correlation": {
+    "sif_mean_chars": 144.77,
+    "non_sif_mean_chars": 127.13,
+    "sif_mean_words": 24.97,
+    "non_sif_mean_words": 20.97,
+    "sif_mean_punct": 2.1,
+    "non_sif_mean_punct": 2.15,
+    "metadata_only_model_accuracy": 0.7717
+  },
+  "part12_baselines": {
+    "majority_class_accuracy": 0.5,
+    "keyword_rule_accuracy": 0.6873,
+    "keyword_rule_f1": 0.5831
+  },
+  "part13_calibration": {
+    "validation_brier_score": 0.0027,
+    "validation_ece": 0.0484,
+    "test_brier_score": 0.0027,
+    "test_ece": 0.0483,
+    "interpretation": "Extremely low Brier score (0.0027) reflects near-binary confidence assignments (0.000 or 1.000) driven by sharp class separation in synthetic data."
+  },
+  "part14_ood_tests": [
+    {
+      "category": "Weather Report",
+      "text": "Light rain expected throughout the afternoon with mild temperatures around 68 degrees.",
+      "probability": 0.0761,
+      "prediction": "NON_SIF",
+      "flag": "NORMAL"
+    },
+    {
+      "category": "Office Activities",
+      "text": "Weekly team sync scheduled for 10 AM in Conference Room B to discuss Q3 roadmap.",
+      "probability": 0.239,
+      "prediction": "NON_SIF",
+      "flag": "NORMAL"
+    },
+    {
+      "category": "Cooking Recipe",
+      "text": "Preheat oven to 350F, mix flour, sugar, and cocoa powder before baking for 25 minutes.",
+      "probability": 0.3681,
+      "prediction": "NON_SIF",
+      "flag": "NORMAL"
+    },
+    {
+      "category": "Software Stack Trace",
+      "text": "NullPointerException at com.example.service.UserProcessor.execute(UserProcessor.java:42).",
+      "probability": 0.3618,
+      "prediction": "NON_SIF",
+      "flag": "NORMAL"
+    },
+    {
+      "category": "Academic Physics",
+      "text": "Quantum entanglement between distant photons demonstrated using high-precision optical interferometers.",
+      "probability": 0.6243,
+      "prediction": "SIF",
+      "flag": "OOD CONCERN"
+    },
+    {
+      "category": "Logistics & Shipping",
+      "text": "Container shipment arrived at port terminal clearance gate containing 400 pallets of office furniture.",
+      "probability": 0.3584,
+      "prediction": "NON_SIF",
+      "flag": "NORMAL"
+    }
+  ],
+  "part15_osha_analysis": {
+    "status": "COMPLETED",
+    "sample_size": 500,
+    "osha_unique_vocab": 6386,
+    "train_vocab_size": 4332,
+    "oov_rate": 0.9178,
+    "mean_predicted_sif_prob": 0.3116,
+    "predicted_sif_ratio": 0.164,
+    "high_confidence_sif_ratio": 0.014
+  }
+}
