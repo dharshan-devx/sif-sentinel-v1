@@ -23,7 +23,11 @@ def test_site_and_report_crud_filtering_and_pagination(client, admin_headers):
     assert filtered.status_code == 200
     assert filtered.json()["total"] == 3
     assert len(filtered.json()["items"]) == 2
-    changed = client.patch(f"/api/v1/reports/{report_id}", headers=admin_headers, json={"status": "REVIEW_REQUIRED"})
+    lifecycle_bypass = client.patch(
+        f"/api/v1/reports/{report_id}", headers=admin_headers, json={"status": "REVIEW_REQUIRED"}
+    )
+    assert lifecycle_bypass.status_code == 422
+    changed = client.patch(f"/api/v1/reports/{report_id}", headers=admin_headers, json={"location": "Updated Yard"})
     assert changed.status_code == 200
     deleted = client.delete(f"/api/v1/reports/{report_id}", headers=admin_headers)
     assert deleted.status_code == 200

@@ -12,17 +12,14 @@ Comprehensive tests for:
 - End-to-end Pipeline and API integration
 """
 
-import pytest
 from app.services.nlp.analysis_pipeline import analyze_text
 from app.services.nlp.causal_engine import (
+    HAZARD_TO_CONTROL_MAP,
     ControlStatus,
     SafetyCausalReasoningEngine,
-    ACTIVITY_TO_HAZARD_MAP,
-    HAZARD_TO_CONTROL_MAP,
 )
-from app.services.nlp.entity_extractor import extract_entities, get_structured_evidence
+from app.services.nlp.entity_extractor import get_structured_evidence
 from app.services.nlp.preprocessing import preprocess_text
-
 
 # ==============================================================================
 # 1. ACTIVITY -> HAZARD RELATIONSHIP INFERENCE

@@ -8,7 +8,6 @@ or mutate the deterministic safety findings.
 from __future__ import annotations
 
 import re
-from typing import Any
 
 from app.services.narrative.narrative_models import (
     NarrativeContext,

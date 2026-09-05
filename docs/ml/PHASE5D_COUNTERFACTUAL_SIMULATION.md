@@ -1,4 +1,7 @@
 # SIF Sentinel — Phase 5D: Counterfactual Safety Simulation Engine
+
+> Historical implementation note (2026-09-05): references to client-side
+> `frontend/` files describe removed artifacts, not a current UI runtime.
 **Interactive Causal "What-If" Reasoning & Barrier Restoration Intelligence**
 
 ---

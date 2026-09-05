@@ -5,7 +5,6 @@ Prompt engineering and anti-jailbreak templates for SIF Sentinel Phase 5E.
 from __future__ import annotations
 
 import json
-from typing import Any
 
 from app.services.narrative.narrative_models import NarrativeContext, NarrativeMode
 

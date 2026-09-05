@@ -473,9 +473,6 @@ class TestDashboardConsistency:
 
     def test_pending_count_decreases_after_decision(self, client, admin_headers, reviewer_headers):
         # Baseline pending count
-        before = client.get("/api/v1/dashboard/summary", headers=admin_headers).json()
-        before_count = before["review_required"]
-
         # Create a new review and approve it
         site = _make_site(client, admin_headers, "DSH", "Dashboard Test")
         report = _make_report(client, admin_headers, site["id"])

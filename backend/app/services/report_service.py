@@ -69,6 +69,12 @@ class ReportService:
 
     async def update(self, human_id: str, payload: ReportUpdate, user_id: UUID, ip_address: str | None) -> Report:
         report = await self.get(human_id)
+        if report.status != ReportStatus.NEW:
+            raise AppError(
+                "REPORT_NOT_EDITABLE",
+                "Only a NEW report may be edited; create a corrected report after analysis.",
+                409,
+            )
         for name, value in payload.model_dump(exclude_unset=True).items():
             setattr(report, name, value)
         await record_audit(self.db, user_id=user_id, action="REPORT_UPDATED", entity_type="report", entity_id=report.id,
@@ -87,4 +93,3 @@ class ReportService:
     @staticmethod
     def _new_human_id() -> str:
         return f"SIF-{datetime.now(UTC):%Y%m%d}-{uuid4().hex[:8].upper()}"
-

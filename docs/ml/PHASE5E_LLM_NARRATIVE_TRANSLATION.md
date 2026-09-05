@@ -1,4 +1,7 @@
 # SIF Sentinel — Phase 5E: LLM Narrative Translation & Explainability Layer
+
+> Historical implementation note (2026-09-05): all references to frontend
+> source files refer to removed artifacts, not an implemented UI.
 **Revised Architectural Implementation Plan & Single Source of Truth Specification**
 
 ---

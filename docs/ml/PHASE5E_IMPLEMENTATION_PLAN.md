@@ -1,4 +1,6 @@
 # Phase 5E — LLM Narrative Translation & Explainability Layer
+
+> Historical plan (2026-09-05): its `frontend/` paths are no longer present.
 **Implementation Plan & Acceptance Verification Matrix**
 
 ---

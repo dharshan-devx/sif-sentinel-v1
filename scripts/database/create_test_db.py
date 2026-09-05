@@ -1,26 +1,30 @@
-import asyncio
-import asyncpg
+"""Create a disposable PostgreSQL database for integration tests.
 
-async def main():
-    # Connect to the default postgres database to create a new one
-    conn = await asyncpg.connect('postgresql://postgres:Dharshan%4009@localhost:5432/postgres')
-    
-    # Drop the test database if it exists
-    try:
-        await conn.execute('DROP DATABASE sif_sentinel_test (FORCE)')
-    except asyncpg.exceptions.InvalidCatalogNameError:
-        pass
-    except Exception as e:
-        print(f"Drop error: {e}")
+Set TEST_ADMIN_DATABASE_URL to an administrative connection URL. The target
+name defaults to sif_sentinel_test and must end in ``_test`` or ``_audit`` to
+avoid accidentally replacing an application database.
+"""
 
-    # Create the test database
-    try:
-        await conn.execute('CREATE DATABASE sif_sentinel_test')
-        print("Test database 'sif_sentinel_test' created successfully.")
-    except Exception as e:
-        print(f"Create error: {e}")
-        
-    await conn.close()
+import os
+import re
+
+from psycopg import connect, sql
+
+
+def main() -> None:
+    admin_url = os.environ.get("TEST_ADMIN_DATABASE_URL")
+    database_name = os.environ.get("TEST_DATABASE_NAME", "sif_sentinel_test")
+    if not admin_url:
+        raise SystemExit("TEST_ADMIN_DATABASE_URL is required; no connection defaults are embedded.")
+    if not re.fullmatch(r"[A-Za-z0-9_]+_(?:test|audit)", database_name):
+        raise SystemExit("TEST_DATABASE_NAME must contain only letters, digits, underscores and end in _test or _audit.")
+
+    with connect(admin_url, autocommit=True) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(sql.SQL("DROP DATABASE IF EXISTS {} WITH (FORCE)").format(sql.Identifier(database_name)))
+            cursor.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(database_name)))
+    print(f"Created disposable database: {database_name}")
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

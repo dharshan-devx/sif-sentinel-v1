@@ -18,7 +18,7 @@ def test_pattern_normalization_trends_and_risk_levels():
     assert one.key == two.key
 
 def test_precursor_rebuild_graph_risk_and_dashboard_apis(client, admin_headers):
-    first_report = _create_and_analyze(client, admin_headers, "P31", "Technician started maintenance before electrical energy isolation was verified.")
+    _create_and_analyze(client, admin_headers, "P31", "Technician started maintenance before electrical energy isolation was verified.")
     _create_and_analyze(client, admin_headers, "P32", "Technician started maintenance before electrical energy isolation was verified.")
     _create_and_analyze(client, admin_headers, "P33", "Technician started maintenance before electrical energy isolation was verified.")
     _create_and_analyze(client, admin_headers, "P34", "Worker entered confined space without gas testing.")

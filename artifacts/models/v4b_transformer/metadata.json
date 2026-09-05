@@ -1,4 +1,6 @@
 {
+  "runtime_available": false,
+  "runtime_unavailable_reason": "Tokenizer/configuration are retained for research provenance; trained model weights are not included in this repository.",
   "model_name": "sif-transformer-v4b",
   "model_version": "v4b",
   "architecture": "DistilBertForSequenceClassification",

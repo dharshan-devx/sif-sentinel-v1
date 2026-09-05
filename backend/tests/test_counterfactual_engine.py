@@ -3,16 +3,15 @@ Unit and Integration Tests for SIF Sentinel Phase 5D Counterfactual Reasoning En
 """
 
 import copy
+
 import pytest
-from app.core.constants import BarrierStatus, SIFLevel
+
 from app.services.nlp.causal_engine import ControlStatus, SafetyCausalReasoningEngine
 from app.services.nlp.counterfactual_engine import (
-    CounterfactualChange,
     CounterfactualSafetyEngine,
-    CounterfactualScenario,
 )
+from app.services.nlp.evidence_model import EvidenceItem, EvidenceType, StructuredEvidence
 from app.services.nlp.preprocessing import preprocess_text
-from app.services.nlp.evidence_model import StructuredEvidence, EvidenceItem, EvidenceType
 
 
 @pytest.fixture

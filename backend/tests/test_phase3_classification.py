@@ -29,33 +29,29 @@ import os
 import sys
 from pathlib import Path
 
-import joblib
-import numpy as np
 import pytest
-from fastapi.testclient import TestClient
 
 ROOT = Path(__file__).parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.core.constants import SIFLevel
-from app.main import app
-from app.ml.inference.predictor import SIFPredictor
-from app.services.nlp.analysis_pipeline import analyze_text
-from app.services.nlp.preprocessing import preprocess_text
-from ml.data.dataset import (
+from ml.data.dataset import (  # noqa: E402 - sibling package needs repository-root bootstrap above.
     FORBIDDEN_FEATURE_COLUMNS,
     extract_model_inputs,
     load_and_validate_dataset,
     normalize_binary_target,
 )
-from ml.data.split import group_aware_split
-from ml.evaluation.metrics import (
+from ml.data.split import group_aware_split  # noqa: E402 - see bootstrap above.
+from ml.evaluation.metrics import (  # noqa: E402 - see bootstrap above.
     calculate_safety_metrics,
     evaluate_calibration_curve,
-    evaluate_threshold_candidates,
     select_operating_threshold,
 )
+
+from app.core.constants import SIFLevel  # noqa: E402 - see bootstrap above.
+from app.ml.inference.predictor import SIFPredictor  # noqa: E402 - see bootstrap above.
+from app.services.nlp.analysis_pipeline import analyze_text  # noqa: E402 - see bootstrap above.
+from app.services.nlp.preprocessing import preprocess_text  # noqa: E402 - see bootstrap above.
 
 PRIMARY_DATASET_PATH = ROOT / "data" / "raw" / "safety_reports.csv"
 SPLIT_MANIFEST_PATH = ROOT / "data" / "processed" / "split_manifest_v2.json"
@@ -104,10 +100,6 @@ class TestDatasetLoadingAndValidation:
         assert summary.duplicate_label_contradictions == 0
 
     def test_contradiction_detection_raises_error(self):
-        synthetic_records = [
-            {"report_text": "Identical safety incident occurred.", "sif_potential": "True"},
-            {"report_text": "Identical safety incident occurred.", "sif_potential": "False"},
-        ]
         import tempfile
         with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, encoding="utf-8") as f:
             f.write("report_text,sif_potential\n")

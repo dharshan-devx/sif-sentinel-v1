@@ -9,13 +9,8 @@ Tests:
 - Semantic challenge examples, counterfactuals, and OOD handling.
 - API inference compatibility.
 """
-import pytest
-from pathlib import Path
-from fastapi.testclient import TestClient
 
-from app.main import app
-from app.ml.inference.predictor import SIFPredictor, ARTIFACT_DIR
-from app.ml.inference.hybrid_pipeline import SemanticClassifierPipeline, HybridClassifierPipeline
+from app.ml.inference.predictor import ARTIFACT_DIR, SIFPredictor
 from app.services.nlp.analysis_pipeline import analyze_text
 
 

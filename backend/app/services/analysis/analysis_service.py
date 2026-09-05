@@ -1,15 +1,16 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
 from app.core.constants import BarrierStatus, ReportStatus, ReviewDecision
-from app.core.exceptions import AppError
+from app.core.exceptions import AppError, NotFoundError
 from app.models.model_prediction import ModelPrediction
 from app.models.precursor_candidate import PrecursorCandidate
 from app.models.precursor_pattern import PrecursorPattern
+from app.models.report import Report
 from app.models.report_analysis import ReportAnalysis
 from app.models.review import Review
 from app.schemas.analysis import AnalysisResponse
@@ -18,7 +19,6 @@ from app.services.intervention_service import InterventionService
 from app.services.llm.assistance_service import LLMAssistanceService
 from app.services.nlp.analysis_pipeline import analyze_text
 from app.services.precursor_engine.precursor_service import PrecursorService
-from app.services.report_service import ReportService
 from app.services.risk_engine.calculator import calculate_risk
 
 
@@ -39,7 +39,20 @@ class AnalysisService:
         if self.db is None:
             raise AppError("NO_DB_SESSION", "Database session is required for report analysis", 500)
 
-        report = await ReportService(self.db).get(human_id)
+        # Lock the report before inspecting its lifecycle state. PostgreSQL
+        # serializes concurrent requests here; SQLite test runs retain the
+        # same state guard even though it has no row-level lock primitive.
+        report = await self.db.scalar(
+            select(Report).where(Report.report_id == human_id).with_for_update()
+        )
+        if not report:
+            raise NotFoundError("report")
+        if report.status != ReportStatus.NEW:
+            raise AppError(
+                "REPORT_ALREADY_ANALYZED",
+                "This report has already entered the analysis lifecycle.",
+                409,
+            )
 
         try:
             # We first extract text to get candidates, ignoring precursor priority for now
@@ -50,8 +63,6 @@ class AnalysisService:
         # Check if the extracted candidates match any active precursor patterns
         precursor_priority = None
         if result.precursor_candidates:
-            from sqlalchemy import select
-
             from app.services.precursor_engine.pattern_builder import build_pattern_key
             keys = [
                 build_pattern_key(c.activity, c.hazard, c.barrier, c.failure_type).key 

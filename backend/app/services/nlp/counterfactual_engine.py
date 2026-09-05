@@ -18,15 +18,13 @@ from __future__ import annotations
 import copy
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
-from app.core.constants import BarrierStatus, SIFLevel
+from app.core.constants import SIFLevel
 from app.services.nlp.causal_engine import (
     ControlStatus,
     SafetyReasoningGraph,
-    CausalChain,
-    HIGH_ENERGY_HAZARDS,
 )
 from app.services.risk_engine.calculator import calculate_risk
 
@@ -76,7 +74,7 @@ class CounterfactualScenario:
     confidence: float
     simulated_graph: dict[str, Any]
     simulation_only: bool = True
-    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -143,7 +141,6 @@ class CounterfactualSafetyEngine:
 
         sim_graph = copy.deepcopy(graph_data)
         nodes: list[dict[str, Any]] = sim_graph.get("nodes", [])
-        edges: list[dict[str, Any]] = sim_graph.get("edges", [])
         chains: list[dict[str, Any]] = sim_graph.get("causal_chains", [])
 
         # 2. Locate the Target Control Node and Chain
@@ -176,7 +173,6 @@ class CounterfactualSafetyEngine:
         orig_status_str = matched_chain.get("control_status", "UNKNOWN") if matched_chain else "NOT_PERFORMED"
         orig_barrier_failure = matched_chain.get("barrier_failure", True) if matched_chain else True
         orig_exposure = matched_chain.get("exposure", "SIF_PRECURSOR_EXPOSURE") if matched_chain else "SIF_PRECURSOR_EXPOSURE"
-        orig_precursor_type = matched_chain.get("sif_precursor_type", "CONTROL_DEGRADATION") if matched_chain else "CONTROL_DEGRADATION"
 
         # 3. Apply Simulated State (VERIFIED / PERFORMED)
         sim_status_enum = simulated_status if isinstance(simulated_status, ControlStatus) else ControlStatus(simulated_status)

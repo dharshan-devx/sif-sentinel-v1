@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass, field
+from difflib import SequenceMatcher
 
 from app.core.constants import BarrierStatus
 from app.knowledge.taxonomy import safety_concepts
@@ -109,9 +110,6 @@ def _tokenize(text: str) -> list[str]:
 
 def _fuzzy_match_phrase(target_phrase: str, text_tokens: list[str]) -> bool:
     """Conservatively check if multi-word phrase appears in tokens with minor typo."""
-    if not HAS_RAPIDFUZZ:
-        return False
-
     target_words = target_phrase.lower().split()
     n = len(target_words)
     if n == 0 or len(text_tokens) < n:
@@ -125,7 +123,11 @@ def _fuzzy_match_phrase(target_phrase: str, text_tokens: list[str]) -> bool:
     for i in range(len(text_tokens) - n + 1):
         window_str = " ".join(text_tokens[i:i + n])
         if abs(len(window_str) - len(target_phrase)) <= 2:
-            score = fuzz.ratio(target_phrase, window_str)
+            score = (
+                fuzz.ratio(target_phrase, window_str)
+                if HAS_RAPIDFUZZ
+                else SequenceMatcher(None, target_phrase, window_str).ratio() * 100
+            )
             if score >= FUZZY_THRESHOLD:
                 return True
 
@@ -204,7 +206,6 @@ def _extract_evidence(document: PreprocessedText) -> StructuredEvidence:
                     has_missing = any(p in window for p in ("missing", "absent", "unavailable", "lacking"))
 
                     # Temporal checks
-                    has_before = any(p in window for p in ("before", "prior"))
                     before_idx = -1
                     for b_term in ("before", "prior"):
                         if b_term in tokens:

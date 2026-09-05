@@ -1,5 +1,9 @@
 # PHASE 5C — INTERACTIVE CAUSAL SAFETY GRAPH VISUALIZER
 
+> Historical implementation note (2026-09-05): the referenced `frontend/`
+> source tree is no longer present. This document is not evidence of a current
+> frontend implementation; use the backend contract for a future F1 build.
+
 **Project**: SIF Sentinel — SIH26165  
 **Domain**: Oil & Gas Upstream/Downstream SIF Precursor Intelligence  
 **Phase**: 5C — Frontend Visualization and Interaction Layer for Causal Safety Reasoning  

@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import pytest_asyncio
 from fastapi.testclient import TestClient
 
 TEST_DB = Path(__file__).parent / "test_sif.db"
@@ -25,9 +26,8 @@ os.environ["JWT_SECRET_KEY"] = "test-only-secret-key-that-is-long-enough"
 os.environ["CORS_ORIGINS"] = "http://localhost:3000"
 os.environ.setdefault("SIF_MODEL_VERSION", "v1")
 
-import pytest_asyncio
-
-import app.models  # noqa: E402,F401
+# These imports must follow the test-only environment setup above.
+import app.models  # noqa: E402, F401
 from app.db.base import Base  # noqa: E402
 from app.db.session import SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402

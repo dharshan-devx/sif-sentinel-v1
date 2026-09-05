@@ -1,11 +1,11 @@
 # SIF SENTINEL — Backend / Frontend Contract
 
-**Status:** audited against backend commit `320e8e96e81ae61e01c60497fe95a2711cdd5d3e` on 2026-09-03.  
+**Status:** reconciled with the backend source and generated OpenAPI on 2026-09-05.
 **Contract base URL:** `http://<host>:8000/api/v1`  
 **Machine-readable source of truth:** `GET /openapi.json` on the running backend (Swagger UI is normally at `/docs`).
 
-This is the implementation-grounded handoff for the Next.js + TypeScript UI in
-`frontend/`. The UI consumes REST only. It must never access PostgreSQL,
+This is the implementation-grounded handoff for a future frontend. The
+`frontend/` directory is currently empty. The UI must consume REST only. It must never access PostgreSQL,
 import backend Python, infer results from model artefacts, or treat LLM text as
 an authoritative safety decision.
 
@@ -145,7 +145,7 @@ ReviewDecision: PENDING | APPROVE | REJECT | MODIFY
 InterventionReviewStatus: PENDING | ACCEPTED | MODIFIED | REJECTED
 ```
 
-## 5. Endpoint inventory (49 operations / 44 paths)
+## 5. Endpoint inventory (66 operations / 60 paths)
 
 The following is the live OpenAPI inventory. All paths below are relative to
 `/api/v1`.
@@ -153,6 +153,8 @@ The following is the live OpenAPI inventory. All paths below are relative to
 | Area | Operations and primary query parameters |
 |---|---|
 | Authentication | `POST /auth/register`, `POST /auth/login`, `GET /auth/me`, `GET /users/me` |
+| Deterministic analysis assistance | `POST /analyze`, `/analyze/counterfactual`, `/analyze/narrative`, `/analyze/interventions` |
+| Corrective-action governance | `GET/POST /corrective-actions`, `/export`, `/{action_id}`, `/{action_id}/audit`, and state transitions `/start`, `/submit`, `/approve`, `/reject`, `/modify`, `/request-verification`, `/verify`, `/close`, `/cancel` |
 | Health | `GET /health`, `/health/status`, `/health/ready` |
 | Sites | `POST /sites`, `GET /sites`, `GET /sites/{site_id}`, `PATCH /sites/{site_id}` |
 | Reports | `POST /reports`, `GET /reports`, `GET/PATCH/DELETE /reports/{report_id}`, `POST /reports/{report_id}/analyze` |
@@ -369,14 +371,17 @@ not an operational safety decision. `GET /models/feedback` returns
 
 ```text
 POST /reports -> NEW
-POST /reports/{human-id}/analyze -> ANALYZED or REVIEW_REQUIRED
+PATCH /reports/{human-id} -> permitted only while NEW; request fields do not include status
+POST /reports/{human-id}/analyze -> ANALYZED or REVIEW_REQUIRED (one analysis lifecycle per report)
   REVIEW_REQUIRED + POST /reviews/{id}/decision -> REVIEWED
-PATCH /reports can directly set any ReportStatus, including CLOSED
 ```
 
-On every persisted analysis the backend creates a new `ReportAnalysis` and
-`ModelPrediction`. It replaces that report's current `PrecursorCandidate` rows
-before rebuilding patterns, so re-analysis does not inflate recurrence.
+One persisted analysis creates one `ReportAnalysis` and `ModelPrediction`.
+Repeated analyse requests return `409 REPORT_ALREADY_ANALYZED`; a report must
+not be edited after analysis because that would make its immutable evidence
+snapshot stale. `PrecursorPattern` is an aggregate across current candidates;
+it is a derived, rebuildable read model. A report may have no recurring pattern
+yet, because the configured threshold is three occurrences.
 `PrecursorPattern` is an aggregate across recurring candidates; it is a
 derived, rebuildable read model. An analysed report may have no recurring
 pattern yet, because the configured threshold is three occurrences.
@@ -480,11 +485,11 @@ than attempting a blind retry.
 | High | No authenticated read API for a report's analyses, risk, LLM metadata, predictions, candidates, or audit trail. | A refreshed report-detail page cannot reconstruct its analysis result from documented REST endpoints. Add a read-only report-detail aggregate/analysis-history endpoint before claiming full reload-safe detail. |
 | High | Audit events are durable but no audit-log API exists. | Do not build an audit timeline as if it is available. Add a role-gated, paginated read endpoint if required for release/audit UX. |
 | High | Registration produces only `VIEWER`; no role administration/invitation path exists. | Provision author/reviewer roles outside the UI, or add a protected user-admin API before role onboarding is a frontend requirement. |
-| Medium | `PATCH /reports` accepts arbitrary `ReportStatus` values for report writers. | Treat status changing as restricted in the UI; backend state-transition enforcement should be considered before production workflow use. |
+| Resolved | `PATCH /reports` formerly accepted arbitrary `ReportStatus` values for report writers. | Lifecycle status is no longer a request field; PATCH is limited to `NEW` reports and later edits return `409 REPORT_NOT_EDITABLE`. |
 | Medium | Review list drops its total despite accepting pagination; interventions have no pagination/status/category filter. | Avoid misleading page-count UI and plan backend pagination/filter additions as data volume grows. |
 | Medium | `/models` and `/rules` have untyped/dynamic route response declarations. | Generate core client types from OpenAPI for typed endpoints, but manually validate these two surfaces or add response schemas server-side. |
 | Medium | No refresh/logout/revocation API and no explicit rate limiting shown in the application code. | Implement client expiry handling; do not imply server-side logout or abuse protection. Treat rate limiting as a deployment/API-gateway concern until implemented. |
-| Low | API OpenAPI title/description/version still say “SIF Precursor Detection API”, `0.1.0`, and “Phase 1”. | Use the endpoint contract, not those marketing/version labels, for product UI copy. |
+| Resolved | API OpenAPI title and description were stale. | The generated API now identifies SIF Sentinel and describes deterministic safety intelligence and human review. |
 | Low | No upload endpoint, realtime events, saved dashboard filters, notifications, user profile edits, or export endpoints. | Do not scaffold UI flows that require these behaviors without a backend feature request. |
 
 ## 10. Demo data and safe product claims
@@ -505,7 +510,7 @@ a fact, medical/safety instruction, or replacement for an HSE decision.
 - Inspected FastAPI router, dependencies, middleware, schemas, ORM models,
   services, configuration, migrations/repository layout, tests, OpenAPI, and
   the frontend placeholder.
-- Generated the current OpenAPI inventory: **49 operations across 44 paths**.
+- Generated the current OpenAPI inventory: **66 operations across 60 paths**.
 - Executed `pytest tests/` against the current SQLite test configuration in a
   background terminal capture (needed only to avoid the desktop console's
   30-second streaming window): **158 passed, 5 warnings, 56.50 s**. The

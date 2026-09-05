@@ -1,5 +1,8 @@
 # SIF Sentinel — Phase 5F: Final Completion & Hardening Report
 
+> Historical report (2026-09-05): the referenced frontend implementation is
+> not present in this repository and is not a current release claim.
+
 ---
 
 ## 1. Executive Summary

@@ -280,7 +280,6 @@ def test_A3_gemini_sdk_import_isolated():
     for mod_name in modules_that_must_not_import_genai:
         if mod_name in sys.modules:
             mod = sys.modules[mod_name]
-            mod_source = getattr(mod, "__file__", "") or ""
             # Inspect module's globals for genai imports
             mod_globals = vars(mod)
             assert "genai" not in mod_globals, (

@@ -4,14 +4,14 @@ SIF SENTINEL is an advanced intelligence platform for Severe Incident and Fatali
 
 ## Architecture
 The system consists of:
-- **Frontend:** A Next.js UI (see `frontend/`)
+- **Frontend:** Reserved for a fresh F1 implementation; no frontend runtime is currently shipped.
 - **Backend:** A FastAPI Modular Monolith (see `backend/`)
 - **Intelligence Engines:** Deterministic NLP, Risk, and Intervention engines powered by trained models.
 
 ## Repository Structure
 Please refer to [docs/architecture/REPOSITORY_STRUCTURE.md](docs/architecture/REPOSITORY_STRUCTURE.md) for the exact boundary definitions.
 - `backend/` - Application Runtime
-- `frontend/` - UI
+- `frontend/` - Reserved for a fresh F1 UI implementation (currently empty)
 - `ml/` - ML Research and Training
 - `data/` - Datasets
 - `artifacts/` - Generated models

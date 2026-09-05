@@ -8,24 +8,22 @@ Enforces:
 4. Comprehensive audit event recording on every mutating action.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
 import structlog
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.constants import UserRole
 from app.core.exceptions import AppError, NotFoundError
-from app.models.corrective_action import CorrectiveAction
 from app.models.audit_log import AuditLog
+from app.models.corrective_action import CorrectiveAction
 from app.schemas.corrective_action import (
     CorrectiveActionCreate,
     CorrectiveActionDecisionRequest,
     CorrectiveActionExportItem,
     CorrectiveActionModifyRequest,
-    CorrectiveActionRead,
     CorrectiveActionVerifyRequest,
 )
 from app.services.audit_service import record_audit
@@ -154,7 +152,7 @@ class CorrectiveActionService:
         old_status = action.status
         action.status = "APPROVED"
         action.approved_by = actor_id
-        action.approved_at = datetime.now(timezone.utc)
+        action.approved_at = datetime.now(UTC)
         if payload and payload.notes:
             action.verification_notes = payload.notes
 
@@ -223,7 +221,7 @@ class CorrectiveActionService:
 
         mod_record = {
             "user_id": str(actor_id),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "reason": payload.modification_reason,
             "changes": {},
         }
@@ -298,7 +296,7 @@ class CorrectiveActionService:
             )
 
         action.status = "VERIFICATION_REQUIRED"
-        action.completed_at = datetime.now(timezone.utc)
+        action.completed_at = datetime.now(UTC)
         await record_audit(
             self.db,
             user_id=actor_id,
@@ -334,7 +332,7 @@ class CorrectiveActionService:
 
         if payload.effective:
             action.status = "VERIFIED"
-            action.verified_at = datetime.now(timezone.utc)
+            action.verified_at = datetime.now(UTC)
         else:
             action.status = "IN_PROGRESS"
 
@@ -369,7 +367,7 @@ class CorrectiveActionService:
 
         action.status = "CLOSED"
         action.closed_by = actor_id
-        action.closed_at = datetime.now(timezone.utc)
+        action.closed_at = datetime.now(UTC)
 
         await record_audit(
             self.db,

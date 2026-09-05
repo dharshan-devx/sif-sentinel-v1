@@ -6,9 +6,8 @@ from __future__ import annotations
 
 import json
 import time
-from typing import Any, Protocol
+from typing import Protocol
 
-from app.core.config import get_settings
 from app.services.narrative.narrative_models import (
     ActionPriority,
     BarrierAnalysisItem,

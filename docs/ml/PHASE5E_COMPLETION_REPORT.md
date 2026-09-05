@@ -1,4 +1,7 @@
 # SIF Sentinel — Phase 5E: Final Completion Report
+
+> Historical report (2026-09-05): referenced `frontend/` files are absent from
+> the repository. This report must not be used as a current frontend-status claim.
 **LLM Narrative Translation & Explainability Layer**
 
 ---

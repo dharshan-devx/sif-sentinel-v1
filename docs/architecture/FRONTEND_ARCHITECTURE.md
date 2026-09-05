@@ -1,46 +1,25 @@
 # SIF SENTINEL frontend architecture
 
-## Runtime boundary
+## Current status
+
+The `frontend/` directory is intentionally empty. No Next.js, Vite, React,
+TypeScript, package-manager, or browser runtime is currently shipped. Frontend
+F1 must start from the backend contract rather than from deleted historical UI
+artifacts.
+
+## Required boundary for F1
 
 ```text
-Browser
-  ↓
-Next.js App Router (layout, route guard, accessible UI components)
-  ↓
-Typed API client + TanStack Query
-  ↓
-FastAPI REST API (/api/v1)
-  ↓
-PostgreSQL
+Browser -> typed REST client -> FastAPI /api/v1 -> PostgreSQL
 ```
 
-The browser has no PostgreSQL credentials and never connects to the database. `frontend/lib/api/` is the only place that makes HTTP requests. Its one `ApiClient` sets the base URL, bearer token, JSON/Accept headers, timeout, normalised errors, and request-ID capture. Resource modules are typed adapters over that client rather than additional clients.
+The browser must never receive database credentials or query PostgreSQL
+directly. The generated FastAPI OpenAPI document and
+[backend/frontend contract](BACKEND_FRONTEND_CONTRACT.md) are the sources of
+truth. Deterministic backend results are authoritative for structured evidence,
+SIF, LSR, barriers, precursor state, risk, review routing, and intervention
+recommendations. Optional LLM output is reviewer assistance only.
 
-## Source of truth and safety boundary
-
-The backend OpenAPI and [backend/frontend contract](BACKEND_FRONTEND_CONTRACT.md) are the source of truth. Local role awareness improves navigation but does not authorise an action; FastAPI RBAC remains final.
-
-Structured evidence, SIF level, Life-Saving Rule, barrier status, precursor state, risk score/priority, review routing, and intervention source evidence are deterministic backend results. An optional LLM can supply only `reviewer_summary` metadata. Future UI must display it as “Reviewer assistance” and visually separate it from authoritative evidence and recommendations.
-
-## State and errors
-
-TanStack Query is the single server-state mechanism. Future mutations must invalidate/refetch their related query keys because the REST API supplies no WebSocket, SSE, cache validators, or background notification channel.
-
-Controlled backend errors preserve status, machine code, safe message, details, and request ID. `401` clears local token state and redirects safely to login; `403` retains accessible data and reports access denied; `409` requires a refetch rather than retrying a final decision; and `422` is available for field-level display. Raw exception objects are never shown.
-
-## Authentication
-
-The session bearer token is stored in `sessionStorage` behind a small token store abstraction. This matches the current backend's lack of refresh, logout, and revocation endpoints. It is not a claim of server-side revocation; the UI’s “End session” is a local clear only.
-
-F2 centralises session state in `AuthProvider`: `loading`, `authenticated`, `unauthenticated`, and `unavailable`. Startup validates an existing token using `GET /auth/me`; only `401` clears it. Transient network and service failures surface a retryable initialisation state instead of falsely terminating a session. A local sign-out or a client-observed `401` clears TanStack Query cache data before protected routing moves to `/login`.
-
-## Team boundaries
-
-- `components/ui`: shared primitives and states.
-- `components/<domain>`: future domain views, once their phase begins.
-- `app`: page composition only.
-- `lib/api`: HTTP adapters and request types.
-- `types`: backend-aligned contract types.
-- `providers` / `hooks`: cross-cutting client state and access helpers.
-
-F1 intentionally provides shell and route placeholders only. Dashboard widgets, report submission/analysis, review decisions, recommendations, precursor graphs, and risk charts begin in later phases.
+Historical Phase 5 documents that refer to files below `frontend/src/` describe
+work that is no longer present and must not be used as an implementation-status
+claim.

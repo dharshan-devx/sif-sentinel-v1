@@ -88,7 +88,7 @@ def test_direct_analysis_and_actual_metrics_api(client, admin_headers):
     assert "confusion_matrix" in metrics.json()
 
 
-def test_reanalysis_replaces_current_precursor_candidates(client, admin_headers):
+def test_reanalysis_is_rejected_without_changing_current_precursor_candidates(client, admin_headers):
     report_id = _create_report(
         client,
         admin_headers,
@@ -110,5 +110,15 @@ def test_reanalysis_replaces_current_precursor_candidates(client, admin_headers)
 
     first_count = asyncio.run(candidate_count())
     assert first_count > 0
-    assert client.post(f"/api/v1/reports/{report_id}/analyze", headers=admin_headers).status_code == 200
+    retry = client.post(f"/api/v1/reports/{report_id}/analyze", headers=admin_headers)
+    assert retry.status_code == 409
+    assert retry.json()["error"]["code"] == "REPORT_ALREADY_ANALYZED"
     assert asyncio.run(candidate_count()) == first_count
+
+    patched = client.patch(
+        f"/api/v1/reports/{report_id}",
+        headers=admin_headers,
+        json={"report_text": "Attempt to alter analysed evidence."},
+    )
+    assert patched.status_code == 409
+    assert patched.json()["error"]["code"] == "REPORT_NOT_EDITABLE"

@@ -6,7 +6,6 @@ They do NOT encode ideal behaviour; they encode actual observed behaviour.
 """
 
 import os
-import sys
 
 import pytest
 
@@ -17,9 +16,8 @@ os.environ.setdefault("JWT_SECRET_KEY", "test-only-secret-key-that-is-long-enoug
 from app.core.constants import BarrierStatus, SIFLevel
 from app.ml.inference.predictor import SIFPredictor, level_for_probability
 from app.services.nlp.analysis_pipeline import PipelineResult, analyze_text
-from app.services.nlp.entity_extractor import ExtractedEntities, extract_entities
-from app.services.nlp.evidence_extractor import Evidence, extract_evidence
-from app.services.nlp.preprocessing import PreprocessedText, preprocess_text
+from app.services.nlp.entity_extractor import extract_entities
+from app.services.nlp.preprocessing import preprocess_text
 
 
 @pytest.fixture(autouse=True)

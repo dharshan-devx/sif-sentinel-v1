@@ -5,9 +5,9 @@ from pathlib import Path
 import sklearn
 
 from app.ml.inference.predictor import ARTIFACT_DIR, SIFPredictor
+from app.services.nlp.confidence import overall_confidence
 
 DATASET = Path(__file__).parents[2] / "data" / "processed" / "safety_reports_v1.csv"
-from app.services.nlp.confidence import overall_confidence
 
 
 def test_model_predictive_terms():

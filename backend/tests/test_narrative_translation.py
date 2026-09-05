@@ -2,20 +2,16 @@
 Unit and Integration Tests for SIF Sentinel Phase 5E LLM Narrative Translation & Explainability Layer.
 """
 
-import pytest
-import asyncio
 from unittest.mock import AsyncMock, patch
 
-from app.core.constants import UserRole
+import pytest
+
 from app.services.narrative.narrative_models import (
-    ActionPriority,
     BarrierAnalysisItem,
     GroundingItem,
     NarrativeContext,
     NarrativeMode,
     NarrativeOutput,
-    NarrativeRequest,
-    RecommendedActionItem,
     SourceBasis,
     ValidationStatus,
 )
@@ -370,8 +366,8 @@ async def test_gemini_provider_network_error_fallback(sample_confined_space_cont
 @pytest.mark.asyncio
 async def test_api_endpoint_translation():
     from app.services.nlp.causal_engine import SafetyCausalReasoningEngine
+    from app.services.nlp.evidence_model import EvidenceItem, EvidenceType, StructuredEvidence
     from app.services.nlp.preprocessing import preprocess_text
-    from app.services.nlp.evidence_model import StructuredEvidence, EvidenceItem, EvidenceType
 
     raw_text = "Worker entered confined space separator vessel V-102 without atmospheric gas testing and experienced toxic H2S exposure."
     prep = preprocess_text(raw_text)

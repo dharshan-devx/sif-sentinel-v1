@@ -46,8 +46,11 @@ async def analyze_counterfactual_endpoint(payload: CounterfactualRequest, _: Use
 
     try:
         sim_status = ControlStatus(payload.simulated_status.upper())
-    except ValueError:
-        raise HTTPException(status_code=422, detail=f"Unsupported simulated status '{payload.simulated_status}'.")
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Unsupported simulated status '{payload.simulated_status}'.",
+        ) from exc
 
     try:
         scenario = CounterfactualSafetyEngine.simulate_barrier_restoration(
@@ -60,8 +63,8 @@ async def analyze_counterfactual_endpoint(payload: CounterfactualRequest, _: Use
             precursor_priority=payload.precursor_priority,
         )
         return CounterfactualResponse(**scenario.to_dict())
-    except ValueError as e:
-        raise HTTPException(status_code=422, detail=str(e))
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @router.post("/analyze/narrative", response_model=NarrativeResponse, summary="Generate explainable AI narrative translation")
@@ -71,8 +74,11 @@ async def analyze_narrative_endpoint(
 ) -> NarrativeResponse:
     try:
         mode = NarrativeMode(payload.mode.upper())
-    except ValueError:
-        raise HTTPException(status_code=422, detail=f"Unsupported narrative mode '{payload.mode}'.")
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Unsupported narrative mode '{payload.mode}'.",
+        ) from exc
 
     context = NarrativeTranslationService.build_context_from_analysis(
         incident_text=payload.incident_text,

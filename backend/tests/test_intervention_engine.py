@@ -13,7 +13,6 @@ Validates:
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.core.constants import SIFLevel, UserRole
 from app.main import app
 from app.services.analysis.analysis_service import AnalysisService
 from app.services.nlp.causal_engine import ControlStatus

@@ -14,17 +14,14 @@ Comprehensive unit tests covering:
 """
 
 import os
-import pytest
 
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///test_phase2.db")
 os.environ.setdefault("JWT_SECRET_KEY", "test-only-secret-key-that-is-long-enough")
 
 from app.core.constants import BarrierStatus
 from app.services.nlp.analysis_pipeline import analyze_text
-from app.services.nlp.entity_extractor import extract_entities, _fuzzy_match_phrase
-from app.services.nlp.evidence_model import EvidenceType
+from app.services.nlp.entity_extractor import _fuzzy_match_phrase, extract_entities
 from app.services.nlp.preprocessing import preprocess_text, split_sentences
-
 
 # ---------------------------------------------------------------------------
 # 1. Safety-Aware Normalization Tests

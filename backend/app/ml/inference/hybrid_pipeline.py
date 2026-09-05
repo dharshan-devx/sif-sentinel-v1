@@ -4,6 +4,7 @@ Semantic & Calibrated Hybrid Classifier Pipelines for SIF Sentinel Phase 4.
 from __future__ import annotations
 
 from typing import Any
+
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression

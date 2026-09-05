@@ -2,9 +2,9 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: sif_db
-      POSTGRES_USER: sif
-      POSTGRES_PASSWORD: sif
+      POSTGRES_DB: ${POSTGRES_DB:-sif_db}
+      POSTGRES_USER: ${POSTGRES_USER:-sif}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the root .env file}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -13,10 +13,12 @@ services:
       timeout: 5s
       retries: 10
   backend:
-    build: ./backend
-    env_file: .env
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: ./backend/.env
     environment:
-      DATABASE_URL: postgresql+psycopg://sif:sif@postgres:5432/sif_db
+      DATABASE_URL: ${DOCKER_DATABASE_URL:?Set DOCKER_DATABASE_URL in the root .env file}
     ports:
       - "8000:8000"
     depends_on:

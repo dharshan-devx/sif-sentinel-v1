@@ -16,7 +16,12 @@ settings = get_settings()
 async def lifespan(_: FastAPI):
     yield
 
-app = FastAPI(title="SIF Precursor Detection API", version="0.1.0", description="Phase 1 backend for SIH26165", lifespan=lifespan)
+app = FastAPI(
+    title="SIF Sentinel Safety Intelligence API",
+    version="0.1.0",
+    description="Deterministic safety intelligence with human review and optional LLM assistance.",
+    lifespan=lifespan,
+)
 app.add_middleware(RequestIDMiddleware)
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origin_list, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 register_error_handlers(app)

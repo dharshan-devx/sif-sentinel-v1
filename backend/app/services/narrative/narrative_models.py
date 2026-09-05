@@ -5,21 +5,21 @@ Data models and schemas for SIF Sentinel Phase 5E Narrative Translation & Explai
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import UTC, datetime
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class NarrativeMode(str, Enum):
+class NarrativeMode(StrEnum):
     EXECUTIVE = "EXECUTIVE"
     INVESTIGATION = "INVESTIGATION"
     FIELD = "FIELD"
     COUNTERFACTUAL = "COUNTERFACTUAL"
 
 
-class SourceBasis(str, Enum):
+class SourceBasis(StrEnum):
     CAUSAL_GRAPH = "CAUSAL_GRAPH"
     RISK_ENGINE = "RISK_ENGINE"
     COUNTERFACTUAL = "COUNTERFACTUAL"
@@ -27,13 +27,13 @@ class SourceBasis(str, Enum):
     LSR_MAPPING = "LSR_MAPPING"
 
 
-class ValidationStatus(str, Enum):
+class ValidationStatus(StrEnum):
     VALID = "VALID"
     FALLBACK_APPLIED = "FALLBACK_APPLIED"
     REJECTED = "REJECTED"
 
 
-class ActionPriority(str, Enum):
+class ActionPriority(StrEnum):
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
@@ -133,7 +133,7 @@ class NarrativeContext:
     counterfactual: dict[str, Any] | None = None
     prevention_detected: bool = False
     temporal_inversion: bool = False
-    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -186,7 +186,7 @@ class NarrativeOutput:
     provider_name: str = "deterministic"
     model_name: str = "rules_engine"
     latency_ms: float = 0.0
-    generated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    generated_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict[str, Any]:
         return {

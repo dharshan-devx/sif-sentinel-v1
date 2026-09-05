@@ -17,15 +17,7 @@ Tests:
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.core.constants import UserRole
 from app.main import app
-from app.services.corrective_action_service import CorrectiveActionService
-from app.schemas.corrective_action import (
-    CorrectiveActionCreate,
-    CorrectiveActionDecisionRequest,
-    CorrectiveActionModifyRequest,
-    CorrectiveActionVerifyRequest,
-)
 
 
 @pytest.fixture

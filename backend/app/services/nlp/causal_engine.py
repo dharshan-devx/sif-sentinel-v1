@@ -14,16 +14,14 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
-from app.core.constants import BarrierStatus, SIFLevel
-from app.knowledge.taxonomy import life_saving_rules, safety_concepts
 from app.services.nlp.evidence_model import EvidenceItem, EvidenceType, StructuredEvidence
 from app.services.nlp.preprocessing import PreprocessedText
 
 
-class ControlStatus(str, Enum):
+class ControlStatus(StrEnum):
     VERIFIED = "VERIFIED"
     NOT_VERIFIED = "NOT_VERIFIED"
     PERFORMED = "PERFORMED"
@@ -439,7 +437,6 @@ class SafetyCausalReasoningEngine:
         Performs advanced syntax-aware negation, prevention, double-negation,
         and temporal inversion parsing on a specific control evidence item.
         """
-        groundings: list[EvidenceGrounding] = []
         concept = item.normalized_concept
         phrase = item.original_span.lower()
         full_text = document.normalized_text

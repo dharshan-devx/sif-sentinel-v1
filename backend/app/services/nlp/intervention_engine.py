@@ -17,11 +17,10 @@ from __future__ import annotations
 import copy
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import UTC, datetime
+from enum import StrEnum
 from typing import Any
 
-from app.core.constants import SIFLevel
 from app.services.nlp.causal_engine import ControlStatus, SafetyReasoningGraph
 from app.services.nlp.counterfactual_engine import (
     CounterfactualSafetyEngine,
@@ -29,7 +28,7 @@ from app.services.nlp.counterfactual_engine import (
 )
 
 
-class HierarchyLevel(str, Enum):
+class HierarchyLevel(StrEnum):
     ELIMINATION = "ELIMINATION"
     SUBSTITUTION = "SUBSTITUTION"
     ENGINEERING_CONTROL = "ENGINEERING_CONTROL"
@@ -37,7 +36,7 @@ class HierarchyLevel(str, Enum):
     PPE = "PPE"
 
 
-class InterventionActionType(str, Enum):
+class InterventionActionType(StrEnum):
     IMMEDIATE_STOP_WORK = "IMMEDIATE_STOP_WORK"
     BARRIER_RESTORATION = "BARRIER_RESTORATION"
     ENGINEERING_INSTALL = "ENGINEERING_INSTALL"
@@ -53,14 +52,14 @@ class InterventionActionType(str, Enum):
     PPE_ENHANCEMENT = "PPE_ENHANCEMENT"
 
 
-class InterventionPriority(str, Enum):
+class InterventionPriority(StrEnum):
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
     LOW = "LOW"
 
 
-class InterventionUrgency(str, Enum):
+class InterventionUrgency(StrEnum):
     IMMEDIATE_PRE_START = "IMMEDIATE_PRE_START"
     WITHIN_SHIFT = "WITHIN_SHIFT"
     PRIOR_TO_NEXT_CYCLE = "PRIOR_TO_NEXT_CYCLE"
@@ -95,7 +94,7 @@ class InterventionRecommendationItem:
     deterministic_rule_id: str
     confidence: float
     status: str = "GENERATED"
-    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -190,7 +189,7 @@ class InterventionEngineResult:
     cumulative_prevention_plan: CumulativePreventionPlan
     source_basis: str
     deterministic: bool = True
-    generated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    generated_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -247,7 +246,7 @@ class SafetyInterventionEngine:
         # Identify all chains or barrier nodes that require intervention
         evaluated_barriers: set[str] = set()
 
-        for idx, chain in enumerate(chains):
+        for chain in chains:
             barrier_name = chain.get("control") or "Unspecified Safety Barrier"
             if barrier_name in evaluated_barriers:
                 continue
@@ -717,7 +716,7 @@ class SafetyInterventionEngine:
         final_risk = baseline_risk
 
         if scenarios:
-            for i, (scen, rec) in enumerate(zip(scenarios, recommendations)):
+            for i, (scen, rec) in enumerate(zip(scenarios, recommendations, strict=False)):
                 step_delta = scen.risk_delta
                 curr_cumul_delta += step_delta
                 final_risk = scen.simulated_risk_score

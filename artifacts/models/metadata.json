@@ -1,13 +1,4 @@
 {
-<<<<<<< HEAD
-  "model_name": "sif-tfidf-randomforest",
-  "model_version": "sif-tfidf-rf-v1",
-  "training_timestamp": "2026-09-03T16:15:22.379128+00:00",
-  "training_dataset_identifier": "synthetic-safety-reports-v1",
-  "dataset_hash": "4512698c83a59ca347609c1057c34325ebd56f983d9e7b5fa3648a6619b589ba",
-  "scikit_learn_version": "1.8.0",
-  "feature_configuration": {
-=======
   "model_name": "sif-tfidf-logreg",
   "model_version": "sif-tfidf-logreg-v2",
   "training_timestamp": "2026-09-03T18:12:07.031751+00:00",
@@ -25,7 +16,6 @@
   "preprocessing_version": "phase2_canonical_normalization",
   "scikit_learn_version": "1.9.0",
   "vectorizer_configuration": {
->>>>>>> 1afc93c0b7ef1a31932121a640586ced99233f55
     "ngram_range": [
       1,
       2
