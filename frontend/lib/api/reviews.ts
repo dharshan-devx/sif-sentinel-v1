@@ -14,7 +14,7 @@ export interface ReviewListParams {
 
 export const reviewsApi = {
   list: (params: ReviewListParams = {}): Promise<ReviewQueueItem[]> =>
-    apiClient.get('/reviews', { params }).then((r) => r.data),
+    apiClient.get('/reviews', { params }).then((r) => r.data.items),
 
   get: (reviewId: string): Promise<ReviewQueueItem> =>
     apiClient.get(`/reviews/${reviewId}`).then((r) => r.data),

@@ -84,7 +84,7 @@ function DecisionDialog({ review, open, onClose }: DecisionDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-5xl max-w-5xl h-[90vh] flex flex-col p-0 overflow-hidden">
         <DialogHeader className="px-6 py-4 border-b border-border bg-muted/20 shrink-0">
           <DialogTitle>Review Decision — {review.report_id}</DialogTitle>
           <DialogDescription>Submit your authoritative human review decision on this AI-generated safety analysis.</DialogDescription>
@@ -94,53 +94,55 @@ function DecisionDialog({ review, open, onClose }: DecisionDialogProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 h-full">
             
             {/* Left Column: Original AI Output */}
-            <div className="p-6 border-r border-border bg-muted/5 space-y-6">
+            <div className="p-6 border-r border-border/50 bg-background/50 backdrop-blur-sm space-y-6">
               <div>
                 <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                   <span className="text-xl">🤖</span> AI Analysis Original Output
                 </h3>
                 
-                <div className="p-3 bg-white border border-slate-200 rounded-lg text-sm shadow-sm mb-4">
-                  <p className="text-xs text-slate-500 font-medium mb-1">Report Narrative</p>
-                  <p className="text-slate-800 leading-relaxed">{review.report_text}</p>
+                <div className="p-4 bg-muted/10 border border-border/50 rounded-xl text-sm shadow-sm mb-4">
+                  <p className="text-xs text-muted-foreground font-medium mb-2 uppercase tracking-wider">Report Narrative</p>
+                  <p className="text-foreground/90 leading-relaxed">{review.report_text}</p>
                 </div>
 
                 {review.explanation && (
-                  <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg text-sm shadow-sm mb-6">
-                    <p className="text-xs text-blue-700 font-medium mb-1">AI Explanation & Reasoning</p>
-                    <p className="text-blue-900">{review.explanation}</p>
+                  <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl text-sm shadow-sm mb-6">
+                    <p className="text-xs text-blue-400 font-medium mb-2 uppercase tracking-wider">AI Explanation & Reasoning</p>
+                    <p className="text-blue-100/90 leading-relaxed">{review.explanation}</p>
                   </div>
                 )}
                 
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="p-3 bg-white border border-slate-200 rounded-lg shadow-sm">
-                      <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wide mb-1">SIF Level</p>
-                      <p className="text-sm font-semibold text-slate-900">{review.original_sif_level || 'N/A'}</p>
+                    <div className="p-4 bg-muted/10 border border-border/50 rounded-xl shadow-sm">
+                      <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-1">SIF Level</p>
+                      <p className="text-sm font-semibold text-foreground">{review.original_sif_level || 'N/A'}</p>
                     </div>
-                    <div className="p-3 bg-white border border-slate-200 rounded-lg shadow-sm">
-                      <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wide mb-1">Life Saving Rule</p>
-                      <p className="text-sm font-medium text-slate-900">{review.original_life_saving_rule || 'N/A'}</p>
+                    <div className="p-4 bg-muted/10 border border-border/50 rounded-xl shadow-sm">
+                      <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider mb-1">Life Saving Rule</p>
+                      <p className="text-sm font-medium text-foreground">{review.original_life_saving_rule || 'N/A'}</p>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-white border border-slate-200 rounded-lg shadow-sm space-y-3">
-                    <p className="text-xs font-semibold text-slate-800 border-b pb-2">Precursor Pattern Details</p>
-                    <div>
-                      <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wide">Activity</p>
-                      <p className="text-sm text-slate-900">{review.original_activity || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wide">Hazard</p>
-                      <p className="text-sm text-slate-900">{review.original_hazard || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wide">Barrier</p>
-                      <p className="text-sm text-slate-900">{review.original_barrier || 'N/A'} <span className="text-xs text-slate-500 ml-2">({review.original_barrier_status || 'N/A'})</span></p>
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-slate-500 font-medium uppercase tracking-wide">Barrier Failure</p>
-                      <p className="text-sm text-slate-900">{review.original_barrier_failure || 'N/A'}</p>
+                  <div className="p-5 bg-muted/10 border border-border/50 rounded-xl shadow-sm space-y-4">
+                    <p className="text-xs font-semibold text-foreground border-b border-border/50 pb-2">Precursor Pattern Details</p>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Activity</p>
+                        <p className="text-sm text-foreground/90">{review.original_activity || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Hazard</p>
+                        <p className="text-sm text-foreground/90">{review.original_hazard || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Barrier</p>
+                        <p className="text-sm text-foreground/90">{review.original_barrier || 'N/A'} <span className="text-xs text-muted-foreground ml-2">({review.original_barrier_status || 'N/A'})</span></p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Barrier Failure</p>
+                        <p className="text-sm text-foreground/90">{review.original_barrier_failure || 'N/A'}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -148,11 +150,11 @@ function DecisionDialog({ review, open, onClose }: DecisionDialogProps) {
             </div>
 
             {/* Right Column: Review Action */}
-            <div className="p-6 bg-white space-y-6">
+            <div className="p-6 bg-background space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="review_decision" className="text-base">Your Decision *</Label>
+                <Label htmlFor="review_decision" className="text-base text-foreground font-medium">Your Decision <span className="text-red-500">*</span></Label>
                 <Select value={decision} onValueChange={(v) => setDecision(v as ReviewDecision)}>
-                  <SelectTrigger id="review_decision" className="h-12 text-base"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="review_decision" className="h-12 text-base bg-muted/20 border-border/50"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="APPROVE">✓ Approve — AI analysis is correct</SelectItem>
                     <SelectItem value="REJECT">✗ Reject — AI analysis is incorrect</SelectItem>
@@ -162,16 +164,16 @@ function DecisionDialog({ review, open, onClose }: DecisionDialogProps) {
               </div>
 
               {decision === 'MODIFY' && (
-                <div className="space-y-4 p-5 border-2 border-orange-100 rounded-xl bg-orange-50/30">
-                  <p className="text-sm font-semibold text-orange-800 flex items-center gap-2">
+                <div className="space-y-4 p-5 border-2 border-orange-500/20 rounded-xl bg-orange-500/10">
+                  <p className="text-sm font-semibold text-orange-400 flex items-center gap-2">
                     <Edit3 className="w-4 h-4" /> Required Corrections
                   </p>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="corrected_sif_level" className="text-xs text-slate-600">Corrected SIF Level</Label>
+                      <Label htmlFor="corrected_sif_level" className="text-xs text-muted-foreground">Corrected SIF Level</Label>
                       <Select value={correctedSifLevel || 'none'} onValueChange={(v) => setCorrectedSifLevel(v === 'none' ? '' : v as SIFLevel)}>
-                        <SelectTrigger id="corrected_sif_level" className="h-9"><SelectValue placeholder="Leave unchanged" /></SelectTrigger>
+                        <SelectTrigger id="corrected_sif_level" className="h-9 bg-background/50 border-border/50"><SelectValue placeholder="Leave unchanged" /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="none">Leave unchanged</SelectItem>
                           <SelectItem value="NON_SIF">Non-SIF</SelectItem>
@@ -182,9 +184,9 @@ function DecisionDialog({ review, open, onClose }: DecisionDialogProps) {
                       </Select>
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="corrected_barrier_status" className="text-xs text-slate-600">Corrected Barrier Status</Label>
+                      <Label htmlFor="corrected_barrier_status" className="text-xs text-muted-foreground">Corrected Barrier Status</Label>
                       <Select value={correctedBarrierStatus || 'none'} onValueChange={(v) => setCorrectedBarrierStatus(v === 'none' ? '' : v as BarrierStatus)}>
-                        <SelectTrigger id="corrected_barrier_status" className="h-9"><SelectValue placeholder="Leave unchanged" /></SelectTrigger>
+                        <SelectTrigger id="corrected_barrier_status" className="h-9 bg-background/50 border-border/50"><SelectValue placeholder="Leave unchanged" /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="none">Leave unchanged</SelectItem>
                           <SelectItem value="EFFECTIVE">Effective</SelectItem>
@@ -197,27 +199,27 @@ function DecisionDialog({ review, open, onClose }: DecisionDialogProps) {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="corrected_lsr" className="text-xs text-slate-600">Corrected Life Saving Rule</Label>
-                    <input id="corrected_lsr" className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" value={correctedLsr} onChange={e => setCorrectedLsr(e.target.value)} placeholder="Leave unchanged" />
+                    <Label htmlFor="corrected_lsr" className="text-xs text-muted-foreground">Corrected Life Saving Rule</Label>
+                    <input id="corrected_lsr" className="flex h-9 w-full rounded-md border border-border/50 bg-background/50 px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground" value={correctedLsr} onChange={e => setCorrectedLsr(e.target.value)} placeholder="Leave unchanged" />
                   </div>
 
-                  <div className="space-y-3 pt-2 border-t border-orange-100">
-                    <p className="text-xs font-semibold text-slate-700">Precursor Corrections</p>
+                  <div className="space-y-3 pt-4 border-t border-orange-500/20">
+                    <p className="text-xs font-semibold text-foreground">Precursor Corrections</p>
                     <div className="space-y-1.5">
-                      <Label htmlFor="corrected_activity" className="text-xs text-slate-500">Activity</Label>
-                      <input id="corrected_activity" className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" value={correctedActivity} onChange={e => setCorrectedActivity(e.target.value)} placeholder="Leave unchanged" />
+                      <Label htmlFor="corrected_activity" className="text-xs text-muted-foreground">Activity</Label>
+                      <input id="corrected_activity" className="flex h-9 w-full rounded-md border border-border/50 bg-background/50 px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground" value={correctedActivity} onChange={e => setCorrectedActivity(e.target.value)} placeholder="Leave unchanged" />
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="corrected_hazard" className="text-xs text-slate-500">Hazard</Label>
-                      <input id="corrected_hazard" className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" value={correctedHazard} onChange={e => setCorrectedHazard(e.target.value)} placeholder="Leave unchanged" />
+                      <Label htmlFor="corrected_hazard" className="text-xs text-muted-foreground">Hazard</Label>
+                      <input id="corrected_hazard" className="flex h-9 w-full rounded-md border border-border/50 bg-background/50 px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground" value={correctedHazard} onChange={e => setCorrectedHazard(e.target.value)} placeholder="Leave unchanged" />
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="corrected_barrier" className="text-xs text-slate-500">Barrier</Label>
-                      <input id="corrected_barrier" className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" value={correctedBarrier} onChange={e => setCorrectedBarrier(e.target.value)} placeholder="Leave unchanged" />
+                      <Label htmlFor="corrected_barrier" className="text-xs text-muted-foreground">Barrier</Label>
+                      <input id="corrected_barrier" className="flex h-9 w-full rounded-md border border-border/50 bg-background/50 px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground" value={correctedBarrier} onChange={e => setCorrectedBarrier(e.target.value)} placeholder="Leave unchanged" />
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="corrected_barrier_failure" className="text-xs text-slate-500">Barrier Failure Details</Label>
-                      <input id="corrected_barrier_failure" className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" value={correctedBarrierFailure} onChange={e => setCorrectedBarrierFailure(e.target.value)} placeholder="Leave unchanged" />
+                      <Label htmlFor="corrected_barrier_failure" className="text-xs text-muted-foreground">Barrier Failure Details</Label>
+                      <input id="corrected_barrier_failure" className="flex h-9 w-full rounded-md border border-border/50 bg-background/50 px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground" value={correctedBarrierFailure} onChange={e => setCorrectedBarrierFailure(e.target.value)} placeholder="Leave unchanged" />
                     </div>
                   </div>
 
@@ -225,8 +227,8 @@ function DecisionDialog({ review, open, onClose }: DecisionDialogProps) {
               )}
 
               <div className="space-y-1.5 pt-4">
-                <Label htmlFor="reviewer_comment" className="text-sm font-medium">Reviewer Comments</Label>
-                <Textarea id="reviewer_comment" value={comment} onChange={(e) => setComment(e.target.value)} rows={4} placeholder="Add your rationale for this decision..." className="resize-none" />
+                <Label htmlFor="reviewer_comment" className="text-sm font-medium text-foreground">Reviewer Comments</Label>
+                <Textarea id="reviewer_comment" value={comment} onChange={(e) => setComment(e.target.value)} rows={4} placeholder="Add your rationale for this decision..." className="resize-none bg-muted/20 border-border/50 text-foreground" />
               </div>
             </div>
 
